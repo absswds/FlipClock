@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -179,7 +181,14 @@ private fun DigitFace(
     Box(
         modifier
             .size(width, height)
-            .background(Brush.verticalGradient(listOf(theme.cardTop, theme.cardBottom))),
+            .background(
+                Brush.verticalGradient(
+                    0f to theme.cardTop,
+                    0.48f to theme.cardTop,
+                    0.52f to theme.cardBottom,
+                    1f to theme.cardBottom,
+                ),
+            ),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -189,11 +198,17 @@ private fun DigitFace(
             fontWeight = ClockDigitFontWeight,
             fontFamily = ClockDigitFontFamily,
             textAlign = TextAlign.Center,
+            modifier = Modifier.graphicsLayer(scaleX = 1.04f),
             style = TextStyle(
                 platformStyle = PlatformTextStyle(includeFontPadding = false),
                 lineHeightStyle = LineHeightStyle(
                     alignment = LineHeightStyle.Alignment.Center,
                     trim = LineHeightStyle.Trim.Both,
+                ),
+                shadow = Shadow(
+                    color = Color.Black.copy(alpha = 0.22f),
+                    offset = Offset(0f, 2.5f),
+                    blurRadius = 3f,
                 ),
             ),
         )

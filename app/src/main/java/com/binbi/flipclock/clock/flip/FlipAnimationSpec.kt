@@ -32,8 +32,11 @@ object FlipAnimationSpec {
     }
 
     /** Darkest the moving flap gets (as it turns edge-on). */
-    const val MAX_SHADOW = 0.55f
+    const val MAX_SHADOW = 0.68f
 
     /** Brightest the freshly revealed face gets as the flap lifts off it. */
-    const val MAX_HIGHLIGHT = 0.12f
+    const val MAX_HIGHLIGHT = 0.16f
+
+    /** Darkest fixed card edges get; used to give the resting face a physical rim. */
+    const val MAX_CARD_EDGE_SHADOW = 0.18f
 }

@@ -92,3 +92,24 @@
 
 ---
 *Update after completing each phase or encountering errors*
+
+## Session: 2026-06-18 Visual Polish Branch
+
+### Goal
+- Bring the Android tablet clock closer to the reference iPad video: compact composition, thicker charcoal cards, brighter heavy digits, stronger hinge/edge depth, and cleaner full-screen immersion.
+
+### Actions taken
+- Created branch `codex/visual-polish-reference-clock`.
+- Extracted and reviewed frames from the reference video and current app video.
+- Cleaned the temporary extracted-frame directory `tmp_video_frames/`.
+- Added video comparison findings to `findings.md`.
+- Started a TDD pass for card edge shadow math in `FlipCardShadowTest`.
+
+### Notes
+- Existing untracked/modified context files (`CLAUDE.md`, `.claude/`, `AGENTS.md`) predated this implementation pass and are not part of the intended visual-polish commit.
+- `./gradlew` is missing from the repository, so Gradle verification may require Android Studio, a system Gradle install, or restoring wrapper scripts.
+
+### Verification
+- `git diff --check`: passed.
+- `./gradlew test --tests "com.binbi.flipclock.clock.flip.FlipCardShadowTest"`: blocked because the repository has no `gradlew`, `gradlew.bat`, or `gradle/wrapper/gradle-wrapper.jar`.
+- `./gradlew assembleDebug`: blocked for the same missing Gradle wrapper reason.

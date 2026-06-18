@@ -78,3 +78,21 @@
 ---
 *Update this file after every 2 view/browser/search operations*
 *This prevents visual information from being lost*
+
+## 2026-06-18 Video Reference Comparison
+
+Reference video: `D:\binbi\Videos\屏幕录制\屏幕录制 2026-06-18 203444.mp4`.
+Current app video: `D:\binbi\Documents\xwechat_files\wxid_3pf3ttkf9ys722_c041\temp\RWTemp\2026-06\9e20f478899dc29eb19741386f9343c8\ba1b4e8e603667ed093a16c704090a91.mp4`.
+
+Key visual findings:
+- The reference iPad design feels more polished because the clock reads as a compact poster-like composition: date, cards, and signature are grouped around one center.
+- The current Android version is functionally close but visually too sparse: the clock spreads too far across the screen, the signature is too dim, and the metadata does not feel integrated with the card group.
+- The reference cards have stronger physical presence: charcoal face, visible edge weight, darker hinge, and controlled highlight. The current cards read more like flat Compose rectangles with a middle line.
+- The reference digits feel heavier and brighter. The current digits are readable but not forceful enough, so the card does not feel premium.
+- The current video shows a right-side system bar affordance, which breaks the full-screen black-stage clock illusion.
+
+Implementation direction:
+- Keep the current architecture of one card per time unit with independently flipping digits.
+- Tune ClassicBlack first; do not spend this pass polishing every alternate preset.
+- Add edge shadow, seam shadow, bevel, and top highlight through theme-driven parameters rather than hard-coded one-off colors.
+- Keep shadow/highlight math in pure functions so unit tests can cover the non-visual parts.

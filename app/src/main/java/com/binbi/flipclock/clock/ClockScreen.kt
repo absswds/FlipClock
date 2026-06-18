@@ -4,9 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -44,41 +47,55 @@ fun ClockScreen(
                 detectTapGestures(onLongPress = { onSettingsClick() })
             },
     ) {
-        Column(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .systemBarsPadding()
                 .offset(x = burnInOffset.first, y = burnInOffset.second)
-                .padding(horizontal = 20.dp, vertical = 28.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
+                .padding(horizontal = 24.dp, vertical = 22.dp),
         ) {
-            Text(
-                text = state.dateText,
-                color = state.theme.date,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Medium,
-                letterSpacing = 0.5.sp,
-                textAlign = TextAlign.Center,
-            )
+            val topInset = maxHeight * 0.18f
+            val dateToClockGap = maxHeight * 0.055f
+            val clockHeight = maxHeight * 0.35f
+            val clockToSignatureGap = maxHeight * 0.055f
 
-            FlipClock(
-                state = state,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-            )
-
-            if (state.signature.isNotBlank()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top,
+            ) {
+                Spacer(Modifier.height(topInset))
                 Text(
-                    text = state.signature,
-                    color = state.theme.signature,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Normal,
+                    text = state.dateText,
+                    color = state.theme.date,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
                     letterSpacing = 0.3.sp,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
                 )
+
+                Spacer(Modifier.height(dateToClockGap))
+
+                FlipClock(
+                    state = state,
+                    modifier = Modifier
+                        .height(clockHeight)
+                        .fillMaxWidth(),
+                )
+
+                Spacer(Modifier.height(clockToSignatureGap))
+
+                if (state.signature.isNotBlank()) {
+                    Text(
+                        text = state.signature,
+                        color = state.theme.signature,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 0.1.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
     }

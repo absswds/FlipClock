@@ -36,4 +36,20 @@ object FlipCardShadow {
         val r = rotationDeg.coerceIn(0f, 90f)
         return (1f - r / 90f) * max
     }
+
+    /**
+     * Resting card edge shade. Horizontal edges carry full weight, while top/bottom edges are
+     * softer so the face still reads clean and bright under the digit.
+     */
+    fun computeCardEdgeShadowAlpha(
+        horizontalProgress: Float,
+        verticalProgress: Float,
+        max: Float = FlipAnimationSpec.MAX_CARD_EDGE_SHADOW,
+    ): Float {
+        val x = horizontalProgress.coerceIn(0f, 1f)
+        val y = verticalProgress.coerceIn(0f, 1f)
+        val horizontalEdge = (1f - kotlin.math.abs(x - 0.5f) * 2f).let { 1f - it }
+        val verticalEdge = (1f - kotlin.math.abs(y - 0.5f) * 2f).let { 1f - it } * 0.55f
+        return max * maxOf(horizontalEdge, verticalEdge)
+    }
 }

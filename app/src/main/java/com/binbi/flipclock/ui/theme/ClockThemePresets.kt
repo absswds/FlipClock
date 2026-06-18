@@ -3,9 +3,8 @@ package com.binbi.flipclock.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * The v1 preset palettes. [ClassicBlack] is the default and the one tuned 1:1 against the
- * reference screenshot (pure-black backdrop, charcoal cards, near-white rounded digits).
- * The others are intentionally restrained variations on the same high-contrast formula.
+ * The v1 preset palettes. ClassicBlack is tuned against the reference iPad video:
+ * pure-black stage, dense charcoal cards, bright white digits, and readable quiet metadata.
  */
 object ClockThemePresets {
 
@@ -13,28 +12,36 @@ object ClockThemePresets {
         id = "classic_black",
         displayName = "经典黑",
         background = Color(0xFF000000),
-        cardTop = Color(0xFF2C2C2F),
-        cardBottom = Color(0xFF171719),
-        digit = Color(0xFFF5F5F7),
-        hinge = Color(0xFF0A0A0B),
-        bevel = Color(0x22FFFFFF),
-        date = Color(0xFF9A9AA0),
-        signature = Color(0xFF6E6E73),
-        accent = Color(0xFFF5F5F7),
+        cardTop = Color(0xFF3A3A3D),
+        cardBottom = Color(0xFF222225),
+        cardEdge = Color(0xFF4A4A4E),
+        cardEdgeShadow = Color(0x66000000),
+        digit = Color(0xFFFFFFFF),
+        hinge = Color(0xFF080809),
+        hingeShadow = Color(0xAA000000),
+        bevel = Color(0x33FFFFFF),
+        topHighlight = Color(0x22FFFFFF),
+        date = Color(0xFFC4C4CA),
+        signature = Color(0xFFA6A6AC),
+        accent = Color(0xFFFFFFFF),
     )
 
     val PureBlack = ClockTheme(
         id = "pure_black",
         displayName = "纯黑夜间",
         background = Color(0xFF000000),
-        cardTop = Color(0xFF121214),
-        cardBottom = Color(0xFF050506),
-        digit = Color(0xFFCFCFD4),
+        cardTop = Color(0xFF151517),
+        cardBottom = Color(0xFF070708),
+        cardEdge = Color(0xFF25252A),
+        cardEdgeShadow = Color(0x88000000),
+        digit = Color(0xFFDADAE0),
         hinge = Color(0xFF000000),
+        hingeShadow = Color(0xAA000000),
         bevel = Color(0x18FFFFFF),
-        date = Color(0xFF6B6B70),
-        signature = Color(0xFF4E4E52),
-        accent = Color(0xFFCFCFD4),
+        topHighlight = Color(0x12FFFFFF),
+        date = Color(0xFF76767D),
+        signature = Color(0xFF5A5A60),
+        accent = Color(0xFFDADAE0),
     )
 
     val RetroGreen = ClockTheme(
@@ -43,9 +50,13 @@ object ClockThemePresets {
         background = Color(0xFF05140C),
         cardTop = Color(0xFF123322),
         cardBottom = Color(0xFF0A2016),
+        cardEdge = Color(0xFF205A3C),
+        cardEdgeShadow = Color(0x77000000),
         digit = Color(0xFF7CFFB0),
         hinge = Color(0xFF03100A),
+        hingeShadow = Color(0x99000000),
         bevel = Color(0x3329FF8F),
+        topHighlight = Color(0x1629FF8F),
         date = Color(0xFF4F9E76),
         signature = Color(0xFF3C7259),
         accent = Color(0xFF7CFFB0),
@@ -57,9 +68,13 @@ object ClockThemePresets {
         background = Color(0xFF120B04),
         cardTop = Color(0xFF332113),
         cardBottom = Color(0xFF1F140A),
+        cardEdge = Color(0xFF4B3120),
+        cardEdgeShadow = Color(0x77000000),
         digit = Color(0xFFFFD9A0),
         hinge = Color(0xFF0E0803),
+        hingeShadow = Color(0x99000000),
         bevel = Color(0x33FFC773),
+        topHighlight = Color(0x16FFC773),
         date = Color(0xFFB08855),
         signature = Color(0xFF836643),
         accent = Color(0xFFFFD9A0),
@@ -71,15 +86,19 @@ object ClockThemePresets {
         background = Color(0xFF0C0F14),
         cardTop = Color(0xFF2A313C),
         cardBottom = Color(0xFF1A1F27),
+        cardEdge = Color(0xFF3B4554),
+        cardEdgeShadow = Color(0x77000000),
         digit = Color(0xFFE6ECF5),
         hinge = Color(0xFF080A0E),
+        hingeShadow = Color(0x99000000),
         bevel = Color(0x22DCE6FF),
+        topHighlight = Color(0x12DCE6FF),
         date = Color(0xFF8893A4),
         signature = Color(0xFF626C7A),
         accent = Color(0xFFE6ECF5),
     )
 
-    /** Default first — used by the theme picker order. */
+    /** Default first, used by the theme picker order. */
     val all: List<ClockTheme> = listOf(ClassicBlack, PureBlack, RetroGreen, WarmAmber, Slate)
 
     fun byId(id: String): ClockTheme = all.firstOrNull { it.id == id } ?: ClassicBlack

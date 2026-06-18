@@ -43,12 +43,21 @@ class FlipCardShadowTest {
     }
 
     @Test
+    fun cardEdgeShadow_keepsCenterCleanAndDarkensEdges() {
+        assertEquals(0f, FlipCardShadow.computeCardEdgeShadowAlpha(0.5f, 0.5f), eps)
+        assertEquals(FlipAnimationSpec.MAX_CARD_EDGE_SHADOW, FlipCardShadow.computeCardEdgeShadowAlpha(0f, 0.5f), eps)
+        assertEquals(FlipAnimationSpec.MAX_CARD_EDGE_SHADOW, FlipCardShadow.computeCardEdgeShadowAlpha(1f, 0.5f), eps)
+        assertEquals(FlipAnimationSpec.MAX_CARD_EDGE_SHADOW * 0.55f, FlipCardShadow.computeCardEdgeShadowAlpha(0.5f, 0f), eps)
+    }
+
+    @Test
     fun allAlphas_stayWithinUnitRange() {
         var deg = 0f
         while (deg <= 180f) {
             assertTrue(FlipCardShadow.computeTopFlapShadowAlpha(deg) in 0f..1f)
             assertTrue(FlipCardShadow.computeBottomFlapShadowAlpha(deg) in 0f..1f)
             assertTrue(FlipCardShadow.computeFlapHighlightAlpha(deg) in 0f..1f)
+            assertTrue(FlipCardShadow.computeCardEdgeShadowAlpha(deg / 180f, 0.5f) in 0f..1f)
             deg += 5f
         }
     }

@@ -15,11 +15,15 @@ data class ClockTheme(
     val background: Color,
     val cardTop: Color,
     val cardBottom: Color,
+    val cardEdge: Color,
+    val cardEdgeShadow: Color,
     val digit: Color,
     /** The dark seam line drawn across the middle of each card. */
     val hinge: Color,
+    val hingeShadow: Color,
     /** A faint highlight just below the seam, simulating the lower card's top edge catching light. */
     val bevel: Color,
+    val topHighlight: Color,
     val date: Color,
     val signature: Color,
     /** Used for the AM/PM indicator and the settings affordance. */
