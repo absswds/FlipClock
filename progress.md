@@ -50,9 +50,26 @@
   - settings：SettingsViewModel + SettingsScreen（24/12h chips、显示秒开关、签名输入限60、主题横向 swatch 预览）
   - 根：FlipClockApp（手写 DI，单 SettingsRepository 喂两个 VM，Clock/Settings 切换）+ MainActivity（edge-to-edge + 常亮 + 沉浸隐藏系统栏）
 
+### Phase 3 真机反馈 → Phase 4（重做修订）
+- 用户真机安装确认外观「正常」，提出 3 点：(1) 设置齿轮和底部签名重叠；(2) 现在每数字一张小卡太分散，参考图是每个时间单位一张卡；(3) 数字只是跳变、没翻页感。
+- AskUserQuestion 确认：每单位一张卡 / 卡内只翻变化的那位 / 长按进设置。已写入 plan 文件「修订 (2026-06-18)」。
+
+### Phase 4（重做）: 翻页动画 + 单位卡
+- **Status:** complete（代码层面；本地无 Android SDK，编译/动画观感未验证 = ★检查点）
+- Actions taken:
+  - 新增 `clock/flip/FlipAnimationSpec.kt`：单条 0→180° keyframes（末尾 182→180 回弹），不依赖跨版本不稳的 per-frame easing infix。
+  - 新增 `clock/flip/FlipCardShadow.kt`：纯函数算 top/bottom flap 阴影 + flap 高光 alpha（可单测）。
+  - 新增 `clock/flip/FlipGlyph.kt`：单数字 3D 翻页器（无卡框，DigitHalf 用全高渐变+裁半保证缝线/渐变跨缝对齐），单 `Animatable` 驱动，`LaunchedEffect(digit)` 只翻变化的位。
+  - 新增 `clock/flip/UnitFlipCard.kt`：每单位一张圆角卡（共享渐变 + 单条 hinge + bevel），卡内 N 个 FlipGlyph 齐平。
+  - 改 `clock/FlipClock.kt`：6 张 per-digit 卡 → 时/分/秒三张 UnitFlipCard；按 worst-case 字数反推稳定字号；AM/PM 仍竖排左侧。
+  - 改 `clock/ClockScreen.kt`：删除 BottomCenter 设置 IconButton（与签名重叠），改根 Box `detectTapGestures(onLongPress=进设置)`。
+  - 删 `clock/flip/FlipDigit.kt`（静态卡，已被 FlipGlyph/UnitFlipCard 取代）。
+  - 测：`app/src/test/.../flip/FlipCardShadowTest.kt`。
+
 ### 下一步（★检查点，等用户）
-- 用户在 Android Studio 打开项目 → 首次 sync 自动生成 gradlew/wrapper jar → 跑模拟器/真机 → 截图反馈外观是否贴合参考图。
-- 确认外观后再进入 Phase 4（翻页动画）、Phase 6（待机：自动亮度/防烧屏/防误触退出）。
+- 真机/模拟器跑：确认时/分/秒各一张卡、卡内两位共缝线；秒位每秒真实翻页（上半下落→换字→下半落定带回弹/阴影）；30→31 只个位翻；长按进设置、签名不再被遮挡。
+- 动画方向/阴影是观感项，本地无法渲染；若翻页方向看起来反了，调 `FlipGlyph` 里两处 `rotationX` 符号即可。
+- 确认后再进 Phase 5（设置/主题打磨）、Phase 6（待机：自动亮度/防烧屏/防误触退出）。
 
 ## Test Results
 | Test | Input | Expected | Actual | Status |

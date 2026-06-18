@@ -4,7 +4,7 @@
 做一个原生 Android（Kotlin + Jetpack Compose）翻页时钟 App，核心场景是充电时全屏待机显示，翻页动画要有真实机械翻页钟的质感（阴影/高光/落定回弹），v1 含秒翻页 + 4-5 套预设主题 + 12/24h + 自定义签名 + 防烧屏/自动亮度/防误触退出。详细需求与架构见 `C:\Users\binbi\.claude\plans\ipad-app-flickering-deer.md`（已批准，作为本计划的需求来源，不要重新讨论范围）。
 
 ## Current Phase
-重做（Rebuild）：旧版 7 个 Phase 代码已被用户判定"没法用、很丑"，已 `git reset` 回退到规划状态（旧码存于 `archive/v1-ugly-attempt` 分支），现按确定的视觉设计规范从零重建。当前从 Phase 2 开始。
+重做（Rebuild）后已推进到 **Phase 4（翻页动画）代码层完成**。用户真机确认 Phase 3 外观「正常」，但提出 3 点修订：设置/签名重叠、要每单位一张卡（非每数字一卡）、要真实翻页动画。已按修订（见 plan 文件「修订 (2026-06-18)」）实现：单位卡 + 卡内逐位 3D 翻页 + 长按进设置。下一步等用户真机确认动画/外观。
 
 ## ⚠️ 重做背景与铁律
 - 旧版失败根因：**原计划只有架构、零视觉设计语言** → 做出来字小、棕底棕字、卡片错位、极丑。
@@ -45,15 +45,16 @@
 - [ ] **★ 检查点：用户在 Android Studio 跑通确认外观贴合参考图后，才进入 Phase 4**
 - **Status:** complete（代码层面，★检查点待用户真机确认外观）
 
-### Phase 4: 翻页动画
-- [ ] 单数字调试页（手动滑杆控制 rotation，独立打磨阴影/高光）
-- [ ] `FlipDigitState` 状态机：IDLE → FLIPPING_TOP_OUT(0→90°) → 90°crossover换内容 → FLIPPING_TOP_IN(90→180°) → SETTLING → IDLE
-- [ ] `graphicsLayer` rotationX/cameraDistance/transformOrigin 实现卡片旋转
-- [ ] `FlipCardShadow`：Canvas 阴影/高光，alpha 由 `computeShadowAlpha`/`computeHighlightAlpha` 纯函数计算（可单测）
-- [ ] 落定回弹细节（keyframes overshoot 或两段式 spring）
-- [ ] 接入秒位每秒连续翻页场景，确认性能/流畅度
-- [ ] 测试"全部 6 位数字同时翻页"（整点场景）不卡顿
-- **Status:** pending
+### Phase 4: 翻页动画（按修订：单位卡 + 卡内逐位翻页）
+- [x] 单个数字翻页动画器 `FlipGlyph`（无独立卡框，套在共享单位卡内）
+- [x] 状态机经单个 `Animatable<Float>` 0→180° 驱动：0–90 旧上半片下落、90 crossover、90–180 新下半片落入
+- [x] `graphicsLayer` rotationX/cameraDistance/transformOrigin（上片 origin 底中、下片 origin 顶中）
+- [x] `FlipCardShadow`：纯函数 `computeTopFlapShadowAlpha`/`computeBottomFlapShadowAlpha`/`computeFlapHighlightAlpha`（黑/白 scrim 叠加），含 JUnit 单测 `FlipCardShadowTest`
+- [x] 落定回弹：`FlipAnimationSpec.flip` keyframes 末尾 182°→180° overshoot
+- [x] `UnitFlipCard`：每单位一张圆角卡（共享渐变 + 单条 hinge），卡内逐位独立翻、只翻变化的位
+- [x] `FlipClock` 改为时/分/秒三张 `UnitFlipCard`；`ClockScreen` 改长按进设置（修掉与签名重叠）
+- [ ] ★ 真机确认：秒位连翻流畅、整点多位同时翻不卡、动画方向/阴影观感贴近参考（本地无 SDK 未验证）
+- **Status:** complete（代码层面，★检查点待用户真机确认动画与外观）
 
 ### Phase 5: 设置与持久化 + 主题
 - [ ] `SettingsRepository`（DataStore：use24h, signatureText, themeId）

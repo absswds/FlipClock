@@ -1,6 +1,7 @@
 package com.binbi.flipclock.clock
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,14 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -26,7 +24,8 @@ import androidx.compose.ui.unit.sp
 /**
  * The full standby screen: date pinned near the top, the flip clock filling the centre, and the
  * signature below it, all on the theme's backdrop. [burnInOffset] nudges the whole content a few
- * dp (anti burn-in); the settings affordance is a faint gear at the bottom.
+ * dp (anti burn-in). Settings are reached by a **long-press anywhere** (keeping the face clean —
+ * no persistent button to collide with the signature).
  *
  * Pure UI: it knows nothing about windows, sensors, or standby — those are wired by the caller.
  */
@@ -40,7 +39,10 @@ fun ClockScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(state.theme.background),
+            .background(state.theme.background)
+            .pointerInput(Unit) {
+                detectTapGestures(onLongPress = { onSettingsClick() })
+            },
     ) {
         Column(
             modifier = Modifier
@@ -78,20 +80,6 @@ fun ClockScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
-        }
-
-        IconButton(
-            onClick = onSettingsClick,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .systemBarsPadding()
-                .padding(bottom = 6.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Settings,
-                contentDescription = "设置",
-                tint = state.theme.signature,
-            )
         }
     }
 }

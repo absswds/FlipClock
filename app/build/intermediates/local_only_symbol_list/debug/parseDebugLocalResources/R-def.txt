@@ -1,0 +1,20 @@
+R_DEF: Internal format may change without notice
+local
+color ic_launcher_background
+drawable ic_launcher_foreground
+mipmap ic_launcher
+mipmap ic_launcher_round
+string app_name
+string default_signature
+string exit_cancel
+string exit_confirm
+string exit_confirm_title
+string settings_12h
+string settings_24h
+string settings_back
+string settings_show_seconds
+string settings_signature
+string settings_theme
+string settings_time_format
+string settings_title
+style Theme.FlipClock
