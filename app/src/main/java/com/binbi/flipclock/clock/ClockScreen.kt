@@ -56,7 +56,7 @@ fun ClockScreen(
         ) {
             val topInset = maxHeight * 0.18f
             val dateToClockGap = maxHeight * 0.055f
-            val clockHeight = maxHeight * 0.35f
+            val clockHeight = maxHeight * 0.40f
             val clockToSignatureGap = maxHeight * 0.055f
 
             Column(

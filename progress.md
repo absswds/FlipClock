@@ -130,3 +130,8 @@
 - User compared the latest screenshot against the reference and clarified the cards/digits still feel too flat and narrow.
 - Reduced the card height-per-glyph ratio so height-limited layouts produce wider cards.
 - Increased digit font size and horizontal scale so the default system Black digits read closer to the reference's broad, heavy numerals.
+
+### Correction: restore balanced card proportions
+- Latest screenshot showed the previous pass overcorrected: cards became too flat, and digits were clipped by the card bounds and hinge line.
+- Increased the clock viewport height, reduced total clock width, restored a taller card aspect ratio, and changed digit scaling from heavy horizontal stretch to a light broadening.
+- `.\gradlew test --tests "com.binbi.flipclock.ui.theme.ClockThemePresetsTest"` is still blocked by the missing Gradle wrapper script.

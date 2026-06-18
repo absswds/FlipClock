@@ -111,3 +111,4 @@ Follow-up clarification:
 - Remove extra card color treatment from the default look: no visible edge tint, bevel, top highlight, or added shadow color beyond the necessary flip seam.
 - Make each time card wider again; the user is optimizing for a broad reference-card shape.
 - After reviewing the user's current screenshot, the remaining mismatch is not just total clock width: the digits read too narrow and too far apart inside each unit. The next pass should widen the digit glyph rendering and reduce the visually skinny Android-default feel.
+- Correction after the next screenshot: over-widening made the cards flat and clipped the digits. The reference wants broad cards with enough height and complete numerals, not stretched text or long horizontal bars.

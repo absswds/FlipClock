@@ -35,8 +35,8 @@ fun FlipClock(
         // Worst-case glyph count for stable per-glyph sizing (hour is sized for 2 digits).
         val maxGlyphs = if (showSeconds) 6 else 4
 
-        val targetClockWidth = maxWidth * 0.96f
-        val groupGap = targetClockWidth * 0.024f
+        val targetClockWidth = maxWidth * 0.88f
+        val groupGap = targetClockWidth * 0.032f
         val amPmReserve = if (state.amPm != null) targetClockWidth * 0.07f else 0.dp
         val amPmGap = if (state.amPm != null) maxWidth * 0.012f else 0.dp
 
@@ -44,14 +44,14 @@ fun FlipClock(
         val usableWidth = targetClockWidth - amPmReserve - amPmGap - betweenGroups
 
         var glyphWidth: Dp = usableWidth / maxGlyphs
-        var cardHeight: Dp = glyphWidth * 1.1f
+        var cardHeight: Dp = glyphWidth * 1.38f
         val maxCardHeight = maxHeight * 0.82f
         if (cardHeight > maxCardHeight) {
             cardHeight = maxCardHeight
-            glyphWidth = cardHeight / 1.1f
+            glyphWidth = cardHeight / 1.38f
         }
 
-        val fontSize = with(LocalDensity.current) { (cardHeight * 0.96f).toSp() }
+        val fontSize = with(LocalDensity.current) { (cardHeight * 0.82f).toSp() }
         val amPmFontSize = with(LocalDensity.current) { (cardHeight * 0.14f).toSp() }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
