@@ -206,9 +206,11 @@ private fun DigitFace(
             },
             style = TextStyle(
                 platformStyle = PlatformTextStyle(includeFontPadding = false),
+                // Trim only the top leading; keep the bottom so round digits' baseline overshoot
+                // isn't clipped. We center the glyph ourselves via the translationY nudge above.
                 lineHeightStyle = LineHeightStyle(
                     alignment = LineHeightStyle.Alignment.Center,
-                    trim = LineHeightStyle.Trim.Both,
+                    trim = LineHeightStyle.Trim.FirstLineTop,
                 ),
                 shadow = Shadow(
                     color = Color.Black.copy(alpha = 0.22f),
