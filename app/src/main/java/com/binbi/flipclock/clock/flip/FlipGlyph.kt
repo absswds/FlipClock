@@ -2,6 +2,7 @@ package com.binbi.flipclock.clock.flip
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -148,9 +149,12 @@ private fun DigitHalf(
             .size(width, height / 2)
             .clipToBounds(),
     ) {
+        // requiredSize (not size) forces the *full* card height so the glyph spans the whole card
+        // and we clip to a single half — otherwise the parent's half-height constraint coerces
+        // this box down and the digit ends up centered (and duplicated) within each half.
         Box(
             Modifier
-                .size(width, height)
+                .requiredSize(width, height)
                 .align(if (top) Alignment.TopCenter else Alignment.BottomCenter)
                 .background(Brush.verticalGradient(listOf(theme.cardTop, theme.cardBottom))),
             contentAlignment = Alignment.Center,
