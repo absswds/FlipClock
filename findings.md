@@ -110,3 +110,4 @@ Follow-up clarification:
 - The card gray should be a plain neutral gray, not a tinted or layered gray.
 - Remove extra card color treatment from the default look: no visible edge tint, bevel, top highlight, or added shadow color beyond the necessary flip seam.
 - Make each time card wider again; the user is optimizing for a broad reference-card shape.
+- After reviewing the user's current screenshot, the remaining mismatch is not just total clock width: the digits read too narrow and too far apart inside each unit. The next pass should widen the digit glyph rendering and reduce the visually skinny Android-default feel.

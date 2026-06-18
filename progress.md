@@ -125,3 +125,8 @@
 - Increased the clock target width and changed card proportions so each time unit reads wider.
 - Added `ClockThemePresetsTest` to lock the ClassicBlack card face to solid neutral gray.
 - `.\gradlew test --tests "com.binbi.flipclock.ui.theme.ClockThemePresetsTest"` remains blocked because the Gradle wrapper script is absent from the repository.
+
+### Follow-up adjustment: wider digit feel
+- User compared the latest screenshot against the reference and clarified the cards/digits still feel too flat and narrow.
+- Reduced the card height-per-glyph ratio so height-limited layouts produce wider cards.
+- Increased digit font size and horizontal scale so the default system Black digits read closer to the reference's broad, heavy numerals.
