@@ -105,3 +105,8 @@ The intended reference look is simpler than the initial polish pass:
 - Time cards should use a mostly solid gray face with large white digits.
 - The time cards should be wider overall; avoid a narrow/tall or visually cramped card feel.
 - Bottom signature text is acceptable and should not be reworked in this pass.
+
+Follow-up clarification:
+- The card gray should be a plain neutral gray, not a tinted or layered gray.
+- Remove extra card color treatment from the default look: no visible edge tint, bevel, top highlight, or added shadow color beyond the necessary flip seam.
+- Make each time card wider again; the user is optimizing for a broad reference-card shape.

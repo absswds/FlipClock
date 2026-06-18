@@ -118,3 +118,10 @@
 - User clarified the target: fixed Chinese date layout (`yyyy年M月d日 EEEE`), keep the current date/clock spacing, use a simpler solid gray card face with white large digits, preserve bottom text, and make the time cards wider.
 - Added a `ClockViewModelTest` expectation for the Chinese date layout.
 - `.\gradlew test --tests "com.binbi.flipclock.clock.ClockViewModelTest"` remains blocked because the Gradle wrapper script is absent from the repository.
+
+### Follow-up adjustment: wider neutral-gray cards
+- User clarified the cards were still too narrow/flat and the gray was not neutral enough.
+- Adjusted the default card face toward a single neutral gray with transparent edge/highlight/bevel treatment.
+- Increased the clock target width and changed card proportions so each time unit reads wider.
+- Added `ClockThemePresetsTest` to lock the ClassicBlack card face to solid neutral gray.
+- `.\gradlew test --tests "com.binbi.flipclock.ui.theme.ClockThemePresetsTest"` remains blocked because the Gradle wrapper script is absent from the repository.
