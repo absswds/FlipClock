@@ -4,7 +4,22 @@
 做一个原生 Android（Kotlin + Jetpack Compose）翻页时钟 App，核心场景是充电时全屏待机显示，翻页动画要有真实机械翻页钟的质感（阴影/高光/落定回弹），v1 含秒翻页 + 4-5 套预设主题 + 12/24h + 自定义签名 + 防烧屏/自动亮度/防误触退出。详细需求与架构见 `C:\Users\binbi\.claude\plans\ipad-app-flickering-deer.md`（已批准，作为本计划的需求来源，不要重新讨论范围）。
 
 ## Current Phase
-Phase 1（已完成，等待用户有空后从 Phase 2 开始）
+重做（Rebuild）：旧版 7 个 Phase 代码已被用户判定"没法用、很丑"，已 `git reset` 回退到规划状态（旧码存于 `archive/v1-ugly-attempt` 分支），现按确定的视觉设计规范从零重建。当前从 Phase 2 开始。
+
+## ⚠️ 重做背景与铁律
+- 旧版失败根因：**原计划只有架构、零视觉设计语言** → 做出来字小、棕底棕字、卡片错位、极丑。
+- **铁律：不参考 `archive/v1-ugly-attempt` 里任何旧代码的设计**。从零按下方视觉规范重建。
+- 本环境无 Android SDK，无法本地编译/渲染 → **采取"先锁外观"策略**：先做脚手架+设计系统+静态时钟屏，让用户在 Android Studio 跑通确认外观，再叠加动画/待机/设置。
+
+## 🎨 视觉设计规范（对齐用户提供的 iOS 参考图，1:1 贴近）
+默认主题「纯黑经典」精确规格（详见 findings.md「目标参考设计」）：
+- 背景纯黑 #000000~#0A0A0A；数字纯白/近白、**超大加粗圆润**字形；卡片深炭灰 #1C1C1E~#262626、中等圆角、中缝水平 hinge 线。
+- **时钟横向占满约 80% 屏宽**，是绝对主视觉（这是修复旧版"字太小"的关键）。
+- 小时不补前导零（12h 制显示 "5"）；**AM/PM 小标竖排在小时左侧**。
+- 时/分/秒用间距分组，冒号弱化/省略。
+- 顶部居中日期+星期浅灰小字；底部居中签名灰色小字；整体垂直居中、大量留白、极简。
+- 数字字体：内置/下载一个 heavy rounded 字体（如 Poppins/Montserrat Black），系统 `FontWeight.Black` 作兜底，设计 token 化便于一行切换。
+- 多主题策略：**先把这套默认黑白主题做到接近参考图精致度**，再扩展其余预设。
 
 ## Phases
 
@@ -15,19 +30,20 @@ Phase 1（已完成，等待用户有空后从 Phase 2 开始）
 - **Status:** complete
 
 ### Phase 2: 项目脚手架
-- [ ] Android Studio Compose 模板初始化（minSdk 26，包名 com.<org>.flipclock）
-- [ ] 验证空项目在模拟器/真机能跑起来
-- [ ] 建立包结构骨架（core/clock/standby/settings/ui.theme）
-- **Status:** pending
+- [x] Gradle/Compose 工程从零搭建（libs.versions.toml、settings/app build.kts、manifest、主题、图标，minSdk 26，包名 com.binbi.flipclock）
+- [x] 建立包结构骨架（core/clock/settings/ui.theme；standby 留待 Phase 6）
+- [ ] 验证在 Android Studio sync + 模拟器/真机跑起来（需用户本地 SDK）
+- **Status:** complete（代码层面；编译待用户真机验证）
 
-### Phase 3: 静态翻页时钟 UI（无动画）
+### Phase 3: 静态翻页时钟 UI（无动画）★ 外观锁定关键阶段
 - [ ] `ClockTimeProvider`（按秒边界精确触发，注入 java.time.Clock 便于测试）
 - [ ] `ClockViewModel` + `ClockUiState`（含 secondTens/secondOnes、amPm、dateText、use24h、theme）
-- [ ] 静态 `FlipDigit`（上下两半 + 中缝线，不转动）
-- [ ] `FlipClock`（6 位：时/分/秒 + 冒号 + AM/PM）
-- [ ] `ClockScreen`（日期 + FlipClock + 签名，签名先硬编码，单一默认主题）
-- [ ] 对照参考图调字体/卡片比例/配色，竖屏先行
-- **Status:** pending
+- [ ] 设计系统：`ClockTheme` + 默认黑白主题 + 字体 token（heavy rounded）
+- [ ] 静态 `FlipDigit`（上下两半 + 中缝 hinge 线，不转动），尺寸按"时钟占屏宽 ~80%"反推
+- [ ] `FlipClock`（6 位：时/分/秒分组 + AM/PM 竖排左侧，冒号弱化），无前导零（12h）
+- [ ] `ClockScreen`（顶部日期 + 居中 FlipClock + 底部签名，纯黑背景，垂直居中大留白）
+- [ ] **★ 检查点：用户在 Android Studio 跑通确认外观贴合参考图后，才进入 Phase 4**
+- **Status:** complete（代码层面，★检查点待用户真机确认外观）
 
 ### Phase 4: 翻页动画
 - [ ] 单数字调试页（手动滑杆控制 rotation，独立打磨阴影/高光）
@@ -80,10 +96,21 @@ Phase 1（已完成，等待用户有空后从 Phase 2 开始）
 ## Errors Encountered
 | Error | Attempt | Resolution |
 |-------|---------|------------|
-| （尚未开始实施，无错误记录） | - | - |
+| ClockScreen.kt 重复 import androidx.compose.ui.unit.Dp（误把删 PaddingValues 写成加 Dp） | 1 | 自查 import 块发现并删除重复行 + 未用的 PaddingValues |
+| Google Fonts 下载字体需 AS 自动生成的精确证书数组，手写易错且运行时静默失败 | 1 | 放弃下载字体，改用系统 Black 字体 token + 文档化一行切换内置 ttf 的方法 |
 
 ## Notes
-- 详细架构/包结构/风险分析见批准的计划文件：`C:\Users\binbi\.claude\plans\ipad-app-flickering-deer.md`，开始 Phase 2 前先重读一遍。
-- 用户要求：计划做好后暂停，不要立即开始写代码，等用户有空时再继续。**当前应停止在此，不要自动推进到 Phase 2。**
+- 详细架构/包结构/风险分析见批准的计划文件：`C:\Users\binbi\.claude\plans\ipad-app-flickering-deer.md`。视觉规范以本文件「🎨 视觉设计规范」+ findings.md「目标参考设计」为准。
+- **重做进行中**：先做 Phase 2 脚手架 + Phase 3 静态外观，到 Phase 3 末尾的 ★ 检查点暂停，等用户真机确认外观。
+- 不参考 archive/v1-ugly-attempt 旧码设计。
 - 每完成一个 Phase 更新本文件状态，并在 progress.md 记录本次会话进展。
 - 真机相关项（Phase 6）模拟器无法准确验证，必须上真实设备测试。
+
+## Decisions Made（重做新增）
+| Decision | Rationale |
+|----------|-----------|
+| 默认主题改纯黑+白色圆润粗体（替代旧棕色） | 1:1 对齐用户参考图，极致对比、最大可读性 |
+| 时钟占屏宽 ~80%，尺寸由此反推卡片/字号 | 修复旧版"字太小淹没在空屏"的首要缺陷 |
+| 内置/下载 heavy rounded 字体 + 系统 Black 兜底 | 贴近参考图圆润粗体质感，token 化便于切换 |
+| 先做精默认主题再扩展其余预设 | 防止重蹈"一次铺 5 套全粗糙"的覆辙 |
+| Phase 3 末设外观检查点，用户真机确认后再叠加 | 本地无 SDK 无法渲染，尽早消灭"丑"风险 |

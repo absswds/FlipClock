@@ -20,11 +20,39 @@
   - `D:\binbi\Documents\Code\project\app\clock\progress.md`（新建，本文件）
 
 ### Phase 2: 项目脚手架
-- **Status:** pending（等待用户指示开始）
+- **Status:** pending（首版已废弃，见下方 2026-06-18 重做会话）
+
+## Session: 2026-06-18（重做 Rebuild）
+
+### 背景
+- 用户判定首版（archive/v1-ugly-attempt 分支，7 个 Phase）"没法用、很丑"：截图显示棕底棕字、字太小、卡片错位。
+- 操作：`git branch archive/v1-ugly-attempt 760a511` 保存旧码 → `git reset --hard a0d848a` 回退到写完计划状态 → 删除工作区残留旧码/构建产物，仅保留规划文档+参考截图。
+- 用户提供 iOS 参考设计图（纯黑底/白色圆润粗体大数字/PM 竖排左侧/顶部日期/底部签名），确认：1:1 贴近、先做精默认黑白主题、内置粗圆字体。视觉规范记入 findings.md + task_plan.md。
+
+### Phase 2（重做）: 脚手架
+- **Status:** complete（代码层面；本地无 Android SDK，编译未验证）
 - Actions taken:
-  -
-- Files created/modified:
-  -
+  - 版本目录 libs.versions.toml（AGP 8.5.2 / Kotlin 2.0.21 / Compose BOM 2024.09.03 / minSdk 26 / compileSdk 34）
+  - settings.gradle.kts、根 build.gradle.kts、app/build.gradle.kts、gradle.properties、wrapper props(gradle 8.7)、.gitignore、proguard
+  - AndroidManifest（单 Activity、KEEP_SCREEN_ON、configChanges 防重建）、strings、themes（纯黑 NoActionBar）、colors、自适应启动图标(vector)
+  - 包结构 core/{time,settings}、clock/flip、settings、ui/theme
+
+### Phase 3（重做）: 静态翻页时钟 UI ★外观锁定
+- **Status:** complete（代码层面，待用户真机确认外观 = ★检查点）
+- Actions taken:
+  - 设计系统：ClockTheme + ClockThemePresets（默认 ClassicBlack 按参考图调色 + 另 4 套）+ ClockType 字体 token（系统 Black 兜底，可一行换内置 ttf）
+  - core/time：TimeFormat、ClockTimeProvider（按秒边界精确触发，可注入 Clock）
+  - core/settings：UserSettings、SettingsRepository（DataStore）
+  - clock：ClockUiState、ClockViewModel（buildState 纯函数：12/24h、无前导零、日期）
+  - clock/flip/FlipDigit（静态：圆角渐变卡片 + 居中大数字 + hinge 缝线 + bevel，includeFontPadding=false 保证缝线居中）
+  - clock/FlipClock（按可用宽度反推卡片尺寸填满 ~90% 屏宽、按高度封顶防横屏溢出、时分秒分组、AM/PM 竖排左侧）
+  - clock/ClockScreen（纯黑底、顶部日期、居中时钟、底部签名、隐藏式齿轮入口；clock 包零依赖 standby/Activity）
+  - settings：SettingsViewModel + SettingsScreen（24/12h chips、显示秒开关、签名输入限60、主题横向 swatch 预览）
+  - 根：FlipClockApp（手写 DI，单 SettingsRepository 喂两个 VM，Clock/Settings 切换）+ MainActivity（edge-to-edge + 常亮 + 沉浸隐藏系统栏）
+
+### 下一步（★检查点，等用户）
+- 用户在 Android Studio 打开项目 → 首次 sync 自动生成 gradlew/wrapper jar → 跑模拟器/真机 → 截图反馈外观是否贴合参考图。
+- 确认外观后再进入 Phase 4（翻页动画）、Phase 6（待机：自动亮度/防烧屏/防误触退出）。
 
 ## Test Results
 | Test | Input | Expected | Actual | Status |
