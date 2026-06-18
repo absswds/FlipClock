@@ -31,6 +31,7 @@ fun UnitFlipCard(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier.clip(RoundedCornerShape(cardHeight * 0.11f))) {
+        // The Row alone determines the card's size (sum of its glyph widths).
         Row {
             digits.forEach { d ->
                 FlipGlyph(
@@ -43,21 +44,25 @@ fun UnitFlipCard(
             }
         }
 
-        // One continuous hinge seam across the whole unit, plus a faint bevel below it.
-        Box(
-            Modifier
-                .align(Alignment.Center)
-                .fillMaxWidth()
-                .height(2.dp)
-                .background(theme.hinge),
-        )
-        Box(
-            Modifier
-                .align(Alignment.Center)
-                .offset(y = 1.5.dp)
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(theme.bevel),
-        )
+        // Overlay matched to the card's *actual* size (matchParentSize doesn't grow the card),
+        // so the seam spans exactly the unit's width — not the whole screen.
+        Box(Modifier.matchParentSize()) {
+            // One continuous hinge seam across the whole unit, plus a faint bevel below it.
+            Box(
+                Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .height(2.dp)
+                    .background(theme.hinge),
+            )
+            Box(
+                Modifier
+                    .align(Alignment.Center)
+                    .offset(y = 1.5.dp)
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(theme.bevel),
+            )
+        }
     }
 }
