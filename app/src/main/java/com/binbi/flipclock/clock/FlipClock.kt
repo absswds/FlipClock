@@ -36,7 +36,7 @@ fun FlipClock(
         val maxGlyphs = if (showSeconds) 6 else 4
 
         val targetClockWidth = maxWidth * 0.88f
-        val groupGap = targetClockWidth * 0.02f
+        val groupGap = targetClockWidth * 0.022f
         val amPmReserve = if (state.amPm != null) targetClockWidth * 0.07f else 0.dp
         val amPmGap = if (state.amPm != null) maxWidth * 0.012f else 0.dp
 
@@ -54,7 +54,7 @@ fun FlipClock(
         // Size the digit off the glyph *width* (the real constraint for 6 digits across), not the
         // card height. The card aspect above is chosen so this tall-metrics font has ~9% vertical
         // margin and never clips at the seam/edges.
-        val fontSize = with(LocalDensity.current) { (glyphWidth * 1.52f).toSp() }
+        val fontSize = with(LocalDensity.current) { (glyphWidth * 1.64f).toSp() }
         val amPmFontSize = with(LocalDensity.current) { (cardHeight * 0.14f).toSp() }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
