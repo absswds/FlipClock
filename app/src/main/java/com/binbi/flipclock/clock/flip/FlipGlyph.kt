@@ -202,7 +202,7 @@ private fun DigitFace(
             // (bold numerals sit visually low because of baseline/descent metrics).
             modifier = Modifier.graphicsLayer {
                 scaleX = 1.04f
-                translationY = -size.height * 0.045f
+                translationY = -size.height * 0.09f
             },
             style = TextStyle(
                 platformStyle = PlatformTextStyle(includeFontPadding = false),
