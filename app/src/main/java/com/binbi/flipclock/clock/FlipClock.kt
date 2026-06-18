@@ -44,11 +44,11 @@ fun FlipClock(
         val usableWidth = targetClockWidth - amPmReserve - amPmGap - betweenGroups
 
         var glyphWidth: Dp = usableWidth / maxGlyphs
-        var cardHeight: Dp = glyphWidth * 2.28f
+        var cardHeight: Dp = glyphWidth * 2.67f
         val maxCardHeight = maxHeight * 0.92f
         if (cardHeight > maxCardHeight) {
             cardHeight = maxCardHeight
-            glyphWidth = cardHeight / 2.28f
+            glyphWidth = cardHeight / 2.67f
         }
 
         // Size the digit off the glyph *width* (the real constraint for 6 digits across), not the

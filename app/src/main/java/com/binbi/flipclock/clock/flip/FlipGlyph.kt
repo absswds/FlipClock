@@ -202,6 +202,9 @@ private fun DigitFace(
             // (bold numerals sit visually low because of baseline/descent metrics).
             modifier = Modifier.graphicsLayer {
                 scaleX = 1.04f
+                // Digit width is capped by the glyph cell, so stretch it vertically to grow into
+                // the taller card instead of floating with margin.
+                scaleY = 1.12f
                 translationY = -size.height * 0.08f
             },
             style = TextStyle(
