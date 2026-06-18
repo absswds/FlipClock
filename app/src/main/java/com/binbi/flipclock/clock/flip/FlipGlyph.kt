@@ -198,7 +198,12 @@ private fun DigitFace(
             fontWeight = ClockDigitFontWeight,
             fontFamily = ClockDigitFontFamily,
             textAlign = TextAlign.Center,
-            modifier = Modifier.graphicsLayer(scaleX = 1.04f),
+            // scaleX widens the glyph slightly; translationY nudges it up to the optical center
+            // (bold numerals sit visually low because of baseline/descent metrics).
+            modifier = Modifier.graphicsLayer {
+                scaleX = 1.04f
+                translationY = -size.height * 0.045f
+            },
             style = TextStyle(
                 platformStyle = PlatformTextStyle(includeFontPadding = false),
                 lineHeightStyle = LineHeightStyle(
