@@ -113,3 +113,8 @@
 - `git diff --check`: passed.
 - `./gradlew test --tests "com.binbi.flipclock.clock.flip.FlipCardShadowTest"`: blocked because the repository has no `gradlew`, `gradlew.bat`, or `gradle/wrapper/gradle-wrapper.jar`.
 - `./gradlew assembleDebug`: blocked for the same missing Gradle wrapper reason.
+
+### Follow-up adjustment from user screenshot
+- User clarified the target: fixed Chinese date layout (`yyyy年M月d日 EEEE`), keep the current date/clock spacing, use a simpler solid gray card face with white large digits, preserve bottom text, and make the time cards wider.
+- Added a `ClockViewModelTest` expectation for the Chinese date layout.
+- `.\gradlew test --tests "com.binbi.flipclock.clock.ClockViewModelTest"` remains blocked because the Gradle wrapper script is absent from the repository.

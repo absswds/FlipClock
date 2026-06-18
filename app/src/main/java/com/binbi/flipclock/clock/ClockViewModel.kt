@@ -32,7 +32,7 @@ class ClockViewModel(
 
     companion object {
         private val dateFormatter: DateTimeFormatter =
-            DateTimeFormatter.ofPattern("MMM d, yyyy  EEE", Locale.getDefault())
+            DateTimeFormatter.ofPattern("yyyy年M月d日 EEEE", Locale.CHINA)
 
         /** Pure mapping from a moment + settings to render state. Unit-testable. */
         fun buildState(now: LocalDateTime, settings: UserSettings): ClockUiState {

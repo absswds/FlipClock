@@ -96,3 +96,12 @@ Implementation direction:
 - Tune ClassicBlack first; do not spend this pass polishing every alternate preset.
 - Add edge shadow, seam shadow, bevel, and top highlight through theme-driven parameters rather than hard-coded one-off colors.
 - Keep shadow/highlight math in pure functions so unit tests can cover the non-visual parts.
+
+## 2026-06-18 User Clarification After First Polish Pass
+
+The intended reference look is simpler than the initial polish pass:
+- Date should read like `2022年8月25日 星期四`, with the date and weekday on one centered line.
+- The date-to-clock distance from the current implementation is acceptable and should be preserved.
+- Time cards should use a mostly solid gray face with large white digits.
+- The time cards should be wider overall; avoid a narrow/tall or visually cramped card feel.
+- Bottom signature text is acceptable and should not be reworked in this pass.

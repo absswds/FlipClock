@@ -198,7 +198,7 @@ private fun DigitFace(
             fontWeight = ClockDigitFontWeight,
             fontFamily = ClockDigitFontFamily,
             textAlign = TextAlign.Center,
-            modifier = Modifier.graphicsLayer(scaleX = 1.04f),
+            modifier = Modifier.graphicsLayer(scaleX = 1.015f),
             style = TextStyle(
                 platformStyle = PlatformTextStyle(includeFontPadding = false),
                 lineHeightStyle = LineHeightStyle(
