@@ -1,4 +1,7 @@
 *.iml
+.agents/
+.codex/
+.claude/
 .gradle
 /local.properties
 /.idea
