@@ -1,5 +1,6 @@
 import type { ClockTheme } from './themes';
 import { byId } from './themes';
+import { resolveLang, weekdays, type Lang } from './i18n';
 
 export type TimeFormat = 'H24' | 'H12';
 
@@ -23,19 +24,6 @@ export interface ClockUiState {
   theme: ClockTheme;
 }
 
-const weekdayKeys: Record<string, string[]> = {
-  zh: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
-  ja: ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
-};
-
-function getWeekday(date: Date, lang: string): string {
-  const day = date.getDay();
-  const keys = weekdayKeys[lang] ?? weekdayKeys['zh'];
-  if (keys) return keys[day];
-
-  return date.toLocaleDateString(lang, { weekday: 'long' });
-}
-
 /**
  * Pure mapping from a moment + settings to render state.
  * Port of ClockViewModel.buildState().
@@ -44,7 +32,7 @@ export function buildState(
   now: Date,
   settings: UserSettings,
 ): ClockUiState {
-  const lang = settings.language === 'ja' ? 'ja' : 'zh';
+  const lang: Lang = resolveLang(settings.language);
   const hour24 = now.getHours();
   let displayHour: number;
   let amPm: string | null;
@@ -53,7 +41,7 @@ export function buildState(
     displayHour = hour24;
     amPm = null;
   } else {
-    displayHour = ((hour24 + 11) % 12) + 1; // 0->12, 13->1, 23->11
+    displayHour = ((hour24 + 11) % 12) + 1;
     amPm = hour24 < 12 ? 'AM' : 'PM';
   }
 
@@ -62,13 +50,19 @@ export function buildState(
       ? [displayHour]
       : [Math.floor(displayHour / 10), displayHour % 10];
 
+  const wd = (weekdays[lang] ?? weekdays.zh)[now.getDay()];
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
   const day = now.getDate();
-  const weekday = getWeekday(now, lang);
 
-  // Format: "2026年7月1日 星期三" (zh) / "2026年7月1日 水曜日" (ja)
-  const dateText = `${year}年${month}月${day}日 ${weekday}`;
+  // Format: "2026年7月1日 星期三" (zh) — month/day labels vary by locale
+  const dateText = lang === 'en'
+    ? `${wd}, ${now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+    : lang === 'ja' || lang === 'ko'
+    ? `${year}年${month}月${day}日 ${wd}`
+    : lang === 'ar'
+    ? `${wd}، ${day}/${month}/${year}`
+    : `${year}年${month}月${day}日 ${wd}`;
 
   return {
     hourDigits,

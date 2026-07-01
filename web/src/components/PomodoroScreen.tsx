@@ -1,5 +1,7 @@
 import type { ClockTheme } from '../logic/themes';
 import type { PomodoroState, PomodoroSettings } from '../logic/productivityModels';
+import type { Lang } from '../logic/i18n';
+import { t } from '../logic/i18n';
 import { formatDuration } from '../logic/formatDuration';
 import FlipDurationDisplay from './FlipDurationDisplay';
 
@@ -11,86 +13,64 @@ interface PomodoroScreenProps {
   onReset: () => void;
   onDismissAlert: () => void;
   onUpdateSettings: (s: PomodoroSettings) => void;
+  lang: Lang;
 }
 
-const modeLabels: Record<string, string> = {
-  FOCUS: '专注',
-  SHORT_BREAK: '短休息',
-  LONG_BREAK: '长休息',
-};
 
 export default function PomodoroScreen({
-  theme,
-  state,
-  onStart,
-  onPause,
-  onReset,
-  onDismissAlert,
-  onUpdateSettings,
+  theme, state, onStart, onPause, onReset, onDismissAlert, onUpdateSettings, lang,
 }: PomodoroScreenProps) {
   const text = formatDuration(state.timer.remainingMillis);
   const isFocus = state.mode === 'FOCUS';
+  const modeLabel = isFocus ? t(lang, 'focusMode') : state.mode === 'SHORT_BREAK' ? t(lang, 'shortBreak') : t(lang, 'longBreak');
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 18px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
-      {/* Mode indicator */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span
-          style={{
-            padding: '3px 12px',
-            borderRadius: 12,
-            background: isFocus ? `${theme.accent}33` : `${theme.signature}22`,
-            color: isFocus ? theme.accent : theme.signature,
-            fontSize: 'clamp(10px, 1.3vw, 14px)',
-            fontWeight: 600,
-          }}
-        >
-          {modeLabels[state.mode]}
+        <span style={{
+          padding: '3px 12px', borderRadius: 12,
+          background: isFocus ? `${theme.accent}33` : `${theme.signature}22`,
+          color: isFocus ? theme.accent : theme.signature,
+          fontSize: 'clamp(10px, 1.3vw, 14px)', fontWeight: 600,
+        }}>
+          {modeLabel}
         </span>
         <span style={{ color: theme.signature, fontSize: 'clamp(10px, 1.1vw, 12px)' }}>
-          #{state.completedFocusSessions} 完成
+          #{state.completedFocusSessions} {t(lang, 'completed')}
         </span>
       </div>
 
-      {/* Alert */}
       {state.showCompletionAlert && (
         <div
           onClick={state.mode === 'FOCUS' ? onDismissAlert : () => { onDismissAlert(); onStart(); }}
           style={{
-            padding: '10px 24px',
-            borderRadius: 8,
-            background: theme.accent,
-            color: theme.background,
-            fontWeight: 700,
-            fontSize: 'clamp(14px, 2vw, 20px)',
-            cursor: 'pointer',
+            padding: '10px 24px', borderRadius: 8, background: theme.accent,
+            color: theme.background, fontWeight: 700,
+            fontSize: 'clamp(14px, 2vw, 20px)', cursor: 'pointer',
             animation: 'pulse 1s ease-in-out infinite',
           }}
         >
-          {state.mode === 'FOCUS' ? '🎉 专注完成！休息一下' : '⏰ 休息结束，继续专注！'}
+          {state.mode === 'FOCUS' ? t(lang, 'focusDone') : t(lang, 'breakDone')}
         </div>
       )}
 
-      {/* Timer display — fills available space */}
       {!state.showCompletionAlert && (
         <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <FlipDurationDisplay text={text} theme={theme} />
         </div>
       )}
 
-      {/* Controls */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
         {!state.timer.isRunning ? (
           <>
-            <Btn theme={theme} onClick={onStart} primary>开始</Btn>
-            <Btn theme={theme} onClick={onReset}>重置</Btn>
+            <Btn theme={theme} onClick={onStart} primary>{t(lang, 'start')}</Btn>
+            <Btn theme={theme} onClick={onReset}>{t(lang, 'reset')}</Btn>
           </>
         ) : (
-          <Btn theme={theme} onClick={onPause} primary>暂停</Btn>
+          <Btn theme={theme} onClick={onPause} primary>{t(lang, 'pause')}</Btn>
         )}
       </div>
 
-      {/* Quick duration settings (only when paused) */}
       {!state.timer.isRunning && state.mode === 'FOCUS' && (
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
           {[15, 25, 30, 45, 60].map((m) => (
@@ -101,16 +81,13 @@ export default function PomodoroScreen({
                 onReset();
               }}
               style={{
-                padding: '3px 10px',
-                borderRadius: 5,
-                border: `1px solid ${theme.date}`,
-                background: 'transparent',
-                color: theme.signature,
-                cursor: 'pointer',
+                padding: '3px 10px', borderRadius: 5,
+                border: `1px solid ${theme.date}`, background: 'transparent',
+                color: theme.signature, cursor: 'pointer',
                 fontSize: 'clamp(9px, 1.1vw, 12px)',
               }}
             >
-              {m}分
+              {m}{t(lang, 'day') === 'd' ? 'm' : '分'}
             </button>
           ))}
         </div>

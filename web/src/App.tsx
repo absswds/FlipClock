@@ -6,6 +6,7 @@ import { useStopwatch } from './hooks/useStopwatch';
 import { useCountdown } from './hooks/useCountdown';
 import { usePomodoro } from './hooks/usePomodoro';
 import { buildState } from './logic/buildState';
+import { resolveLang } from './logic/i18n';
 import ClockScreen from './components/ClockScreen';
 import SettingsScreen from './components/SettingsScreen';
 import TimerScreen from './components/TimerScreen';
@@ -31,6 +32,7 @@ export default function App({ page, onNavigate }: AppProps) {
 
   const clockState = useMemo(() => buildState(now, settings), [now, settings]);
   const theme = clockState.theme;
+  const lang = resolveLang(settings.language);
 
   const renderPage = () => {
     switch (page) {
@@ -54,6 +56,7 @@ export default function App({ page, onNavigate }: AppProps) {
             onStart={timer.start}
             onPause={timer.pause}
             onReset={timer.reset}
+            lang={lang}
           />
         );
       case 'stopwatch':
@@ -65,6 +68,7 @@ export default function App({ page, onNavigate }: AppProps) {
             onPause={stopwatch.pause}
             onReset={stopwatch.reset}
             onLap={stopwatch.lap}
+            lang={lang}
           />
         );
       case 'countdown':
@@ -74,6 +78,7 @@ export default function App({ page, onNavigate }: AppProps) {
             target={countdown.target}
             remaining={countdown.remaining}
             onSetTarget={countdown.setTarget}
+            lang={lang}
           />
         );
       case 'focus':
@@ -86,6 +91,7 @@ export default function App({ page, onNavigate }: AppProps) {
             onReset={pomodoro.reset}
             onDismissAlert={pomodoro.dismissAlert}
             onUpdateSettings={pomodoro.updateSettings}
+            lang={lang}
           />
         );
       case 'clock':
@@ -111,12 +117,10 @@ export default function App({ page, onNavigate }: AppProps) {
         flexDirection: 'column',
       }}
     >
-      {/* Page content — takes remaining space above navbar */}
       <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
         {renderPage()}
       </div>
 
-      {/* Bottom navigation — auto-hides on clock page, always visible elsewhere */}
       <NavBar
         current={page}
         onNavigate={onNavigate}
@@ -124,6 +128,7 @@ export default function App({ page, onNavigate }: AppProps) {
         digit={theme.digit}
         background={theme.background}
         autoHide={page === 'clock'}
+        lang={lang}
       />
     </div>
   );

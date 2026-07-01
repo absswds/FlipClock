@@ -121,9 +121,6 @@ export const Slate: ClockTheme = {
 export const allThemes: ClockTheme[] = [
   ClassicBlack,
   PureBlack,
-  RetroGreen,
-  WarmAmber,
-  Slate,
 ];
 
 export function byId(id: string): ClockTheme {

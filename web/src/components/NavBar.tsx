@@ -1,5 +1,7 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import type { Page } from '../main';
+import type { Lang } from '../logic/i18n';
+import { t } from '../logic/i18n';
 
 interface NavBarProps {
   current: Page;
@@ -8,16 +10,10 @@ interface NavBarProps {
   digit: string;
   background: string;
   autoHide?: boolean;
+  lang: Lang;
 }
 
-const items: { page: Page; label: string }[] = [
-  { page: 'clock', label: '时钟' },
-  { page: 'timer', label: '计时' },
-  { page: 'stopwatch', label: '秒表' },
-  { page: 'countdown', label: '倒数' },
-  { page: 'focus', label: '专注' },
-  { page: 'settings', label: '设置' },
-];
+const pageKeys = ['clock', 'timer', 'stopwatch', 'countdown', 'focus', 'settings'] as const;
 
 export default function NavBar({
   current,
@@ -26,8 +22,14 @@ export default function NavBar({
   digit,
   background,
   autoHide = false,
+  lang,
 }: NavBarProps) {
   const [visible, setVisible] = useState(!autoHide);
+
+  const items = useMemo(
+    () => pageKeys.map((k) => ({ page: k as Page, label: t(lang, k) })),
+    [lang],
+  );
   const idleRef = useRef<ReturnType<typeof setTimeout>>();
   const hoveringRef = useRef(false);
 

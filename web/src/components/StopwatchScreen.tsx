@@ -1,5 +1,7 @@
 import type { ClockTheme } from '../logic/themes';
 import type { StopwatchState } from '../logic/productivityModels';
+import type { Lang } from '../logic/i18n';
+import { t } from '../logic/i18n';
 import { formatDuration } from '../logic/formatDuration';
 import FlipDurationDisplay from './FlipDurationDisplay';
 
@@ -10,9 +12,10 @@ interface StopwatchScreenProps {
   onPause: () => void;
   onReset: () => void;
   onLap: () => void;
+  lang: Lang;
 }
 
-export default function StopwatchScreen({ theme, state, onStart, onPause, onReset, onLap }: StopwatchScreenProps) {
+export default function StopwatchScreen({ theme, state, onStart, onPause, onReset, onLap, lang }: StopwatchScreenProps) {
   const text = formatDuration(state.elapsedMillis, state.elapsedMillis >= 3600_000);
 
   return (
@@ -25,13 +28,13 @@ export default function StopwatchScreen({ theme, state, onStart, onPause, onRese
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
         {!state.isRunning ? (
           <>
-            <Btn theme={theme} onClick={onStart} primary>开始</Btn>
-            {state.elapsedMillis > 0 && <Btn theme={theme} onClick={onReset}>重置</Btn>}
+            <Btn theme={theme} onClick={onStart} primary>{t(lang, 'start')}</Btn>
+            {state.elapsedMillis > 0 && <Btn theme={theme} onClick={onReset}>{t(lang, 'reset')}</Btn>}
           </>
         ) : (
           <>
-            <Btn theme={theme} onClick={onPause} primary>暂停</Btn>
-            <Btn theme={theme} onClick={onLap}>计圈</Btn>
+            <Btn theme={theme} onClick={onPause} primary>{t(lang, 'pause')}</Btn>
+            <Btn theme={theme} onClick={onLap}>{t(lang, 'lap')}</Btn>
           </>
         )}
       </div>

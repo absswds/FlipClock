@@ -85,9 +85,9 @@ describe('buildState', () => {
 
   it('picks the correct theme by id', () => {
     const d = new Date();
-    const state = buildState(d, makeSettings({ themeId: 'retro_green' }));
+    const state = buildState(d, makeSettings({ themeId: 'pure_black' }));
 
-    expect(state.theme.id).toBe('retro_green');
+    expect(state.theme.id).toBe('pure_black');
   });
 
   it('falls back to classic black for unknown theme id', () => {

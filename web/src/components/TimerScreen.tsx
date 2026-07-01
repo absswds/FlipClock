@@ -1,6 +1,8 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ClockTheme } from '../logic/themes';
 import type { TimerState } from '../logic/productivityModels';
+import type { Lang } from '../logic/i18n';
+import { t } from '../logic/i18n';
 import { formatDuration } from '../logic/formatDuration';
 import UnitFlipCard from './UnitFlipCard';
 
@@ -10,47 +12,52 @@ interface TimerScreenProps {
   onStart: (durationMs?: number) => void;
   onPause: () => void;
   onReset: () => void;
+  lang: Lang;
 }
 
 function msToHMS(ms: number): [number, number, number] {
   const totalSec = Math.floor(ms / 1000);
-  return [
-    Math.floor(totalSec / 3600),
-    Math.floor((totalSec % 3600) / 60),
-    totalSec % 60,
-  ];
+  return [Math.floor(totalSec / 3600), Math.floor((totalSec % 3600) / 60), totalSec % 60];
 }
 
 const presets = [
-  { label: '1分钟', ms: 60_000 },
-  { label: '3分钟', ms: 3 * 60_000 },
-  { label: '5分钟', ms: 5 * 60_000 },
-  { label: '10分钟', ms: 10 * 60_000 },
-  { label: '30分钟', ms: 30 * 60_000 },
+  { label: '1分', ms: 60_000 },
+  { label: '3分', ms: 3 * 60_000 },
+  { label: '5分', ms: 5 * 60_000 },
+  { label: '10分', ms: 10 * 60_000 },
+  { label: '30分', ms: 30 * 60_000 },
 ];
 
-/**
- * Timer screen with click-to-flip time picker.
- * When idle, each time unit card (HH/MM/SS) is clickable — tapping increments the value
- * and the flip animation plays on the changing digits. Clean and intuitive.
- */
-export default function TimerScreen({ theme, state, onStart, onPause, onReset }: TimerScreenProps) {
+const GUIDE_KEY = 'flipclock_timer_guide_seen';
+
+export default function TimerScreen({ theme, state, onStart, onPause, onReset, lang }: TimerScreenProps) {
   const [h, setH] = useState(0);
   const [m, setM] = useState(5);
   const [s, setS] = useState(0);
+  const [showGuide, setShowGuide] = useState(false);
 
   const isIdle = !state.isRunning && !state.isComplete;
   const text = formatDuration(state.remainingMillis, state.durationMillis >= 3600_000);
 
-  // Sync local time to what was last started
+  // Sync local time
   useEffect(() => {
     if (!state.isRunning && !state.isComplete && state.remainingMillis === state.durationMillis) {
       const [hh, mm, ss] = msToHMS(state.durationMillis);
-      setH(hh);
-      setM(mm);
-      setS(ss);
+      setH(hh); setM(mm); setS(ss);
     }
   }, [state.durationMillis, state.isRunning, state.isComplete, state.remainingMillis]);
+
+  // Show guide on first visit to timer page (when idle)
+  useEffect(() => {
+    if (isIdle && !localStorage.getItem(GUIDE_KEY)) {
+      setShowGuide(true);
+    }
+  }, [isIdle]);
+
+  const dismissGuide = useCallback(() => {
+    setShowGuide(false);
+    localStorage.setItem(GUIDE_KEY, '1');
+  }, []);
 
   const startCustom = useCallback(() => {
     onStart((h * 3600 + m * 60 + s) * 1000);
@@ -61,14 +68,45 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset }:
   const [mTens, mOnes] = pad2(m % 60).split('').map(Number);
   const [sTens, sOnes] = pad2(s % 60).split('').map(Number);
 
+  // Shared gesture handler: scroll or swipe to adjust time
+  const makeHandlers = (
+    inc: () => void,
+    dec: () => void,
+  ) => {
+    let touchY = 0;
+    return {
+      onWheel: (e: React.WheelEvent) => {
+        e.preventDefault();
+        if (e.deltaY < 0) inc();
+        else dec();
+      },
+      onTouchStart: (e: React.TouchEvent) => {
+        touchY = e.touches[0].clientY;
+      },
+      onTouchEnd: (e: React.TouchEvent) => {
+        const dy = e.changedTouches[0].clientY - touchY;
+        if (Math.abs(dy) > 20) {
+          if (dy < 0) inc(); // swipe up = +1
+          else dec(); // swipe down = -1
+        }
+      },
+    };
+  };
+
+  const hInc = () => setH((v) => (v + 1) % 100);
+  const hDec = () => setH((v) => (v - 1 + 100) % 100);
+  const mInc = () => setM((v) => (v + 1) % 60);
+  const mDec = () => setM((v) => (v - 1 + 60) % 60);
+  const sInc = () => setS((v) => (v + 1) % 60);
+  const sDec = () => setS((v) => (v - 1 + 60) % 60);
+
   if (!isIdle || state.isComplete) {
-    // Running or complete — show countdown
     return (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 20px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
         <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {state.isComplete ? (
             <div style={{ color: theme.accent, fontSize: 'clamp(24px, 5vw, 48px)', fontWeight: 700, animation: 'pulse 1s ease-in-out infinite' }}>
-              ⏰ 时间到！
+              {t(lang, 'timeUp')}
             </div>
           ) : (
             <FlipTextDisplay text={text} theme={theme} />
@@ -76,11 +114,11 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset }:
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
           {state.isRunning ? (
-            <Btn theme={theme} onClick={onPause} primary>暂停</Btn>
+            <Btn theme={theme} onClick={onPause} primary>{t(lang, 'pause')}</Btn>
           ) : (
             <>
-              <Btn theme={theme} onClick={startCustom} primary>重新开始</Btn>
-              <Btn theme={theme} onClick={onReset}>重置</Btn>
+              <Btn theme={theme} onClick={startCustom} primary>{t(lang, 'restart')}</Btn>
+              <Btn theme={theme} onClick={onReset}>{t(lang, 'reset')}</Btn>
             </>
           )}
         </div>
@@ -88,44 +126,65 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset }:
     );
   }
 
-  // Idle — click-to-flip time picker
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 20px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
-      {/* Clickable flip card time picker — fills available space */}
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 20px)', padding: '2vw 2vw max(80px, 10vh) 2vw', position: 'relative' }}>
+      {/* === Onboarding guide overlay === */}
+      {showGuide && (
+        <div
+          onClick={dismissGuide}
+          style={{
+            position: 'absolute', inset: 0, zIndex: 200,
+            background: 'rgba(0,0,0,0.75)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+        >
+          <div style={{ color: theme.accent, fontSize: 'clamp(16px, 2.5vw, 24px)', fontWeight: 700, marginBottom: 12 }}>
+            {t(lang, 'timerGuide')}
+          </div>
+          <div style={{ color: theme.digit, fontSize: 'clamp(12px, 1.8vw, 18px)', opacity: 0.8, marginBottom: 8 }}>
+            &#9650; {t(lang, 'timerGuideTop')}
+          </div>
+          <div style={{ color: theme.digit, fontSize: 'clamp(12px, 1.8vw, 18px)', opacity: 0.8, marginBottom: 8 }}>
+            &#9660; {t(lang, 'timerGuideBot')}
+          </div>
+          <div style={{ color: theme.signature, fontSize: 'clamp(10px, 1.3vw, 14px)', marginTop: 16 }}>
+            {t(lang, 'scrollUp')} / {t(lang, 'scrollDown')}
+          </div>
+          <div style={{ color: theme.signature, fontSize: 'clamp(10px, 1.2vw, 13px)', marginTop: 24, opacity: 0.5 }}>
+            ({t(lang, 'tapHint')})
+          </div>
+        </div>
+      )}
+
+      {/* Flip card time picker */}
       <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <ClickableTimePicker
           theme={theme}
           hTens={hTens} hOnes={hOnes}
           mTens={mTens} mOnes={mOnes}
           sTens={sTens} sOnes={sOnes}
-          onIncHour={() => setH((v) => (v + 1) % 100)}
-          onDecHour={() => setH((v) => (v - 1 + 100) % 100)}
-          onIncMin={() => setM((v) => (v + 1) % 60)}
-          onDecMin={() => setM((v) => (v - 1 + 60) % 60)}
-          onIncSec={() => setS((v) => (v + 1) % 60)}
-          onDecSec={() => setS((v) => (v - 1 + 60) % 60)}
+          hInc={hInc} hDec={hDec}
+          mInc={mInc} mDec={mDec}
+          sInc={sInc} sDec={sDec}
+          makeHandlers={makeHandlers}
         />
       </div>
 
-      {/* Action buttons */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-        <Btn theme={theme} onClick={startCustom} primary>开始</Btn>
+        <Btn theme={theme} onClick={startCustom} primary>{t(lang, 'start')}</Btn>
       </div>
 
-      {/* Quick presets */}
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
         {presets.map((p) => (
           <button
             key={p.ms}
-            onClick={() => {
-              const [hh, mm, ss] = msToHMS(p.ms);
-              setH(hh); setM(mm); setS(ss);
-            }}
+            onClick={() => { const [hh, mm, ss] = msToHMS(p.ms); setH(hh); setM(mm); setS(ss); }}
             style={{
               padding: '3px 10px', borderRadius: 5,
-              border: `1px solid ${theme.date}`,
-              background: 'transparent', color: theme.signature,
-              cursor: 'pointer', fontSize: 'clamp(9px, 1.1vw, 12px)',
+              border: `1px solid ${theme.date}`, background: 'transparent',
+              color: theme.signature, cursor: 'pointer',
+              fontSize: 'clamp(9px, 1.1vw, 12px)',
             }}
           >
             {p.label}
@@ -136,20 +195,21 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset }:
   );
 }
 
-/**
- * Three clickable unit cards (HH : MM : SS) sized to fill the parent container.
- * Each card flips its digits when clicked.
- */
 function ClickableTimePicker({
-  theme,
-  hTens, hOnes, mTens, mOnes, sTens, sOnes,
-  onIncHour, onDecHour, onIncMin, onDecMin, onIncSec, onDecSec,
+  theme, hTens, hOnes, mTens, mOnes, sTens, sOnes,
+  hInc, hDec, mInc, mDec, sInc, sDec,
+  makeHandlers,
 }: {
   theme: ClockTheme;
   hTens: number; hOnes: number; mTens: number; mOnes: number; sTens: number; sOnes: number;
-  onIncHour: () => void; onDecHour: () => void;
-  onIncMin: () => void; onDecMin: () => void;
-  onIncSec: () => void; onDecSec: () => void;
+  hInc: () => void; hDec: () => void;
+  mInc: () => void; mDec: () => void;
+  sInc: () => void; sDec: () => void;
+  makeHandlers: (inc: () => void, dec: () => void) => {
+    onWheel: (e: React.WheelEvent) => void;
+    onTouchStart: (e: React.TouchEvent) => void;
+    onTouchEnd: (e: React.TouchEvent) => void;
+  };
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 0, h: 0 });
@@ -162,25 +222,23 @@ function ClickableTimePicker({
     return () => ro.disconnect();
   }, []);
 
-  // Layout: same as FlipDurationDisplay but with 6 digits + 2 colons
   const digitCount = 6;
   const separatorCount = 2;
-  const separatorWeight = 0.18;
-  const weightedGlyphs = digitCount + separatorCount * separatorWeight;
-  const targetWidth = dims.w * 0.96;
-  let glyphWidth = targetWidth / weightedGlyphs;
-  let cardHeight = glyphWidth * 1.78;
-  const maxCardHeight = dims.h * 0.88;
-  if (cardHeight > maxCardHeight) {
-    cardHeight = maxCardHeight;
-    glyphWidth = cardHeight / 1.78;
-  }
-  const fontSize = glyphWidth * 1.52;
-  const sepW = glyphWidth * separatorWeight;
-  const sepFS = cardHeight * 0.42;
+  const sw = 0.18;
+  const tw = dims.w * 0.96;
+  let gw = tw / (digitCount + separatorCount * sw);
+  let ch = gw * 1.78;
+  if (ch > dims.h * 0.88) { ch = dims.h * 0.88; gw = ch / 1.78; }
+  const fs = gw * 1.52;
+  const sepW = gw * sw;
+  const sepFs = ch * 0.42;
+
+  const hourHandlers = makeHandlers(hInc, hDec);
+  const minHandlers = makeHandlers(mInc, mDec);
+  const secHandlers = makeHandlers(sInc, sDec);
 
   const sepStyle: React.CSSProperties = {
-    color: theme.digit, fontSize: `${sepFS}px`, fontWeight: 900,
+    color: theme.digit, fontSize: `${sepFs}px`, fontWeight: 900,
     width: `${sepW}px`, textAlign: 'center', lineHeight: 1,
   };
 
@@ -188,46 +246,37 @@ function ClickableTimePicker({
     <div ref={containerRef} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {dims.w > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
-          {/* HH — top half +1, bottom half -1 */}
           <div
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
-              const y = e.clientY - rect.top;
-              if (y < rect.height / 2) onIncHour();
-              else onDecHour();
+              (e.clientY - rect.top < rect.height / 2) ? hInc() : hDec();
             }}
+            {...hourHandlers}
             style={{ cursor: 'pointer' }}
-            title="上半 +1h / 下半 −1h"
           >
-            <UnitFlipCard digits={[hTens, hOnes]} theme={theme} glyphWidth={glyphWidth} cardHeight={cardHeight} fontSize={fontSize} />
+            <UnitFlipCard digits={[hTens, hOnes]} theme={theme} glyphWidth={gw} cardHeight={ch} fontSize={fs} />
           </div>
           <span style={sepStyle}>:</span>
-          {/* MM — top half +1, bottom half -1 */}
           <div
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
-              const y = e.clientY - rect.top;
-              if (y < rect.height / 2) onIncMin();
-              else onDecMin();
+              (e.clientY - rect.top < rect.height / 2) ? mInc() : mDec();
             }}
+            {...minHandlers}
             style={{ cursor: 'pointer' }}
-            title="上半 +1m / 下半 −1m"
           >
-            <UnitFlipCard digits={[mTens, mOnes]} theme={theme} glyphWidth={glyphWidth} cardHeight={cardHeight} fontSize={fontSize} />
+            <UnitFlipCard digits={[mTens, mOnes]} theme={theme} glyphWidth={gw} cardHeight={ch} fontSize={fs} />
           </div>
           <span style={sepStyle}>:</span>
-          {/* SS — top half +1, bottom half -1 */}
           <div
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
-              const y = e.clientY - rect.top;
-              if (y < rect.height / 2) onIncSec();
-              else onDecSec();
+              (e.clientY - rect.top < rect.height / 2) ? sInc() : sDec();
             }}
+            {...secHandlers}
             style={{ cursor: 'pointer' }}
-            title="上半 +1s / 下半 −1s"
           >
-            <UnitFlipCard digits={[sTens, sOnes]} theme={theme} glyphWidth={glyphWidth} cardHeight={cardHeight} fontSize={fontSize} />
+            <UnitFlipCard digits={[sTens, sOnes]} theme={theme} glyphWidth={gw} cardHeight={ch} fontSize={fs} />
           </div>
         </div>
       )}
@@ -235,7 +284,6 @@ function ClickableTimePicker({
   );
 }
 
-/** Simple flip text display for the running countdown (not clickable). */
 function FlipTextDisplay({ text, theme }: { text: string; theme: ClockTheme }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 0, h: 0 });
@@ -248,18 +296,15 @@ function FlipTextDisplay({ text, theme }: { text: string; theme: ClockTheme }) {
     return () => ro.disconnect();
   }, []);
 
-  // Parse text into segments: digits and colons
   const segments = parseTimeText(text);
-  const digitCount = segments.filter((s) => s.type === 'digits').reduce((s, seg) => s + (seg as {type:'digits', digits:number[]}).digits.length, 0);
-  const sepCount = segments.filter((s) => s.type === 'separator').length;
+  const dc = segments.filter((s) => s.type === 'digits').reduce((sum, seg) => sum + seg.digits.length, 0);
+  const sc = segments.filter((s) => s.type === 'separator').length;
   const sw = 0.18;
   const tw = dims.w * 0.96;
-  let gw = digitCount > 0 ? tw / (digitCount + sepCount * sw) : 0;
+  let gw = dc > 0 ? tw / (dc + sc * sw) : 0;
   let ch = gw * 1.78;
   if (ch > dims.h * 0.88) { ch = dims.h * 0.88; gw = ch / 1.78; }
   const fs = gw * 1.52;
-  const sepW = gw * sw;
-  const sepFs = ch * 0.42;
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -269,7 +314,7 @@ function FlipTextDisplay({ text, theme }: { text: string; theme: ClockTheme }) {
             seg.type === 'digits' ? (
               <UnitFlipCard key={i} digits={seg.digits} theme={theme} glyphWidth={gw} cardHeight={ch} fontSize={fs} />
             ) : (
-              <span key={i} style={{ color: theme.digit, fontSize: `${sepFs}px`, fontWeight: 900, width: `${sepW}px`, textAlign: 'center', lineHeight: 1 }}>
+              <span key={i} style={{ color: theme.digit, fontSize: `${ch * 0.42}px`, fontWeight: 900, width: `${gw * sw}px`, textAlign: 'center', lineHeight: 1 }}>
                 {seg.text}
               </span>
             )
