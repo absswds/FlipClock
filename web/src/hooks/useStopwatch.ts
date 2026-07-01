@@ -1,71 +1,62 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import type { StopwatchState } from '../logic/productivityModels';
 
-interface UseStopwatchReturn {
-  state: StopwatchState;
-  start: () => void;
-  pause: () => void;
-  reset: () => void;
-  lap: () => void;
-}
+export function useStopwatch() {
+  const [elapsed, setElapsed] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const [laps, setLaps] = useState<number[]>([]);
 
-export function useStopwatch(): UseStopwatchReturn {
-  const [state, setState] = useState<StopwatchState>({
-    elapsedMillis: 0,
-    isRunning: false,
-    startedAtMillis: null,
-    lapsMillis: [],
-  });
-  const rafRef = useRef<number>(0);
+  const startTimeRef = useRef(0);
+  const accumulatedRef = useRef(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+
+  const clearTimer = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = undefined;
+    }
+  }, []);
+
+  useEffect(() => clearTimer, [clearTimer]);
 
   const tick = useCallback(() => {
-    setState((prev) => {
-      if (!prev.isRunning || prev.startedAtMillis === null) return prev;
-      const elapsed = Date.now() - prev.startedAtMillis + prev.elapsedMillis;
-      return { ...prev, elapsedMillis: elapsed };
-    });
-    rafRef.current = requestAnimationFrame(tick);
+    setElapsed(accumulatedRef.current + (performance.now() - startTimeRef.current));
   }, []);
-
-  useEffect(() => {
-    if (state.isRunning) {
-      rafRef.current = requestAnimationFrame(tick);
-    }
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [state.isRunning, tick]);
 
   const start = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      isRunning: true,
-      startedAtMillis: Date.now(),
-      // elapsedMillis keeps its accumulated value — timer ticks from here add to it
-    }));
-  }, []);
+    accumulatedRef.current = elapsed;
+    startTimeRef.current = performance.now();
+    setIsRunning(true);
+    clearTimer();
+    intervalRef.current = setInterval(tick, 34); // ~30fps
+  }, [elapsed, tick, clearTimer]);
 
   const pause = useCallback(() => {
-    setState((prev) => {
-      if (!prev.isRunning || prev.startedAtMillis === null) return prev;
-      return {
-        ...prev,
-        elapsedMillis: Date.now() - prev.startedAtMillis + prev.elapsedMillis,
-        isRunning: false,
-        startedAtMillis: null,
-      };
-    });
-  }, []);
+    accumulatedRef.current += performance.now() - startTimeRef.current;
+    setElapsed(accumulatedRef.current);
+    setIsRunning(false);
+    clearTimer();
+  }, [clearTimer]);
 
   const reset = useCallback(() => {
-    cancelAnimationFrame(rafRef.current);
-    setState({ elapsedMillis: 0, isRunning: false, startedAtMillis: null, lapsMillis: [] });
-  }, []);
+    clearTimer();
+    accumulatedRef.current = 0;
+    startTimeRef.current = 0;
+    setElapsed(0);
+    setIsRunning(false);
+    setLaps([]);
+  }, [clearTimer]);
 
   const lap = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      lapsMillis: [...prev.lapsMillis, prev.elapsedMillis],
-    }));
-  }, []);
+    setLaps((prev) => [...prev, elapsed]);
+  }, [elapsed]);
+
+  const state: StopwatchState = {
+    elapsedMillis: elapsed,
+    isRunning,
+    startedAtMillis: isRunning ? startTimeRef.current : null,
+    lapsMillis: laps,
+  };
 
   return { state, start, pause, reset, lap };
 }

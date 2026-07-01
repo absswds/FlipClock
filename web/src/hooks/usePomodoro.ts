@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import type { PomodoroState, PomodoroMode, PomodoroSettings } from '../logic/productivityModels';
 import { nextPomodoroMode } from '../logic/formatDuration';
 
@@ -10,106 +10,94 @@ function modeDuration(mode: PomodoroMode, s: PomodoroSettings): number {
   return s.longBreakMinutes * 60 * 1000;
 }
 
-interface UsePomodoroReturn {
-  state: PomodoroState;
-  start: () => void;
-  pause: () => void;
-  reset: () => void;
-  dismissAlert: () => void;
-  updateSettings: (s: PomodoroSettings) => void;
-}
-
-export function usePomodoro(): UsePomodoroReturn {
+export function usePomodoro() {
   const [settings, setSettings] = useState<PomodoroSettings>(DEFAULT);
-  const [state, setState] = useState<PomodoroState>(() => ({
-    mode: 'FOCUS',
-    completedFocusSessions: 0,
-    timer: { durationMillis: modeDuration('FOCUS', DEFAULT), remainingMillis: modeDuration('FOCUS', DEFAULT), isRunning: false, startedAtMillis: null, isComplete: false },
-    showCompletionAlert: false,
-  }));
-  const rafRef = useRef<number>(0);
-  const stateRef = useRef(state);
-  stateRef.current = state;
+  const [mode, setMode] = useState<PomodoroMode>('FOCUS');
+  const [completed, setCompleted] = useState(0);
+  const [remaining, setRemaining] = useState(modeDuration('FOCUS', DEFAULT));
+  const [isRunning, setIsRunning] = useState(false);
+  const [alert, setAlert] = useState(false);
+
+  const startTimeRef = useRef(0);
+  const startedRemainingRef = useRef(modeDuration('FOCUS', DEFAULT));
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
 
-  const tick = useCallback(() => {
-    setState((prev) => {
-      if (!prev.timer.isRunning || prev.timer.startedAtMillis === null) return prev;
-      const elapsed = Date.now() - prev.timer.startedAtMillis;
-      const remaining = Math.max(0, prev.timer.durationMillis - elapsed);
-      if (remaining <= 0) {
-        const cur = stateRef.current;
-        const s = settingsRef.current;
-        const next = nextPomodoroMode(cur.mode, cur.completedFocusSessions);
-        return {
-          ...cur,
-          mode: next.mode,
-          completedFocusSessions: next.completedSessions,
-          timer: { durationMillis: modeDuration(next.mode, s), remainingMillis: modeDuration(next.mode, s), isRunning: false, startedAtMillis: null, isComplete: true },
-          showCompletionAlert: true,
-        };
-      }
-      return { ...prev, timer: { ...prev.timer, remainingMillis: remaining } };
-    });
-    rafRef.current = requestAnimationFrame(tick);
+  const clearTimer = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = undefined;
+    }
   }, []);
 
-  useEffect(() => {
-    if (state.timer.isRunning) {
-      rafRef.current = requestAnimationFrame(tick);
-    }
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [state.timer.isRunning, tick]);
+  useEffect(() => clearTimer, [clearTimer]);
 
   const start = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      showCompletionAlert: false,
-      timer: {
-        ...prev.timer,
-        durationMillis: modeDuration(prev.mode, settingsRef.current),
-        remainingMillis: prev.timer.remainingMillis > 0 ? prev.timer.remainingMillis : modeDuration(prev.mode, settingsRef.current),
-        isRunning: true,
-        startedAtMillis: Date.now(),
-        isComplete: false,
-      },
-    }));
-  }, []);
+    setAlert(false);
+    startTimeRef.current = performance.now();
+    startedRemainingRef.current = remaining > 0 ? remaining : modeDuration(mode, settingsRef.current);
+    setIsRunning(true);
+    clearTimer();
+    intervalRef.current = setInterval(() => {
+      const elapsed = performance.now() - startTimeRef.current;
+      const rem = Math.max(0, startedRemainingRef.current - elapsed);
+      setRemaining(rem);
+      if (rem <= 0) {
+        // Auto-advance
+        setMode((prevMode) => {
+          setCompleted((c) => {
+            const next = nextPomodoroMode(prevMode, c);
+            setMode(next.mode);
+            setRemaining(modeDuration(next.mode, settingsRef.current));
+            return next.completedSessions;
+          });
+          return prevMode;
+        });
+        setIsRunning(false);
+        setAlert(true);
+        clearTimer();
+      }
+    }, 34);
+  }, [remaining, mode, clearTimer]);
 
   const pause = useCallback(() => {
-    setState((prev) => {
-      if (!prev.timer.isRunning || prev.timer.startedAtMillis === null) return prev;
-      const elapsed = Date.now() - prev.timer.startedAtMillis;
-      return {
-        ...prev,
-        timer: {
-          ...prev.timer,
-          remainingMillis: Math.max(0, prev.timer.durationMillis - elapsed),
-          isRunning: false,
-          startedAtMillis: null,
-        },
-      };
-    });
-  }, []);
+    clearTimer();
+    const elapsed = performance.now() - startTimeRef.current;
+    setRemaining(Math.max(0, startedRemainingRef.current - elapsed));
+    setIsRunning(false);
+  }, [clearTimer]);
 
   const reset = useCallback(() => {
-    cancelAnimationFrame(rafRef.current);
-    setState({
-      mode: 'FOCUS',
-      completedFocusSessions: 0,
-      timer: { durationMillis: modeDuration('FOCUS', DEFAULT), remainingMillis: modeDuration('FOCUS', DEFAULT), isRunning: false, startedAtMillis: null, isComplete: false },
-      showCompletionAlert: false,
-    });
-  }, []);
+    clearTimer();
+    setMode('FOCUS');
+    setCompleted(0);
+    setRemaining(modeDuration('FOCUS', settingsRef.current));
+    setIsRunning(false);
+    setAlert(false);
+  }, [clearTimer]);
 
-  const dismissAlert = useCallback(() => {
-    setState((prev) => ({ ...prev, showCompletionAlert: false }));
-  }, []);
-
+  const dismissAlert = useCallback(() => setAlert(false), []);
   const updateSettings = useCallback((s: PomodoroSettings) => {
     setSettings(s);
-  }, []);
+    if (!isRunning) {
+      setRemaining(modeDuration(mode, s));
+    }
+  }, [isRunning, mode]);
 
-  return { state, start, pause, reset, dismissAlert, updateSettings };
+  return {
+    state: {
+      mode,
+      completedFocusSessions: completed,
+      timer: {
+        durationMillis: modeDuration(mode, settings),
+        remainingMillis: remaining,
+        isRunning,
+        startedAtMillis: isRunning ? startTimeRef.current : null,
+        isComplete: alert && mode === 'FOCUS',
+      },
+      showCompletionAlert: alert,
+    } as PomodoroState,
+    start, pause, reset, dismissAlert, updateSettings,
+  };
 }
