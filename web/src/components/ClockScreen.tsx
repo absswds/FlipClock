@@ -45,12 +45,13 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         userSelect: 'none',
         WebkitUserSelect: 'none',
         cursor: 'pointer',
         transition: 'background 0.4s',
         position: 'relative',
+        paddingTop: 'clamp(2rem, 10vh, 6rem)',
       }}
     >
       {/* Date — top */}
@@ -60,7 +61,7 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
           fontSize: 'clamp(10px, 1.4vw, 18px)',
           fontWeight: 400,
           letterSpacing: '0.05em',
-          marginBottom: 'clamp(0.8rem, 3vh, 3rem)',
+          marginBottom: 'clamp(1rem, 4vh, 3rem)',
           opacity: pressing ? 0.6 : 1,
           transition: 'opacity 0.2s',
         }}
@@ -68,7 +69,7 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
         {dateText}
       </div>
 
-      {/* Clock — center, takes most of the screen */}
+      {/* Clock — fills remaining space, vertically centered within it */}
       <div
         style={{
           flex: 1,
@@ -76,7 +77,6 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          maxHeight: '70vh',
           padding: '0 2vw',
         }}
       >
@@ -90,7 +90,8 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
           fontSize: 'clamp(9px, 1.1vw, 14px)',
           fontWeight: 400,
           letterSpacing: '0.08em',
-          marginTop: 'clamp(0.8rem, 3vh, 3rem)',
+          marginTop: 'clamp(0.5rem, 2vh, 2rem)',
+          marginBottom: 'clamp(1rem, 4vh, 3rem)',
           opacity: pressing ? 0.6 : 1,
           transition: 'opacity 0.2s',
         }}

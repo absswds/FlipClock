@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { ClockTheme } from '../logic/themes';
 
 interface FlipGlyphProps {
@@ -11,8 +11,8 @@ interface FlipGlyphProps {
 }
 
 /**
- * One flipping digit. Uses pure CSS @keyframes for buttery-smooth 60fps 3D animation.
- * Port of FlipGlyph.kt — same keyframe timing, same shadow curves.
+ * One flipping digit. Uses pure CSS @keyframes for 60fps GPU-accelerated 3D animation.
+ * On digit change: renders split panels with CSS animations → onAnimationEnd → returns to resting.
  */
 export default function FlipGlyph({
   digit,
@@ -24,12 +24,11 @@ export default function FlipGlyph({
 }: FlipGlyphProps) {
   const [shown, setShown] = useState(digit);
   const [previous, setPrevious] = useState(digit);
-  const [animKey, setAnimKey] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [flipId, setFlipId] = useState(0);
+  const [animating, setAnimating] = useState(false);
 
   const halfH = Math.floor(height / 2);
 
-  // Unique animation names per instance to avoid conflicts
   const names = useMemo(() => {
     const id = Math.random().toString(36).slice(2, 8);
     return {
@@ -45,15 +44,20 @@ export default function FlipGlyph({
     if (digit === shown) return;
     setPrevious(shown);
     setShown(digit);
-    setAnimKey((k) => k + 1);
+    setAnimating(true);
+    setFlipId((k) => k + 1);
   }, [digit, shown]);
+
+  const handleAnimEnd = useCallback(() => {
+    setAnimating(false);
+    setPrevious(shown);
+  }, [shown]);
 
   const oldDigit = previous;
   const newDigit = shown;
 
   return (
     <>
-      {/* Scoped CSS keyframes — injected once per instance */}
       <style>{`
         @keyframes ${names.topFlap} {
           0%        { transform: rotateX(0deg);   opacity: 1; }
@@ -90,7 +94,6 @@ export default function FlipGlyph({
       `}</style>
 
       <div
-        ref={containerRef}
         style={{
           width,
           height,
@@ -102,31 +105,27 @@ export default function FlipGlyph({
         }}
         onClick={onClick}
       >
-        {animKey === 0 || (animKey > 0 && digit === shown && previous === shown) ? (
-          /* ===== Resting: single full-height glyph ===== */
+        {!animating ? (
           <DigitFace digit={newDigit} theme={theme} width={width} height={height} fontSize={fontSize} />
         ) : (
-          <div key={animKey}>
-            {/* ===== Static top half: new digit ===== */}
+          <div key={flipId}>
+            {/* Static top: new digit */}
             <div style={{ width, height: halfH, overflow: 'hidden', position: 'absolute', top: 0, left: 0 }}>
               <DigitFace digit={newDigit} theme={theme} width={width} height={height} fontSize={fontSize} />
             </div>
 
-            {/* ===== Static bottom half: old digit ===== */}
+            {/* Static bottom: old digit */}
             <div style={{ width, height: halfH, overflow: 'hidden', position: 'absolute', top: halfH, left: 0 }}>
               <div style={{ marginTop: -halfH }}>
                 <DigitFace digit={oldDigit} theme={theme} width={width} height={height} fontSize={fontSize} />
               </div>
             </div>
 
-            {/* ===== Top flap: old digit falling 0→-90° ===== */}
+            {/* Top flap: old digit falling 0→-90° */}
             <div
               style={{
-                width,
-                height: halfH,
-                overflow: 'hidden',
-                position: 'absolute',
-                top: 0, left: 0,
+                width, height: halfH, overflow: 'hidden',
+                position: 'absolute', top: 0, left: 0,
                 transformOrigin: '50% 100%',
                 transformStyle: 'preserve-3d',
                 backfaceVisibility: 'hidden',
@@ -135,28 +134,22 @@ export default function FlipGlyph({
               }}
             >
               <DigitFace digit={oldDigit} theme={theme} width={width} height={height} fontSize={fontSize} />
-              <div
-                style={{
-                  position: 'absolute', inset: 0, background: 'white', pointerEvents: 'none',
-                  animation: `${names.topHighlight} 620ms forwards`,
-                }}
-              />
-              <div
-                style={{
-                  position: 'absolute', inset: 0, background: 'black', pointerEvents: 'none',
-                  animation: `${names.topShadow} 620ms forwards`,
-                }}
-              />
+              <div style={{
+                position: 'absolute', inset: 0, background: 'white', pointerEvents: 'none',
+                animation: `${names.topHighlight} 620ms forwards`,
+              }} />
+              <div style={{
+                position: 'absolute', inset: 0, background: 'black', pointerEvents: 'none',
+                animation: `${names.topShadow} 620ms forwards`,
+              }} />
             </div>
 
-            {/* ===== Bottom flap: new digit dropping -90→0° ===== */}
+            {/* Bottom flap: new digit dropping -90→0° */}
             <div
+              onAnimationEnd={handleAnimEnd}
               style={{
-                width,
-                height: halfH,
-                overflow: 'hidden',
-                position: 'absolute',
-                top: halfH, left: 0,
+                width, height: halfH, overflow: 'hidden',
+                position: 'absolute', top: halfH, left: 0,
                 transformOrigin: '50% 0%',
                 transformStyle: 'preserve-3d',
                 backfaceVisibility: 'hidden',
@@ -167,12 +160,10 @@ export default function FlipGlyph({
               <div style={{ marginTop: -halfH }}>
                 <DigitFace digit={newDigit} theme={theme} width={width} height={height} fontSize={fontSize} />
               </div>
-              <div
-                style={{
-                  position: 'absolute', inset: 0, background: 'black', pointerEvents: 'none',
-                  animation: `${names.bottomShadow} 620ms forwards`,
-                }}
-              />
+              <div style={{
+                position: 'absolute', inset: 0, background: 'black', pointerEvents: 'none',
+                animation: `${names.bottomShadow} 620ms forwards`,
+              }} />
             </div>
           </div>
         )}
@@ -181,48 +172,29 @@ export default function FlipGlyph({
   );
 }
 
-/** A full-card-height face: gradient background + one centered digit glyph. */
 function DigitFace({
-  digit,
-  theme,
-  width,
-  height,
-  fontSize,
+  digit, theme, width, height, fontSize,
 }: {
-  digit: number;
-  theme: ClockTheme;
-  width: number;
-  height: number;
-  fontSize: number;
+  digit: number; theme: ClockTheme; width: number; height: number; fontSize: number;
 }) {
   return (
     <div
       style={{
-        width,
-        height,
+        width, height,
         background: `linear-gradient(180deg, ${theme.cardTop} 0%, ${theme.cardTop} 48%, ${theme.cardBottom} 52%, ${theme.cardBottom} 100%)`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: theme.digit,
-        fontSize: `${fontSize}px`,
-        fontWeight: 900,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: theme.digit, fontSize: `${fontSize}px`, fontWeight: 900,
         fontFamily: '"Inter", "Helvetica Neue", system-ui, sans-serif',
-        fontVariantNumeric: 'tabular-nums',
-        lineHeight: 1,
+        fontVariantNumeric: 'tabular-nums', lineHeight: 1,
         textShadow: '0 2.5px 3px rgba(0,0,0,0.22)',
         position: 'relative',
       }}
     >
-      <span
-        style={{
-          display: 'inline-block',
-          transform: `scaleX(1.04) translateY(${-height * 0.08}px)`,
-          lineHeight: 1,
-          padding: 0,
-          margin: 0,
-        }}
-      >
+      <span style={{
+        display: 'inline-block',
+        transform: `scaleX(1.04) translateY(${-height * 0.08}px)`,
+        lineHeight: 1, padding: 0, margin: 0,
+      }}>
         {digit}
       </span>
     </div>

@@ -107,7 +107,6 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset }:
       {/* Action buttons */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
         <Btn theme={theme} onClick={startCustom} primary>开始</Btn>
-        <Btn theme={theme} onClick={onReset}>重置</Btn>
       </div>
 
       {/* Quick presets */}
