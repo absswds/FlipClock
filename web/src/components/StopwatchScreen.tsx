@@ -19,7 +19,7 @@ export default function StopwatchScreen({ theme, state, onStart, onPause, onRese
   const text = formatDuration(state.elapsedMillis, state.elapsedMillis >= 3600_000);
 
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 20px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
+    <div className="page-panel" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 20px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
       {/* Flip display — fills available space */}
       <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <FlipDurationDisplay text={text} theme={theme} />
@@ -66,6 +66,7 @@ export default function StopwatchScreen({ theme, state, onStart, onPause, onRese
 function Btn({ theme, onClick, primary, children }: { theme: ClockTheme; onClick: () => void; primary?: boolean; children: React.ReactNode }) {
   return (
     <button
+      className="soft-button"
       onClick={onClick}
       style={{
         padding: '10px 28px',

@@ -37,7 +37,7 @@ export default function PomodoroScreen({
   const modeLabel = isFocus ? t(lang, 'focusMode') : state.mode === 'SHORT_BREAK' ? t(lang, 'shortBreak') : t(lang, 'longBreak');
 
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 18px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
+    <div className="page-panel" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 18px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{
           padding: '3px 12px', borderRadius: 12,
@@ -88,6 +88,7 @@ export default function PomodoroScreen({
           {[15, 25, 30, 45, 60].map((m) => (
             <button
               key={m}
+              className="soft-button"
               onClick={() => {
                 onUpdateSettings({ focusMinutes: m, shortBreakMinutes: 5, longBreakMinutes: 15 });
                 onReset();
@@ -111,6 +112,7 @@ export default function PomodoroScreen({
 function Btn({ theme, onClick, primary, children }: { theme: ClockTheme; onClick: () => void; primary?: boolean; children: React.ReactNode }) {
   return (
     <button
+      className="soft-button"
       onClick={onClick}
       style={{
         padding: '10px 28px',

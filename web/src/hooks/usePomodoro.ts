@@ -20,14 +20,14 @@ export function usePomodoro() {
 
   const startTimeRef = useRef(0);
   const startedRemainingRef = useRef(modeDuration('FOCUS', DEFAULT));
-  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
-      intervalRef.current = undefined;
+      intervalRef.current = null;
     }
   }, []);
 

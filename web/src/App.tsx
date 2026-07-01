@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { useTime } from './hooks/useTime';
 import { useSettings } from './hooks/useSettings';
 import { useTimer } from './hooks/useTimer';
@@ -14,7 +14,7 @@ import StopwatchScreen from './components/StopwatchScreen';
 import CountdownScreen from './components/CountdownScreen';
 import PomodoroScreen from './components/PomodoroScreen';
 import NavBar from './components/NavBar';
-import type { Page } from './main';
+import type { Page } from './logic/page';
 
 interface AppProps {
   page: Page;
@@ -109,6 +109,8 @@ export default function App({ page, onNavigate }: AppProps) {
   return (
     <div
       style={{
+        '--accent': theme.accent,
+        '--digit': theme.digit,
         width: '100vw',
         height: '100vh',
         background: theme.background,
@@ -116,9 +118,10 @@ export default function App({ page, onNavigate }: AppProps) {
         transition: 'background 0.4s',
         display: 'flex',
         flexDirection: 'column',
-      }}
+      } as CSSProperties}
     >
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+      <div className="ambient-glow" aria-hidden="true" />
+      <div key={page} className="page-surface" style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
         {renderPage()}
       </div>
 

@@ -35,6 +35,7 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
 
   return (
     <div
+      className="clock-screen"
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       onPointerLeave={onPointerUp}
@@ -54,6 +55,7 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
         paddingTop: 'clamp(0.5rem, 2vh, 2rem)',
       }}
     >
+      <div className="clock-breathe" aria-hidden="true" />
       {/* Date — top */}
       <div
         style={{
@@ -64,6 +66,8 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
           marginBottom: 'clamp(1rem, 4vh, 3rem)',
           opacity: pressing ? 0.6 : 1,
           transition: 'opacity 0.2s',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         {dateText}
@@ -78,6 +82,8 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
           justifyContent: 'center',
           width: '100%',
           padding: '0 2vw',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         <FlipClock state={state} />
@@ -94,6 +100,8 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
           marginBottom: 'clamp(1rem, 4vh, 3rem)',
           opacity: pressing ? 0.6 : 1,
           transition: 'opacity 0.2s',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         {signature || ' '}

@@ -37,7 +37,7 @@ export const weekdays: Record<Lang, string[]> = {
 };
 
 // UI text translations
-type TextKey = 'clock' | 'timer' | 'stopwatch' | 'countdown' | 'focus' | 'settings'
+export type TextKey = 'clock' | 'timer' | 'stopwatch' | 'countdown' | 'focus' | 'settings'
   | 'start' | 'pause' | 'reset' | 'lap' | 'back'
   | 'theme' | 'timeFormat' | 'h24' | 'h12' | 'showSeconds' | 'signature'
   | 'signaturePlaceholder' | 'language' | 'timezone' | 'detected' | 'close'

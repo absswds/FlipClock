@@ -113,7 +113,7 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset, l
 
   if (!isIdle || state.isComplete) {
     return (
-      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 20px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
+      <div className="page-panel" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 20px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
         <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {state.isComplete ? (
             <div style={{ color: theme.accent, fontSize: 'clamp(24px, 5vw, 48px)', fontWeight: 700, animation: 'pulse 1s ease-in-out infinite' }}>
@@ -138,7 +138,7 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset, l
   }
 
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 20px)', padding: '2vw 2vw max(80px, 10vh) 2vw', position: 'relative' }}>
+    <div className="page-panel" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 20px)', padding: '2vw 2vw max(80px, 10vh) 2vw', position: 'relative' }}>
       {/* === Onboarding guide overlay === */}
       {showGuide && (
         <div
@@ -190,6 +190,7 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset, l
         {presets.map((p) => (
           <button
             key={p.ms}
+            className="soft-button"
             onClick={() => { const [hh, mm, ss] = msToHMS(p.ms); setH(hh); setM(mm); setS(ss); }}
             style={{
               padding: '3px 10px', borderRadius: 5,
@@ -260,7 +261,8 @@ function ClickableTimePicker({
           <div
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
-              (e.clientY - rect.top < rect.height / 2) ? hInc() : hDec();
+              if (e.clientY - rect.top < rect.height / 2) hInc();
+              else hDec();
             }}
             {...hourHandlers}
             style={{ cursor: 'pointer' }}
@@ -271,7 +273,8 @@ function ClickableTimePicker({
           <div
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
-              (e.clientY - rect.top < rect.height / 2) ? mInc() : mDec();
+              if (e.clientY - rect.top < rect.height / 2) mInc();
+              else mDec();
             }}
             {...minHandlers}
             style={{ cursor: 'pointer' }}
@@ -282,7 +285,8 @@ function ClickableTimePicker({
           <div
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
-              (e.clientY - rect.top < rect.height / 2) ? sInc() : sDec();
+              if (e.clientY - rect.top < rect.height / 2) sInc();
+              else sDec();
             }}
             {...secHandlers}
             style={{ cursor: 'pointer' }}
@@ -356,6 +360,7 @@ function parseTimeText(text: string): ({ type: 'digits'; digits: number[] } | { 
 function Btn({ theme, onClick, primary, children }: { theme: ClockTheme; onClick: () => void; primary?: boolean; children: React.ReactNode }) {
   return (
     <button
+      className="soft-button"
       onClick={onClick}
       style={{
         padding: '10px 28px', borderRadius: 8,

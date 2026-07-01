@@ -1,7 +1,7 @@
 import { allThemes } from '../logic/themes';
 import type { ClockTheme } from '../logic/themes';
 import type { UserSettings, TimeFormat } from '../logic/buildState';
-import { resolveLanguage, resolveTimezone } from '../hooks/useSettings';
+import { resolveTimezone } from '../hooks/useSettings';
 import type { Lang } from '../logic/i18n';
 import { t, supportedLangs, resolveLang } from '../logic/i18n';
 
@@ -29,7 +29,7 @@ export default function SettingsScreen({
   };
 
   return (
-    <div style={{
+    <div className="page-panel" style={{
       width: '100vw', height: '100vh', background: currentTheme.background,
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       padding: 'clamp(20px, 4vh, 40px) clamp(12px, 3vw, 24px)',
@@ -44,7 +44,7 @@ export default function SettingsScreen({
         <h2 style={{ margin: 0, fontSize: 'clamp(16px, 2vw, 24px)', fontWeight: 600 }}>
           {t(lang, 'settings')}
         </h2>
-        <button onClick={onClose} style={{
+        <button className="soft-button" onClick={onClose} style={{
           background: 'transparent', border: `1px solid ${currentTheme.accent}`,
           color: currentTheme.accent, padding: '6px 16px', borderRadius: 6,
           cursor: 'pointer', fontSize: 'clamp(12px, 1.4vw, 16px)',
@@ -58,7 +58,7 @@ export default function SettingsScreen({
         <Sect title={t(lang, 'theme')}>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {allThemes.map((theme) => (
-              <button key={theme.id} onClick={() => onSetThemeId(theme.id)} style={{
+              <button className="soft-button" key={theme.id} onClick={() => onSetThemeId(theme.id)} style={{
                 display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8,
                 border: settings.themeId === theme.id ? `2px solid ${currentTheme.accent}` : `1px solid ${currentTheme.date}`,
                 background: theme.background, color: currentTheme.digit, cursor: 'pointer',
@@ -107,11 +107,11 @@ export default function SettingsScreen({
         {/* Language */}
         <Sect title={t(lang, 'language')}>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            <button onClick={() => onSetLanguage('auto')} style={langBtnStyle(settings.language === 'auto', currentTheme)}>
+            <button className="soft-button" onClick={() => onSetLanguage('auto')} style={langBtnStyle(settings.language === 'auto', currentTheme)}>
               Auto
             </button>
             {supportedLangs.map((l) => (
-              <button key={l.id} onClick={() => onSetLanguage(l.id)}
+              <button className="soft-button" key={l.id} onClick={() => onSetLanguage(l.id)}
                 style={langBtnStyle(settings.language === l.id, currentTheme)}>
                 {l.native}
               </button>
@@ -166,7 +166,7 @@ function TBtn({ active, onClick, accent, digit, label }: {
   active: boolean; onClick: () => void; accent: string; digit: string; label: string;
 }) {
   return (
-    <button onClick={onClick} style={{
+    <button className="soft-button" onClick={onClick} style={{
       padding: '6px 18px', border: active ? `2px solid ${accent}` : `1px solid ${digit}33`,
       borderRadius: 6, background: active ? `${accent}22` : 'transparent',
       color: active ? accent : digit, cursor: 'pointer',

@@ -2,10 +2,11 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import type { CountdownTarget, CountdownRemaining } from '../logic/productivityModels';
 import { computeCountdownRemaining } from '../logic/formatDuration';
 
-interface UseCountdownReturn {
-  target: CountdownTarget | null;
-  remaining: CountdownRemaining;
-  setTarget: (t: CountdownTarget) => void;
+const STORAGE_KEY = 'flipclock_countdown';
+
+interface StoredCountdownState {
+  selectedId: string;
+  customTargets: CountdownTarget[];
 }
 
 /** Universal global dates — always resolved to the next occurrence. */
@@ -25,22 +26,42 @@ const presetKeys = [
   { id: 'nye', mmdd: '12-31' },
 ];
 
+function readStoredState(): StoredCountdownState {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { selectedId: 'newyear', customTargets: [] };
+    const parsed = JSON.parse(raw) as Partial<StoredCountdownState>;
+    return {
+      selectedId: typeof parsed.selectedId === 'string' ? parsed.selectedId : 'newyear',
+      customTargets: Array.isArray(parsed.customTargets)
+        ? parsed.customTargets.filter((target): target is CountdownTarget =>
+            typeof target?.id === 'string'
+            && typeof target.title === 'string'
+            && typeof target.date === 'string'
+            && target.isPreset === false,
+          )
+        : [],
+    };
+  } catch {
+    return { selectedId: 'newyear', customTargets: [] };
+  }
+}
+
+function writeStoredState(state: StoredCountdownState): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
 export function useCountdown() {
-  const [targetId, setTargetId] = useState('newyear');
+  const [storedState, setStoredState] = useState<StoredCountdownState>(readStoredState);
   const [now, setNow] = useState(Date.now());
-  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     intervalRef.current = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(intervalRef.current);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, []);
-
-  const target = useMemo<CountdownTarget>(() => {
-    const p = presetKeys.find((k) => k.id === targetId) ?? presetKeys[0];
-    return { id: p.id, title: p.id, date: nextDate(p.mmdd), isPreset: true };
-  }, [targetId]);
-
-  const remaining = computeCountdownRemaining(target.date, now);
 
   const presets = useMemo<CountdownTarget[]>(
     () => presetKeys.map((k) => ({
@@ -49,8 +70,26 @@ export function useCountdown() {
     [],
   );
 
+  const targets = useMemo(
+    () => [...presets, ...storedState.customTargets],
+    [presets, storedState.customTargets],
+  );
+
+  const target = useMemo<CountdownTarget>(() => {
+    return targets.find((item) => item.id === storedState.selectedId) ?? presets[0];
+  }, [presets, storedState.selectedId, targets]);
+
+  const remaining: CountdownRemaining = computeCountdownRemaining(target.date, now);
+
   const setTarget = (t: CountdownTarget) => {
-    setTargetId(t.id);
+    setStoredState((prev) => {
+      const customTargets = t.isPreset
+        ? prev.customTargets
+        : [...prev.customTargets.filter((item) => item.id !== t.id), t];
+      const next = { selectedId: t.id, customTargets };
+      writeStoredState(next);
+      return next;
+    });
   };
 
   return { target, remaining, setTarget, presets };

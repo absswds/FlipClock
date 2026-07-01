@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { buildState, type UserSettings } from './buildState';
-import type { ClockUiState } from './buildState';
 
 function makeSettings(overrides: Partial<UserSettings> = {}): UserSettings {
   return {

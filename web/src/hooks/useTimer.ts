@@ -9,12 +9,12 @@ export function useTimer(initialDurationMs = 5 * 60 * 1000) {
 
   const startTimeRef = useRef(0);
   const startedRemainingRef = useRef(initialDurationMs);
-  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
-      intervalRef.current = undefined;
+      intervalRef.current = null;
     }
   }, []);
 

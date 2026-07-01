@@ -26,6 +26,7 @@ export default function UnitFlipCard({
 
   return (
     <div
+      className="flip-card-shell"
       style={{
         borderRadius,
         border: `1px solid ${theme.cardEdge}`,

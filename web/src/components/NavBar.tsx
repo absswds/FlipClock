@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import type { Page } from '../main';
+import type { Page } from '../logic/page';
 import type { Lang } from '../logic/i18n';
 import { t } from '../logic/i18n';
 
@@ -30,7 +30,7 @@ export default function NavBar({
     () => pageKeys.map((k) => ({ page: k as Page, label: t(lang, k) })),
     [lang],
   );
-  const idleRef = useRef<ReturnType<typeof setTimeout>>();
+  const idleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hoveringRef = useRef(false);
 
   // Reset on page switch
@@ -123,6 +123,7 @@ export default function NavBar({
       {items.map(({ page, label }) => (
         <button
           key={page}
+          className="nav-button"
           onClick={() => {
             show();
             onNavigate(page);

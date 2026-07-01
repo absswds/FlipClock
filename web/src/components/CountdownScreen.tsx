@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import type { ClockTheme } from '../logic/themes';
 import type { CountdownTarget, CountdownRemaining } from '../logic/productivityModels';
-import type { Lang } from '../logic/i18n';
+import type { Lang, TextKey } from '../logic/i18n';
 import { t } from '../logic/i18n';
 import { alertComplete } from '../logic/notify';
 import FlipDurationDisplay from './FlipDurationDisplay';
@@ -21,6 +21,10 @@ export default function CountdownScreen({ theme, target, remaining, presets, onS
   const [customTitle, setCustomTitle] = useState('');
 
   const timeText = `${String(remaining.hours).padStart(2, '0')}:${String(remaining.minutes).padStart(2, '0')}:${String(remaining.seconds).padStart(2, '0')}`;
+  const titleFor = useCallback(
+    (item: CountdownTarget) => item.isPreset ? t(lang, item.id as TextKey) : item.title,
+    [lang],
+  );
 
   // Alert when countdown hits zero
   const wasDone = useRef(false);
@@ -28,10 +32,10 @@ export default function CountdownScreen({ theme, target, remaining, presets, onS
   useEffect(() => {
     if (isDone && !wasDone.current) {
       wasDone.current = true;
-      alertComplete(target.isPreset ? t(lang, target.id as keyof Parameters<typeof t>[1]) : target.title, '');
+      alertComplete(titleFor(target), '');
     }
     if (!isDone) wasDone.current = false;
-  }, [isDone, target, lang]);
+  }, [isDone, target, titleFor]);
 
   const addCustom = () => {
     if (!customDate || !customTitle.trim()) return;
@@ -47,9 +51,9 @@ export default function CountdownScreen({ theme, target, remaining, presets, onS
   };
 
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 18px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
+    <div className="page-panel" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 18px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
       <div style={{ color: theme.date, fontSize: 'clamp(12px, 1.6vw, 18px)', fontWeight: 500 }}>
-        {target.isPreset ? t(lang, target.id as keyof Parameters<typeof t>[1]) : target.title}
+        {titleFor(target)}
       </div>
 
       <div style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
@@ -76,6 +80,7 @@ export default function CountdownScreen({ theme, target, remaining, presets, onS
         {presets.map((p) => (
           <button
             key={p.id}
+            className="soft-button"
             onClick={() => onSetTarget(p)}
             style={{
               padding: '6px 14px', borderRadius: 6,
@@ -85,10 +90,11 @@ export default function CountdownScreen({ theme, target, remaining, presets, onS
               cursor: 'pointer', fontSize: 'clamp(10px, 1.2vw, 13px)',
             }}
           >
-            {t(lang, p.id as keyof Parameters<typeof t>[1])}
+            {titleFor(p)}
           </button>
         ))}
         <button
+          className="soft-button"
           onClick={() => setShowCustom(!showCustom)}
           style={{
             padding: '6px 14px', borderRadius: 6,
@@ -108,7 +114,7 @@ export default function CountdownScreen({ theme, target, remaining, presets, onS
             type="text"
             value={customTitle}
             onChange={(e) => setCustomTitle(e.target.value)}
-            placeholder={t(lang, 'signaturePlaceholder')}
+            placeholder={t(lang, 'datePlaceholder')}
             style={{
               width: 120, padding: '4px 8px', borderRadius: 4,
               border: `1px solid ${theme.date}`, background: 'transparent',
@@ -127,6 +133,7 @@ export default function CountdownScreen({ theme, target, remaining, presets, onS
             }}
           />
           <button
+            className="soft-button"
             onClick={addCustom}
             style={{
               padding: '4px 14px', borderRadius: 4,

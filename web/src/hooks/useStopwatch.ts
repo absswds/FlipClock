@@ -8,12 +8,12 @@ export function useStopwatch() {
 
   const startTimeRef = useRef(0);
   const accumulatedRef = useRef(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
-      intervalRef.current = undefined;
+      intervalRef.current = null;
     }
   }, []);
 
