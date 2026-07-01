@@ -40,7 +40,7 @@ export const weekdays: Record<Lang, string[]> = {
 export type TextKey = 'clock' | 'timer' | 'stopwatch' | 'countdown' | 'focus' | 'settings'
   | 'start' | 'pause' | 'reset' | 'lap' | 'back'
   | 'theme' | 'timeFormat' | 'h24' | 'h12' | 'showSeconds' | 'signature'
-  | 'signaturePlaceholder' | 'language' | 'timezone' | 'detected' | 'close'
+  | 'signaturePlaceholder' | 'defaultSignature' | 'language' | 'timezone' | 'detected' | 'close'
   | 'timerGuide' | 'timerGuideTop' | 'timerGuideBot'
   | 'timeUp' | 'restart'
   | 'focusMode' | 'shortBreak' | 'longBreak' | 'completed' | 'focusDone' | 'breakDone'
@@ -53,7 +53,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     clock: '时钟', timer: '计时', stopwatch: '秒表', countdown: '倒数', focus: '专注', settings: '设置',
     start: '开始', pause: '暂停', reset: '重置', lap: '计圈', back: '返回',
     theme: '主题', timeFormat: '时间格式', h24: '24 小时', h12: '12 小时',
-    showSeconds: '显示秒', signature: '签名', signaturePlaceholder: '输入自定义签名...',
+    showSeconds: '显示秒', signature: '签名', signaturePlaceholder: '输入自定义签名...', defaultSignature: '翻页时钟',
     language: '语言', timezone: '时区', detected: '检测到', close: '返回',
     timerGuide: '计时器操作指引', timerGuideTop: '点击上半区 +1', timerGuideBot: '点击下半区 −1',
     timeUp: '时间到！', restart: '重新开始',
@@ -67,7 +67,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     clock: 'Clock', timer: 'Timer', stopwatch: 'Stopwatch', countdown: 'Countdown', focus: 'Focus', settings: 'Settings',
     start: 'Start', pause: 'Pause', reset: 'Reset', lap: 'Lap', back: 'Back',
     theme: 'Theme', timeFormat: 'Time Format', h24: '24-Hour', h12: '12-Hour',
-    showSeconds: 'Show Seconds', signature: 'Signature', signaturePlaceholder: 'Enter signature...',
+    showSeconds: 'Show Seconds', signature: 'Signature', signaturePlaceholder: 'Enter signature...', defaultSignature: 'Flip Clock',
     language: 'Language', timezone: 'Timezone', detected: 'Detected', close: 'Back',
     timerGuide: 'Timer Controls', timerGuideTop: 'Tap top half ＋1', timerGuideBot: 'Tap bottom half −1',
     timeUp: 'Time\'s up!', restart: 'Restart',
@@ -81,7 +81,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     clock: '時計', timer: 'タイマー', stopwatch: 'ストップウォッチ', countdown: 'カウントダウン', focus: '集中', settings: '設定',
     start: '開始', pause: '停止', reset: 'リセット', lap: 'ラップ', back: '戻る',
     theme: 'テーマ', timeFormat: '時刻形式', h24: '24時間', h12: '12時間',
-    showSeconds: '秒を表示', signature: '署名', signaturePlaceholder: '署名を入力...',
+    showSeconds: '秒を表示', signature: '署名', signaturePlaceholder: '署名を入力...', defaultSignature: 'フリップ時計',
     language: '言語', timezone: 'タイムゾーン', detected: '検出', close: '戻る',
     timerGuide: 'タイマー操作', timerGuideTop: '上半分タップ ＋1', timerGuideBot: '下半分タップ −1',
     timeUp: '時間です！', restart: '再開',
@@ -95,7 +95,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     clock: '시계', timer: '타이머', stopwatch: '스톱워치', countdown: '카운트다운', focus: '집중', settings: '설정',
     start: '시작', pause: '일시정지', reset: '초기화', lap: '랩', back: '뒤로',
     theme: '테마', timeFormat: '시간 형식', h24: '24시간', h12: '12시간',
-    showSeconds: '초 표시', signature: '서명', signaturePlaceholder: '서명 입력...',
+    showSeconds: '초 표시', signature: '서명', signaturePlaceholder: '서명 입력...', defaultSignature: '플립 시계',
     language: '언어', timezone: '시간대', detected: '감지됨', close: '뒤로',
     timerGuide: '타이머 조작', timerGuideTop: '상단 탭 ＋1', timerGuideBot: '하단 탭 −1',
     timeUp: '시간 종료!', restart: '재시작',
@@ -109,7 +109,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     clock: 'Horloge', timer: 'Minuteur', stopwatch: 'Chrono', countdown: 'Compte à rebours', focus: 'Focus', settings: 'Réglages',
     start: 'Démarrer', pause: 'Pause', reset: 'Réinitialiser', lap: 'Tour', back: 'Retour',
     theme: 'Thème', timeFormat: 'Format', h24: '24h', h12: '12h',
-    showSeconds: 'Secondes', signature: 'Signature', signaturePlaceholder: 'Votre signature...',
+    showSeconds: 'Secondes', signature: 'Signature', signaturePlaceholder: 'Votre signature...', defaultSignature: 'Horloge flip',
     language: 'Langue', timezone: 'Fuseau', detected: 'Détecté', close: 'Retour',
     timerGuide: 'Contrôles', timerGuideTop: 'Haut ＋1', timerGuideBot: 'Bas −1',
     timeUp: 'Temps écoulé!', restart: 'Relancer',
@@ -123,7 +123,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     clock: 'Uhr', timer: 'Timer', stopwatch: 'Stoppuhr', countdown: 'Countdown', focus: 'Fokus', settings: 'Einstellungen',
     start: 'Start', pause: 'Pause', reset: 'Zurücksetzen', lap: 'Runde', back: 'Zurück',
     theme: 'Design', timeFormat: 'Zeitformat', h24: '24h', h12: '12h',
-    showSeconds: 'Sekunden', signature: 'Signatur', signaturePlaceholder: 'Signatur eingeben...',
+    showSeconds: 'Sekunden', signature: 'Signatur', signaturePlaceholder: 'Signatur eingeben...', defaultSignature: 'Flip-Uhr',
     language: 'Sprache', timezone: 'Zeitzone', detected: 'Erkannt', close: 'Zurück',
     timerGuide: 'Steuerung', timerGuideTop: 'Oben tippen ＋1', timerGuideBot: 'Unten tippen −1',
     timeUp: 'Zeit abgelaufen!', restart: 'Neustart',
@@ -137,7 +137,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     clock: 'Reloj', timer: 'Temporizador', stopwatch: 'Cronómetro', countdown: 'Cuenta atrás', focus: 'Enfoque', settings: 'Ajustes',
     start: 'Iniciar', pause: 'Pausa', reset: 'Reiniciar', lap: 'Vuelta', back: 'Volver',
     theme: 'Tema', timeFormat: 'Formato', h24: '24h', h12: '12h',
-    showSeconds: 'Segundos', signature: 'Firma', signaturePlaceholder: 'Tu firma...',
+    showSeconds: 'Segundos', signature: 'Firma', signaturePlaceholder: 'Tu firma...', defaultSignature: 'Reloj flip',
     language: 'Idioma', timezone: 'Zona horaria', detected: 'Detectado', close: 'Volver',
     timerGuide: 'Controles', timerGuideTop: 'Arriba ＋1', timerGuideBot: 'Abajo −1',
     timeUp: '¡Tiempo!', restart: 'Reiniciar',
@@ -151,7 +151,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     clock: 'Relógio', timer: 'Timer', stopwatch: 'Cronômetro', countdown: 'Contagem', focus: 'Foco', settings: 'Configurações',
     start: 'Iniciar', pause: 'Pausar', reset: 'Redefinir', lap: 'Volta', back: 'Voltar',
     theme: 'Tema', timeFormat: 'Formato', h24: '24h', h12: '12h',
-    showSeconds: 'Segundos', signature: 'Assinatura', signaturePlaceholder: 'Sua assinatura...',
+    showSeconds: 'Segundos', signature: 'Assinatura', signaturePlaceholder: 'Sua assinatura...', defaultSignature: 'Relógio flip',
     language: 'Idioma', timezone: 'Fuso', detected: 'Detectado', close: 'Voltar',
     timerGuide: 'Controles', timerGuideTop: 'Topo ＋1', timerGuideBot: 'Base −1',
     timeUp: 'Tempo esgotado!', restart: 'Recomeçar',
@@ -165,7 +165,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     clock: 'Часы', timer: 'Таймер', stopwatch: 'Секундомер', countdown: 'Обратный отсчёт', focus: 'Фокус', settings: 'Настройки',
     start: 'Старт', pause: 'Пауза', reset: 'Сброс', lap: 'Круг', back: 'Назад',
     theme: 'Тема', timeFormat: 'Формат', h24: '24ч', h12: '12ч',
-    showSeconds: 'Секунды', signature: 'Подпись', signaturePlaceholder: 'Ваша подпись...',
+    showSeconds: 'Секунды', signature: 'Подпись', signaturePlaceholder: 'Ваша подпись...', defaultSignature: 'Перекидные часы',
     language: 'Язык', timezone: 'Часовой пояс', detected: 'Определён', close: 'Назад',
     timerGuide: 'Управление', timerGuideTop: 'Верх ＋1', timerGuideBot: 'Низ −1',
     timeUp: 'Время вышло!', restart: 'Заново',
@@ -179,7 +179,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     clock: 'ساعة', timer: 'مؤقت', stopwatch: 'ساعة توقيت', countdown: 'عد تنازلي', focus: 'تركيز', settings: 'إعدادات',
     start: 'بدء', pause: 'إيقاف', reset: 'إعادة', lap: 'لفة', back: 'رجوع',
     theme: 'السمة', timeFormat: 'صيغة الوقت', h24: '24 ساعة', h12: '12 ساعة',
-    showSeconds: 'إظهار الثواني', signature: 'توقيع', signaturePlaceholder: 'أدخل توقيعك...',
+    showSeconds: 'إظهار الثواني', signature: 'توقيع', signaturePlaceholder: 'أدخل توقيعك...', defaultSignature: 'ساعة التقليب',
     language: 'اللغة', timezone: 'المنطقة الزمنية', detected: 'تم الاكتشاف', close: 'رجوع',
     timerGuide: 'عناصر التحكم', timerGuideTop: 'النصف العلوي ＋1', timerGuideBot: 'النصف السفلي −1',
     timeUp: 'انتهى الوقت!', restart: 'إعادة',

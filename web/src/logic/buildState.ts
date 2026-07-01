@@ -1,6 +1,6 @@
 import type { ClockTheme } from './themes';
 import { byId } from './themes';
-import { resolveLang, weekdays, type Lang } from './i18n';
+import { resolveLang, t, weekdays, type Lang } from './i18n';
 
 export type TimeFormat = 'H24' | 'H12';
 
@@ -75,7 +75,7 @@ export function buildState(
     showSeconds: settings.showSeconds,
     amPm,
     dateText,
-    signature: settings.signature,
+    signature: settings.signature.trim() ? settings.signature : t(lang, 'defaultSignature'),
     theme: byId(settings.themeId),
   };
 }

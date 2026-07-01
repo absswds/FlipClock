@@ -102,4 +102,18 @@ describe('buildState', () => {
 
     expect(state.signature).toBe('Hello World');
   });
+
+  it('uses a localized default signature when signature is empty', () => {
+    const d = new Date();
+    const state = buildState(d, makeSettings({ language: 'en', signature: '' }));
+
+    expect(state.signature).toBe('Flip Clock');
+  });
+
+  it('keeps the user signature when one is set', () => {
+    const d = new Date();
+    const state = buildState(d, makeSettings({ language: 'en', signature: 'My desk clock' }));
+
+    expect(state.signature).toBe('My desk clock');
+  });
 });

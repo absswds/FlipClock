@@ -2,12 +2,13 @@ import { useState, useCallback, useEffect } from 'react';
 import type { UserSettings, TimeFormat } from '../logic/buildState';
 
 const STORAGE_KEY = 'flipclock_settings';
+const LEGACY_DEFAULT_SIGNATURES = new Set(['翻页时钟']);
 
 function defaultSettings(): UserSettings {
   return {
     timeFormat: 'H24',
     showSeconds: true,
-    signature: '翻页时钟',
+    signature: '',
     themeId: 'classic_black',
     language: 'auto',
     timezone: 'auto',
@@ -19,7 +20,11 @@ function loadSettings(): UserSettings {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultSettings();
     const parsed = JSON.parse(raw);
-    return { ...defaultSettings(), ...parsed };
+    const settings = { ...defaultSettings(), ...parsed };
+    if (LEGACY_DEFAULT_SIGNATURES.has(settings.signature)) {
+      settings.signature = '';
+    }
+    return settings;
   } catch {
     return defaultSettings();
   }
