@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { ClockTheme } from '../logic/themes';
 
 interface FlipGlyphProps {
@@ -12,7 +12,7 @@ interface FlipGlyphProps {
 
 /**
  * One flipping digit. Uses pure CSS @keyframes for 60fps GPU-accelerated 3D animation.
- * On digit change: renders split panels with CSS animations → onAnimationEnd → returns to resting.
+ * On digit change: renders split panels with CSS animations → setTimeout → returns to resting.
  */
 export default function FlipGlyph({
   digit,
@@ -46,12 +46,15 @@ export default function FlipGlyph({
     setShown(digit);
     setAnimating(true);
     setFlipId((k) => k + 1);
-  }, [digit, shown]);
 
-  const handleAnimEnd = useCallback(() => {
-    setAnimating(false);
-    setPrevious(shown);
-  }, [shown]);
+    // Guaranteed cleanup via timer — more reliable than onAnimationEnd
+    const timer = setTimeout(() => {
+      setAnimating(false);
+      setPrevious(digit);
+    }, 650);
+
+    return () => clearTimeout(timer);
+  }, [digit, shown]);
 
   const oldDigit = previous;
   const newDigit = shown;
@@ -146,7 +149,6 @@ export default function FlipGlyph({
 
             {/* Bottom flap: new digit dropping -90→0° */}
             <div
-              onAnimationEnd={handleAnimEnd}
               style={{
                 width, height: halfH, overflow: 'hidden',
                 position: 'absolute', top: halfH, left: 0,
@@ -192,7 +194,7 @@ function DigitFace({
     >
       <span style={{
         display: 'inline-block',
-        transform: `scaleX(1.04) translateY(${-height * 0.08}px)`,
+        transform: `scaleX(1.04) translateY(${height * 0.02}px)`,
         lineHeight: 1, padding: 0, margin: 0,
       }}>
         {digit}

@@ -99,8 +99,11 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset }:
           mTens={mTens} mOnes={mOnes}
           sTens={sTens} sOnes={sOnes}
           onIncHour={() => setH((v) => (v + 1) % 100)}
+          onDecHour={() => setH((v) => (v - 1 + 100) % 100)}
           onIncMin={() => setM((v) => (v + 1) % 60)}
+          onDecMin={() => setM((v) => (v - 1 + 60) % 60)}
           onIncSec={() => setS((v) => (v + 1) % 60)}
+          onDecSec={() => setS((v) => (v - 1 + 60) % 60)}
         />
       </div>
 
@@ -140,11 +143,13 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset }:
 function ClickableTimePicker({
   theme,
   hTens, hOnes, mTens, mOnes, sTens, sOnes,
-  onIncHour, onIncMin, onIncSec,
+  onIncHour, onDecHour, onIncMin, onDecMin, onIncSec, onDecSec,
 }: {
   theme: ClockTheme;
   hTens: number; hOnes: number; mTens: number; mOnes: number; sTens: number; sOnes: number;
-  onIncHour: () => void; onIncMin: () => void; onIncSec: () => void;
+  onIncHour: () => void; onDecHour: () => void;
+  onIncMin: () => void; onDecMin: () => void;
+  onIncSec: () => void; onDecSec: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 0, h: 0 });
@@ -183,18 +188,45 @@ function ClickableTimePicker({
     <div ref={containerRef} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {dims.w > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
-          {/* HH — clickable */}
-          <div onClick={onIncHour} style={{ cursor: 'pointer' }} title="点击调小时">
+          {/* HH — top half +1, bottom half -1 */}
+          <div
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const y = e.clientY - rect.top;
+              if (y < rect.height / 2) onIncHour();
+              else onDecHour();
+            }}
+            style={{ cursor: 'pointer' }}
+            title="上半 +1h / 下半 −1h"
+          >
             <UnitFlipCard digits={[hTens, hOnes]} theme={theme} glyphWidth={glyphWidth} cardHeight={cardHeight} fontSize={fontSize} />
           </div>
           <span style={sepStyle}>:</span>
-          {/* MM — clickable */}
-          <div onClick={onIncMin} style={{ cursor: 'pointer' }} title="点击调分钟">
+          {/* MM — top half +1, bottom half -1 */}
+          <div
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const y = e.clientY - rect.top;
+              if (y < rect.height / 2) onIncMin();
+              else onDecMin();
+            }}
+            style={{ cursor: 'pointer' }}
+            title="上半 +1m / 下半 −1m"
+          >
             <UnitFlipCard digits={[mTens, mOnes]} theme={theme} glyphWidth={glyphWidth} cardHeight={cardHeight} fontSize={fontSize} />
           </div>
           <span style={sepStyle}>:</span>
-          {/* SS — clickable */}
-          <div onClick={onIncSec} style={{ cursor: 'pointer' }} title="点击调秒">
+          {/* SS — top half +1, bottom half -1 */}
+          <div
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const y = e.clientY - rect.top;
+              if (y < rect.height / 2) onIncSec();
+              else onDecSec();
+            }}
+            style={{ cursor: 'pointer' }}
+            title="上半 +1s / 下半 −1s"
+          >
             <UnitFlipCard digits={[sTens, sOnes]} theme={theme} glyphWidth={glyphWidth} cardHeight={cardHeight} fontSize={fontSize} />
           </div>
         </div>
