@@ -135,3 +135,29 @@
 - Latest screenshot showed the previous pass overcorrected: cards became too flat, and digits were clipped by the card bounds and hinge line.
 - Increased the clock viewport height, reduced total clock width, restored a taller card aspect ratio, and changed digit scaling from heavy horizontal stretch to a light broadening.
 - `.\gradlew test --tests "com.binbi.flipclock.ui.theme.ClockThemePresetsTest"` is still blocked by the missing Gradle wrapper script.
+
+## Session: 2026-06-18 Productivity Tools
+
+### Goal
+- Add in-app Timer, Stopwatch, Countdown, and Pomodoro flows. Keep widgets, lock screen, dynamic-island-style surfaces, and background notifications out of scope.
+
+### Actions taken
+- Added test-first coverage for pure productivity logic under `app/src/test/java/com/binbi/flipclock/productivity/`.
+- Added pure models/calculators for timer, stopwatch, countdown remaining-time math, fixed holiday presets, formatting, and pomodoro transitions.
+- Added `ProductivityRepository` using DataStore Preferences for timer defaults, custom countdown targets, selected countdown target, and pomodoro duration settings.
+- Added ViewModels for Timer, Stopwatch, Countdown, and Pomodoro. They use wall-clock timestamps for elapsed time and use coroutine ticks only to refresh UI.
+- Added black-stage Compose screens for the four tools with foreground-only completion banners.
+- Replaced the root two-state app switch with six destinations: Clock, Timer, Stopwatch, Countdown, Focus, Settings.
+
+### Verification
+- `git diff --check`: passed.
+- `.\gradlew.bat test --tests "com.binbi.flipclock.productivity.*"`: blocked because `gradlew.bat` is missing.
+- System `gradle`: unavailable.
+- `gradle/wrapper/gradle-wrapper.jar`: missing; only `gradle-wrapper.properties` exists.
+
+### Follow-up adjustment: flip-style productivity displays
+- Added `FlipDurationDisplay`, a reusable Compose display that splits formatted duration text into digit groups and separators, then renders digit groups with the existing `UnitFlipCard` flip animation.
+- Added `FlipDisplayPartsTest` for duration/day split behavior.
+- Replaced the primary time displays in Timer, Stopwatch, Countdown, and Pomodoro with flip-style cards. Countdown keeps the target title/date as text, renders day count as a large flip number, and renders `HH:MM:SS` as flip groups.
+- `.\gradlew.bat test --tests "com.binbi.flipclock.productivity.FlipDisplayPartsTest"`: blocked because `gradlew.bat` is missing.
+- `gradle --version`: blocked because system Gradle is unavailable.

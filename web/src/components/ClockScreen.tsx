@@ -98,19 +98,6 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
         {signature || ' '}
       </div>
 
-      {/* Subtle settings hint at bottom */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 'clamp(6px, 1.5vh, 20px)',
-          color: theme.accent,
-          opacity: 0.22,
-          fontSize: 'clamp(8px, 1vw, 12px)',
-          letterSpacing: '0.1em',
-        }}
-      >
-        长按进入设置
-      </div>
     </div>
   );
 }

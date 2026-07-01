@@ -4,6 +4,8 @@
 做一个原生 Android（Kotlin + Jetpack Compose）翻页时钟 App，核心场景是充电时全屏待机显示，翻页动画要有真实机械翻页钟的质感（阴影/高光/落定回弹），v1 含秒翻页 + 4-5 套预设主题 + 12/24h + 自定义签名 + 防烧屏/自动亮度/防误触退出。详细需求与架构见 `C:\Users\binbi\.claude\plans\ipad-app-flickering-deer.md`（已批准，作为本计划的需求来源，不要重新讨论范围）。
 
 ## Current Phase
+Add-on implementation note (2026-06-18): in-app Timer, Stopwatch, Countdown, and Pomodoro have been implemented at code level with foreground-only completion alerts. Desktop widgets, lock screen, dynamic-island-style surfaces, and background notifications remain out of scope. Gradle test/build verification is still blocked because `gradlew.bat` and `gradle/wrapper/gradle-wrapper.jar` are missing.
+
 重做（Rebuild）后已推进到 **Phase 4（翻页动画）代码层完成**。用户真机确认 Phase 3 外观「正常」，但提出 3 点修订：设置/签名重叠、要每单位一张卡（非每数字一卡）、要真实翻页动画。已按修订（见 plan 文件「修订 (2026-06-18)」）实现：单位卡 + 卡内逐位 3D 翻页 + 长按进设置。下一步等用户真机确认动画/外观。
 
 ## ⚠️ 重做背景与铁律

@@ -116,16 +116,15 @@ export default function App({ page, onNavigate }: AppProps) {
         {renderPage()}
       </div>
 
-      {/* Bottom navigation — hidden on clock page (full-screen mode) */}
-      {page !== 'clock' && (
-        <NavBar
-          current={page}
-          onNavigate={onNavigate}
-          accent={theme.accent}
-          digit={theme.digit}
-          background={theme.background}
-        />
-      )}
+      {/* Bottom navigation — auto-hides on clock page, always visible elsewhere */}
+      <NavBar
+        current={page}
+        onNavigate={onNavigate}
+        accent={theme.accent}
+        digit={theme.digit}
+        background={theme.background}
+        autoHide={page === 'clock'}
+      />
     </div>
   );
 }
