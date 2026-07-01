@@ -7,10 +7,6 @@ interface ClockScreenProps {
   onLongPress: () => void;
 }
 
-/**
- * Full-screen clock display: date at top, FlipClock centered, signature at bottom.
- * Long-press anywhere to enter settings.
- */
 export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
   const [pressing, setPressing] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -32,10 +28,11 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
   }, []);
 
   const { theme, dateText, signature } = state;
+  const isPaperDesk = theme.id === 'paper_desk';
 
   return (
     <div
-      className="clock-screen"
+      className={`clock-screen${isPaperDesk ? ' paper-clock-screen' : ''}`}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       onPointerLeave={onPointerUp}
@@ -52,36 +49,42 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
         cursor: 'pointer',
         transition: 'background 0.4s',
         position: 'relative',
-        paddingTop: 'clamp(0.5rem, 2vh, 2rem)',
+        padding: isPaperDesk
+          ? 'clamp(24px, 4vw, 48px) clamp(20px, 4vw, 56px) clamp(72px, 10vh, 112px)'
+          : 'clamp(8px, 2vh, 24px) 0 0',
       }}
     >
       <div className="clock-breathe" aria-hidden="true" />
-      {/* Date — top */}
       <div
+        className={isPaperDesk ? 'paper-date-rail' : undefined}
         style={{
           color: theme.date,
-          fontSize: 'clamp(10px, 1.4vw, 18px)',
-          fontWeight: 400,
-          letterSpacing: '0.05em',
-          marginBottom: 'clamp(1rem, 4vh, 3rem)',
+          fontSize: isPaperDesk ? 'clamp(11px, 1vw, 15px)' : 'clamp(10px, 1.4vw, 18px)',
+          fontWeight: isPaperDesk ? 500 : 400,
+          letterSpacing: isPaperDesk ? '0.02em' : '0.05em',
+          marginBottom: isPaperDesk ? 0 : 'clamp(1rem, 4vh, 3rem)',
           opacity: pressing ? 0.6 : 1,
           transition: 'opacity 0.2s',
           position: 'relative',
           zIndex: 1,
+          alignSelf: isPaperDesk ? 'flex-start' : 'center',
+          maxWidth: isPaperDesk ? 'min(42ch, 38vw)' : 'none',
+          textAlign: isPaperDesk ? 'left' : 'center',
+          textTransform: isPaperDesk ? 'uppercase' : 'none',
         }}
       >
         {dateText}
       </div>
 
-      {/* Clock — fills remaining space, vertically centered within it */}
       <div
+        className={isPaperDesk ? 'paper-clock-frame' : undefined}
         style={{
           flex: 1,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          padding: '0 2vw',
+          padding: isPaperDesk ? 'clamp(20px, 3vw, 40px) 0' : '0 2vw',
           position: 'relative',
           zIndex: 1,
         }}
@@ -89,24 +92,26 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
         <FlipClock state={state} />
       </div>
 
-      {/* Signature — bottom */}
       <div
+        className={isPaperDesk ? 'paper-signature-chip' : undefined}
         style={{
           color: theme.signature,
-          fontSize: 'clamp(9px, 1.1vw, 14px)',
-          fontWeight: 400,
-          letterSpacing: '0.08em',
-          marginTop: 'clamp(0.5rem, 2vh, 2rem)',
-          marginBottom: 'clamp(1rem, 4vh, 3rem)',
+          fontSize: isPaperDesk ? 'clamp(11px, 1vw, 14px)' : 'clamp(9px, 1.1vw, 14px)',
+          fontWeight: isPaperDesk ? 500 : 400,
+          letterSpacing: isPaperDesk ? '0.01em' : '0.08em',
+          marginTop: isPaperDesk ? 0 : 'clamp(0.5rem, 2vh, 2rem)',
+          marginBottom: isPaperDesk ? 0 : 'clamp(1rem, 4vh, 3rem)',
           opacity: pressing ? 0.6 : 1,
           transition: 'opacity 0.2s',
           position: 'relative',
           zIndex: 1,
+          alignSelf: isPaperDesk ? 'flex-end' : 'center',
+          maxWidth: isPaperDesk ? 'min(34ch, 34vw)' : 'none',
+          textAlign: isPaperDesk ? 'left' : 'center',
         }}
       >
         {signature || ' '}
       </div>
-
     </div>
   );
 }

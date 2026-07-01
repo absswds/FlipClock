@@ -18,6 +18,26 @@ export interface ClockTheme {
   accent: string;
 }
 
+export const PaperDesk: ClockTheme = {
+  id: 'paper_desk',
+  displayName: 'Paper Desk',
+  displayNameEn: 'Paper Desk',
+  displayNameJa: 'Paper Desk',
+  background: '#F4ECDF',
+  cardTop: '#F8F3EA',
+  cardBottom: '#ECE3D4',
+  cardEdge: '#D7C9B6',
+  cardEdgeShadow: 'rgba(87, 64, 38, 0.12)',
+  digit: '#26231F',
+  hinge: 'rgba(86, 66, 42, 0.24)',
+  hingeShadow: 'rgba(98, 75, 48, 0.14)',
+  bevel: 'rgba(255,255,255,0.74)',
+  topHighlight: 'rgba(255,255,255,0.62)',
+  date: '#7C6F61',
+  signature: '#8C7C68',
+  accent: '#7B5A35',
+};
+
 export const ClassicBlack: ClockTheme = {
   id: 'classic_black',
   displayName: '经典黑',
@@ -119,10 +139,11 @@ export const Slate: ClockTheme = {
 };
 
 export const allThemes: ClockTheme[] = [
+  PaperDesk,
   ClassicBlack,
   PureBlack,
 ];
 
 export function byId(id: string): ClockTheme {
-  return allThemes.find((t) => t.id === id) ?? ClassicBlack;
+  return allThemes.find((t) => t.id === id) ?? PaperDesk;
 }

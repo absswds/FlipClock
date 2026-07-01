@@ -9,7 +9,8 @@ function defaultSettings(): UserSettings {
     timeFormat: 'H24',
     showSeconds: true,
     signature: '',
-    themeId: 'classic_black',
+    themeId: 'paper_desk',
+    themeCustomized: false,
     language: 'auto',
     timezone: 'auto',
   };
@@ -23,6 +24,10 @@ function loadSettings(): UserSettings {
     const settings = { ...defaultSettings(), ...parsed };
     if (LEGACY_DEFAULT_SIGNATURES.has(settings.signature)) {
       settings.signature = '';
+    }
+    if (settings.themeId === 'classic_black' && settings.themeCustomized !== true) {
+      settings.themeId = 'paper_desk';
+      settings.themeCustomized = false;
     }
     return settings;
   } catch {
@@ -83,7 +88,7 @@ export function useSettings() {
     [update],
   );
   const setThemeId = useCallback(
-    (v: string) => update({ themeId: v }),
+    (v: string) => update({ themeId: v, themeCustomized: true }),
     [update],
   );
   const setLanguage = useCallback(

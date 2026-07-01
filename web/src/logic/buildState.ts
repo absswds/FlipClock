@@ -9,6 +9,7 @@ export interface UserSettings {
   showSeconds: boolean;
   signature: string;
   themeId: string;
+  themeCustomized?: boolean;
   language: string;
   timezone: string;
 }

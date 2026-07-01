@@ -9,12 +9,6 @@ interface UnitFlipCardProps {
   fontSize: number;
 }
 
-/**
- * One time unit (hour, minute, or second) as a single rounded card.
- * Digits sit flush so their shared gradient reads as one continuous face,
- * with one hinge seam drawn straight across the whole card.
- * Port of UnitFlipCard.kt.
- */
 export default function UnitFlipCard({
   digits,
   theme,
@@ -22,11 +16,14 @@ export default function UnitFlipCard({
   cardHeight,
   fontSize,
 }: UnitFlipCardProps) {
-  const borderRadius = cardHeight * 0.075;
+  const isPaperDesk = theme.id === 'paper_desk';
+  const borderRadius = isPaperDesk
+    ? Math.min(cardHeight * 0.038, 18)
+    : cardHeight * 0.075;
 
   return (
     <div
-      className="flip-card-shell"
+      className={`flip-card-shell${isPaperDesk ? ' paper-card-shell' : ''}`}
       style={{
         borderRadius,
         border: `1px solid ${theme.cardEdge}`,
@@ -36,7 +33,6 @@ export default function UnitFlipCard({
         flexDirection: 'row',
       }}
     >
-      {/* Digits row — each glyph flips independently when its digit changes */}
       {digits.map((d, i) => (
         <FlipGlyph
           key={`pos${i}`}
@@ -48,35 +44,32 @@ export default function UnitFlipCard({
         />
       ))}
 
-      {/* Hinge shadow (dark gradient above seam) */}
       <div
         style={{
           position: 'absolute',
           left: 0,
           right: 0,
           top: '50%',
-          height: 5,
-          marginTop: -2,
+          height: isPaperDesk ? 3 : 5,
+          marginTop: isPaperDesk ? -1 : -2,
           background: `linear-gradient(180deg, transparent, ${theme.hingeShadow})`,
           pointerEvents: 'none',
         }}
       />
 
-      {/* Hinge line (dark seam) */}
       <div
         style={{
           position: 'absolute',
           left: 0,
           right: 0,
           top: '50%',
-          height: 2,
-          marginTop: -1,
+          height: isPaperDesk ? 1 : 2,
+          marginTop: isPaperDesk ? 0 : -1,
           background: theme.hinge,
           pointerEvents: 'none',
         }}
       />
 
-      {/* Bevel highlight (thin line just below seam) */}
       <div
         style={{
           position: 'absolute',
@@ -84,26 +77,24 @@ export default function UnitFlipCard({
           right: 0,
           top: '50%',
           height: 1,
-          marginTop: 1.5,
+          marginTop: isPaperDesk ? 1 : 1.5,
           background: theme.bevel,
           pointerEvents: 'none',
         }}
       />
 
-      {/* Top highlight gradient (soft glow at top edge) */}
       <div
         style={{
           position: 'absolute',
           left: 0,
           right: 0,
           top: 0,
-          height: cardHeight * 0.14,
+          height: cardHeight * (isPaperDesk ? 0.1 : 0.14),
           background: `linear-gradient(180deg, ${theme.topHighlight}, transparent)`,
           pointerEvents: 'none',
         }}
       />
 
-      {/* Side shadow overlay — horizontal gradient */}
       <div
         style={{
           position: 'absolute',
@@ -113,7 +104,6 @@ export default function UnitFlipCard({
         }}
       />
 
-      {/* Vertical shadow overlay — top & bottom soft shadow */}
       <div
         style={{
           position: 'absolute',

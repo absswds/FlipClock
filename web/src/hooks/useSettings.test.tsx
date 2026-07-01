@@ -24,4 +24,47 @@ describe('useSettings', () => {
 
     expect(result.current.settings.signature).toBe('');
   });
+
+  it('uses paper desk as the default theme for new users', () => {
+    const { result } = renderHook(() => useSettings());
+
+    expect(result.current.settings.themeId).toBe('paper_desk');
+  });
+
+  it('migrates the legacy default classic black theme to paper desk', () => {
+    localStorage.setItem(
+      'flipclock_settings',
+      JSON.stringify({
+        timeFormat: 'H24',
+        showSeconds: true,
+        signature: '',
+        themeId: 'classic_black',
+        language: 'en',
+        timezone: 'auto',
+      }),
+    );
+
+    const { result } = renderHook(() => useSettings());
+
+    expect(result.current.settings.themeId).toBe('paper_desk');
+  });
+
+  it('keeps a user-selected classic black theme when it was customized', () => {
+    localStorage.setItem(
+      'flipclock_settings',
+      JSON.stringify({
+        timeFormat: 'H24',
+        showSeconds: true,
+        signature: '',
+        themeId: 'classic_black',
+        themeCustomized: true,
+        language: 'en',
+        timezone: 'auto',
+      }),
+    );
+
+    const { result } = renderHook(() => useSettings());
+
+    expect(result.current.settings.themeId).toBe('classic_black');
+  });
 });

@@ -93,7 +93,7 @@ describe('buildState', () => {
     const d = new Date();
     const state = buildState(d, makeSettings({ themeId: 'nonexistent' }));
 
-    expect(state.theme.id).toBe('classic_black');
+    expect(state.theme.id).toBe('paper_desk');
   });
 
   it('passes signature through', () => {

@@ -111,6 +111,8 @@ export default function App({ page, onNavigate }: AppProps) {
       style={{
         '--accent': theme.accent,
         '--digit': theme.digit,
+        '--surface': theme.cardTop,
+        '--surface-edge': theme.cardEdge,
         width: '100vw',
         height: '100vh',
         background: theme.background,
@@ -128,6 +130,7 @@ export default function App({ page, onNavigate }: AppProps) {
       <NavBar
         current={page}
         onNavigate={onNavigate}
+        themeId={theme.id}
         accent={theme.accent}
         digit={theme.digit}
         background={theme.background}
