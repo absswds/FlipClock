@@ -16,8 +16,11 @@ export default function StopwatchScreen({ theme, state, onStart, onPause, onRese
   const text = formatDuration(state.elapsedMillis, state.elapsedMillis >= 3600_000);
 
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 20px)', padding: '2vw' }}>
-      <FlipDurationDisplay text={text} theme={theme} />
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 20px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
+      {/* Flip display — fills available space */}
+      <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <FlipDurationDisplay text={text} theme={theme} />
+      </div>
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
         {!state.isRunning ? (
@@ -34,7 +37,7 @@ export default function StopwatchScreen({ theme, state, onStart, onPause, onRese
       </div>
 
       {state.lapsMillis.length > 0 && (
-        <div style={{ maxHeight: '25vh', overflow: 'auto', width: '100%', maxWidth: 300 }}>
+        <div style={{ maxHeight: '20vh', overflow: 'auto', width: '100%', maxWidth: 300 }}>
           {[...state.lapsMillis].reverse().slice(0, 20).map((lap, i) => (
             <div
               key={i}

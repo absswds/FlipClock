@@ -6,18 +6,14 @@ import UnitFlipCard from './UnitFlipCard';
 interface FlipDurationDisplayProps {
   text: string;
   theme: ClockTheme;
-  height?: number;
 }
 
 /**
  * Renders a formatted duration string (e.g. "00:05:30") with flip cards for digit groups
- * and plain text for separators. Port of FlipDurationDisplay.kt.
+ * and plain text for separators. Fills its parent container — no fixed height.
+ * Port of FlipDurationDisplay.kt.
  */
-export default function FlipDurationDisplay({
-  text,
-  theme,
-  height = 240,
-}: FlipDurationDisplayProps) {
+export default function FlipDurationDisplay({ text, theme }: FlipDurationDisplayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 0, h: 0 });
 
@@ -45,8 +41,7 @@ export default function FlipDurationDisplay({
       ref={containerRef}
       style={{
         width: '100%',
-        height: `${height}px`,
-        maxHeight: '70vh',
+        height: '100%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

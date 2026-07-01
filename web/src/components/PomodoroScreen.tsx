@@ -32,7 +32,7 @@ export default function PomodoroScreen({
   const isFocus = state.mode === 'FOCUS';
 
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 18px)', padding: '2vw' }}>
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 18px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
       {/* Mode indicator */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span
@@ -71,8 +71,12 @@ export default function PomodoroScreen({
         </div>
       )}
 
-      {/* Timer display */}
-      {!state.showCompletionAlert && <FlipDurationDisplay text={text} theme={theme} height={220} />}
+      {/* Timer display — fills available space */}
+      {!state.showCompletionAlert && (
+        <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <FlipDurationDisplay text={text} theme={theme} />
+        </div>
+      )}
 
       {/* Controls */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
