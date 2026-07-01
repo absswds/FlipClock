@@ -44,7 +44,7 @@ export default function NavBar({
 
   const hideSoon = useCallback(() => {
     if (!autoHide) return;
-    timerRef.current = setTimeout(() => setVisible(false), 800);
+    timerRef.current = setTimeout(() => setVisible(false), 250);
   }, [autoHide]);
 
   const cancelHide = useCallback(() => {

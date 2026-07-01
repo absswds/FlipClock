@@ -29,7 +29,7 @@ export const ClassicBlack: ClockTheme = {
   cardEdge: '#3F3F3F',
   cardEdgeShadow: 'transparent',
   digit: '#FFFFFF',
-  hinge: '#080809',
+  hinge: '#3F3F3F',
   hingeShadow: 'transparent',
   bevel: 'transparent',
   topHighlight: 'transparent',
