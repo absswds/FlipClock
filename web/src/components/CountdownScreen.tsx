@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { ClockTheme } from '../logic/themes';
 import type { CountdownTarget, CountdownRemaining } from '../logic/productivityModels';
 import type { Lang } from '../logic/i18n';
 import { t } from '../logic/i18n';
+import { alertComplete } from '../logic/notify';
 import FlipDurationDisplay from './FlipDurationDisplay';
 
 interface CountdownScreenProps {
@@ -20,6 +21,17 @@ export default function CountdownScreen({ theme, target, remaining, presets, onS
   const [customTitle, setCustomTitle] = useState('');
 
   const timeText = `${String(remaining.hours).padStart(2, '0')}:${String(remaining.minutes).padStart(2, '0')}:${String(remaining.seconds).padStart(2, '0')}`;
+
+  // Alert when countdown hits zero
+  const wasDone = useRef(false);
+  const isDone = remaining.days === 0 && remaining.hours === 0 && remaining.minutes === 0 && remaining.seconds === 0;
+  useEffect(() => {
+    if (isDone && !wasDone.current) {
+      wasDone.current = true;
+      alertComplete(target.isPreset ? t(lang, target.id as keyof Parameters<typeof t>[1]) : target.title, '');
+    }
+    if (!isDone) wasDone.current = false;
+  }, [isDone, target, lang]);
 
   const addCustom = () => {
     if (!customDate || !customTitle.trim()) return;

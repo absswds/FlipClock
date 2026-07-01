@@ -1,8 +1,10 @@
+import { useEffect, useRef } from 'react';
 import type { ClockTheme } from '../logic/themes';
 import type { PomodoroState, PomodoroSettings } from '../logic/productivityModels';
 import type { Lang } from '../logic/i18n';
 import { t } from '../logic/i18n';
 import { formatDuration } from '../logic/formatDuration';
+import { alertComplete } from '../logic/notify';
 import FlipDurationDisplay from './FlipDurationDisplay';
 
 interface PomodoroScreenProps {
@@ -22,6 +24,16 @@ export default function PomodoroScreen({
 }: PomodoroScreenProps) {
   const text = formatDuration(state.timer.remainingMillis);
   const isFocus = state.mode === 'FOCUS';
+
+  const wasAlert = useRef(false);
+  useEffect(() => {
+    if (state.showCompletionAlert && !wasAlert.current) {
+      wasAlert.current = true;
+      const title = state.mode === 'FOCUS' ? t(lang, 'focusDone') : t(lang, 'breakDone');
+      alertComplete(title, '');
+    }
+    if (!state.showCompletionAlert) wasAlert.current = false;
+  }, [state.showCompletionAlert, state.mode, lang]);
   const modeLabel = isFocus ? t(lang, 'focusMode') : state.mode === 'SHORT_BREAK' ? t(lang, 'shortBreak') : t(lang, 'longBreak');
 
   return (

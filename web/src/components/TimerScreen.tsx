@@ -4,6 +4,7 @@ import type { TimerState } from '../logic/productivityModels';
 import type { Lang } from '../logic/i18n';
 import { t } from '../logic/i18n';
 import { formatDuration } from '../logic/formatDuration';
+import { alertComplete } from '../logic/notify';
 import UnitFlipCard from './UnitFlipCard';
 
 interface TimerScreenProps {
@@ -38,6 +39,16 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset, l
 
   const isIdle = !state.isRunning && !state.isComplete;
   const text = formatDuration(state.remainingMillis, state.durationMillis >= 3600_000);
+
+  // Alert on completion
+  const wasComplete = useRef(false);
+  useEffect(() => {
+    if (state.isComplete && !wasComplete.current) {
+      wasComplete.current = true;
+      alertComplete(t(lang, 'timeUp'), '');
+    }
+    if (!state.isComplete) wasComplete.current = false;
+  }, [state.isComplete, lang]);
 
   // Sync local time
   useEffect(() => {
