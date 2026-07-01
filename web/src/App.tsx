@@ -77,6 +77,7 @@ export default function App({ page, onNavigate }: AppProps) {
             theme={theme}
             target={countdown.target}
             remaining={countdown.remaining}
+            presets={countdown.presets}
             onSetTarget={countdown.setTarget}
             lang={lang}
           />

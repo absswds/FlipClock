@@ -3,18 +3,18 @@ import type { ClockTheme } from '../logic/themes';
 import type { CountdownTarget, CountdownRemaining } from '../logic/productivityModels';
 import type { Lang } from '../logic/i18n';
 import { t } from '../logic/i18n';
-import { countdownPresets } from '../hooks/useCountdown';
 import FlipDurationDisplay from './FlipDurationDisplay';
 
 interface CountdownScreenProps {
   theme: ClockTheme;
   target: CountdownTarget;
   remaining: CountdownRemaining;
+  presets: CountdownTarget[];
   onSetTarget: (t: CountdownTarget) => void;
   lang: Lang;
 }
 
-export default function CountdownScreen({ theme, target, remaining, onSetTarget, lang }: CountdownScreenProps) {
+export default function CountdownScreen({ theme, target, remaining, presets, onSetTarget, lang }: CountdownScreenProps) {
   const [showCustom, setShowCustom] = useState(false);
   const [customDate, setCustomDate] = useState('');
   const [customTitle, setCustomTitle] = useState('');
@@ -37,7 +37,7 @@ export default function CountdownScreen({ theme, target, remaining, onSetTarget,
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px, 2vh, 18px)', padding: '2vw 2vw max(80px, 10vh) 2vw' }}>
       <div style={{ color: theme.date, fontSize: 'clamp(12px, 1.6vw, 18px)', fontWeight: 500 }}>
-        {target.title}
+        {target.isPreset ? t(lang, target.id as keyof Parameters<typeof t>[1]) : target.title}
       </div>
 
       <div style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
@@ -61,7 +61,7 @@ export default function CountdownScreen({ theme, target, remaining, onSetTarget,
 
       {/* Presets + Custom */}
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
-        {countdownPresets.map((p) => (
+        {presets.map((p) => (
           <button
             key={p.id}
             onClick={() => onSetTarget(p)}
@@ -73,7 +73,7 @@ export default function CountdownScreen({ theme, target, remaining, onSetTarget,
               cursor: 'pointer', fontSize: 'clamp(10px, 1.2vw, 13px)',
             }}
           >
-            {p.title}
+            {t(lang, p.id as keyof Parameters<typeof t>[1])}
           </button>
         ))}
         <button

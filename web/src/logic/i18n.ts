@@ -45,7 +45,8 @@ type TextKey = 'clock' | 'timer' | 'stopwatch' | 'countdown' | 'focus' | 'settin
   | 'timeUp' | 'restart'
   | 'focusMode' | 'shortBreak' | 'longBreak' | 'completed' | 'focusDone' | 'breakDone'
   | 'day' | 'customDate' | 'datePlaceholder'
-  | 'scrollUp' | 'scrollDown' | 'tapHint';
+  | 'scrollUp' | 'scrollDown' | 'tapHint'
+  | 'newyear' | 'valentine' | 'christmas' | 'nye';
 
 const ui: Record<Lang, Record<TextKey, string>> = {
   zh: {
@@ -60,6 +61,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '🎉 专注完成！休息一下', breakDone: '⏰ 休息结束，继续专注！',
     day: '天', customDate: '自定义', datePlaceholder: '选择日期...',
     scrollUp: '滚轮上滚 +1', scrollDown: '滚轮下滚 −1', tapHint: '轻触切换',
+    newyear: '元旦', valentine: '情人节', christmas: '圣诞节', nye: '除夕',
   },
   en: {
     clock: 'Clock', timer: 'Timer', stopwatch: 'Stopwatch', countdown: 'Countdown', focus: 'Focus', settings: 'Settings',
@@ -73,6 +75,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '🎉 Focus done! Take a break', breakDone: '⏰ Break over, back to focus!',
     day: 'd', customDate: 'Custom', datePlaceholder: 'Pick a date...',
     scrollUp: 'Scroll up ＋1', scrollDown: 'Scroll down −1', tapHint: 'Tap to toggle',
+    newyear: "New Year's Day", valentine: "Valentine's Day", christmas: 'Christmas', nye: "New Year's Eve",
   },
   ja: {
     clock: '時計', timer: 'タイマー', stopwatch: 'ストップウォッチ', countdown: 'カウントダウン', focus: '集中', settings: '設定',
@@ -86,6 +89,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '🎉 集中完了！休憩しましょう', breakDone: '⏰ 休憩終了、集中に戻ろう！',
     day: '日', customDate: 'カスタム', datePlaceholder: '日付を選択...',
     scrollUp: '上スクロール ＋1', scrollDown: '下スクロール −1', tapHint: 'タップ切替',
+    newyear: '元旦', valentine: 'バレンタイン', christmas: 'クリスマス', nye: '大晦日',
   },
   ko: {
     clock: '시계', timer: '타이머', stopwatch: '스톱워치', countdown: '카운트다운', focus: '집중', settings: '설정',
@@ -99,6 +103,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '🎉 집중 완료! 휴식하세요', breakDone: '⏰ 휴식 종료, 다시 집중!',
     day: '일', customDate: '사용자 지정', datePlaceholder: '날짜 선택...',
     scrollUp: '위로 스크롤 ＋1', scrollDown: '아래로 스크롤 −1', tapHint: '탭 전환',
+    newyear: '새해 첫날', valentine: '밸런타인데이', christmas: '크리스마스', nye: '새해 전날',
   },
   fr: {
     clock: 'Horloge', timer: 'Minuteur', stopwatch: 'Chrono', countdown: 'Compte à rebours', focus: 'Focus', settings: 'Réglages',
@@ -112,6 +117,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '🎉 Focus terminé! Pause', breakDone: '⏰ Pause finie, au travail!',
     day: 'j', customDate: 'Personnalisé', datePlaceholder: 'Choisir une date...',
     scrollUp: 'Défiler haut ＋1', scrollDown: 'Défiler bas −1', tapHint: 'Tapoter',
+    newyear: 'Nouvel An', valentine: 'Saint-Valentin', christmas: 'Noël', nye: 'Saint-Sylvestre',
   },
   de: {
     clock: 'Uhr', timer: 'Timer', stopwatch: 'Stoppuhr', countdown: 'Countdown', focus: 'Fokus', settings: 'Einstellungen',
@@ -125,6 +131,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '🎉 Fokus fertig! Pause machen', breakDone: '⏰ Pause vorbei, weiter!',
     day: 'T', customDate: 'Benutzerdefiniert', datePlaceholder: 'Datum wählen...',
     scrollUp: 'Hochscrollen ＋1', scrollDown: 'Runterscrollen −1', tapHint: 'Tippen',
+    newyear: 'Neujahr', valentine: 'Valentinstag', christmas: 'Weihnachten', nye: 'Silvester',
   },
   es: {
     clock: 'Reloj', timer: 'Temporizador', stopwatch: 'Cronómetro', countdown: 'Cuenta atrás', focus: 'Enfoque', settings: 'Ajustes',
@@ -138,6 +145,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '🎉 ¡Enfoque completado! Descansa', breakDone: '⏰ ¡Descanso terminado!',
     day: 'd', customDate: 'Personalizado', datePlaceholder: 'Elegir fecha...',
     scrollUp: 'Desplazar arriba ＋1', scrollDown: 'Desplazar abajo −1', tapHint: 'Tocar',
+    newyear: 'Año Nuevo', valentine: 'San Valentín', christmas: 'Navidad', nye: 'Nochevieja',
   },
   pt: {
     clock: 'Relógio', timer: 'Timer', stopwatch: 'Cronômetro', countdown: 'Contagem', focus: 'Foco', settings: 'Configurações',
@@ -151,6 +159,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '🎉 Foco concluído! Descanse', breakDone: '⏰ Pausa encerrada!',
     day: 'd', customDate: 'Personalizado', datePlaceholder: 'Escolher data...',
     scrollUp: 'Rolar p/cima ＋1', scrollDown: 'Rolar p/baixo −1', tapHint: 'Tocar',
+    newyear: 'Ano Novo', valentine: 'Dia dos Namorados', christmas: 'Natal', nye: 'Véspera de Ano Novo',
   },
   ru: {
     clock: 'Часы', timer: 'Таймер', stopwatch: 'Секундомер', countdown: 'Обратный отсчёт', focus: 'Фокус', settings: 'Настройки',
@@ -164,6 +173,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '🎉 Фокус завершён! Отдых', breakDone: '⏰ Перерыв окончен!',
     day: 'д', customDate: 'Своя дата', datePlaceholder: 'Выбрать дату...',
     scrollUp: 'Прокрутка вверх ＋1', scrollDown: 'Прокрутка вниз −1', tapHint: 'Нажать',
+    newyear: 'Новый год', valentine: 'День Валентина', christmas: 'Рождество', nye: 'Канун Нового года',
   },
   ar: {
     clock: 'ساعة', timer: 'مؤقت', stopwatch: 'ساعة توقيت', countdown: 'عد تنازلي', focus: 'تركيز', settings: 'إعدادات',
@@ -177,6 +187,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '🎉 اكتمل التركيز! استرح', breakDone: '⏰ انتهت الاستراحة!',
     day: 'يوم', customDate: 'مخصص', datePlaceholder: 'اختر تاريخاً...',
     scrollUp: 'تمرير لأعلى ＋1', scrollDown: 'تمرير لأسفل −1', tapHint: 'انقر',
+    newyear: 'رأس السنة', valentine: 'عيد الحب', christmas: 'عيد الميلاد', nye: 'ليلة رأس السنة',
   },
 };
 
