@@ -1,0 +1,29 @@
+/* === Global Reset === */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Prevent accidental text selection on clock */
+  user-select: none;
+  -webkit-user-select: none;
+  /* Disable pull-to-refresh and overscroll on mobile */
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+/* 3D flip card containers need this for proper 3D rendering */
+/* perspective is set inline on each FlipGlyph */
