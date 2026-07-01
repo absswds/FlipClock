@@ -19,8 +19,6 @@ const items: { page: Page; label: string }[] = [
   { page: 'settings', label: '设置' },
 ];
 
-const TRIGGER_HEIGHT = 40;
-
 export default function NavBar({
   current,
   onNavigate,
@@ -30,39 +28,80 @@ export default function NavBar({
   autoHide = false,
 }: NavBarProps) {
   const [visible, setVisible] = useState(!autoHide);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
-  const navRef = useRef<HTMLDivElement>(null);
+  const idleRef = useRef<ReturnType<typeof setTimeout>>();
+  const hoveringRef = useRef(false);
 
+  // Reset on page switch
   useEffect(() => {
     setVisible(!autoHide);
   }, [autoHide, current]);
 
+  const startIdle = useCallback(() => {
+    if (idleRef.current) clearTimeout(idleRef.current);
+    if (!autoHide) return;
+    idleRef.current = setTimeout(() => {
+      if (!hoveringRef.current) setVisible(false);
+    }, 1000);
+  }, [autoHide]);
+
   const show = useCallback(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
+    if (idleRef.current) clearTimeout(idleRef.current);
     setVisible(true);
   }, []);
 
-  const hideSoon = useCallback(() => {
+  // Mouse-idle: any movement shows navbar, 1s stillness hides it
+  useEffect(() => {
     if (!autoHide) return;
-    timerRef.current = setTimeout(() => setVisible(false), 250);
-  }, [autoHide]);
 
-  const cancelHide = useCallback(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
+    const onMove = () => {
+      show();
+      startIdle();
+    };
+
+    const onTouch = () => {
+      show();
+      // Longer timeout for touch
+      if (idleRef.current) clearTimeout(idleRef.current);
+      idleRef.current = setTimeout(() => {
+        if (!hoveringRef.current) setVisible(false);
+      }, 2000);
+    };
+
+    document.addEventListener('mousemove', onMove, { passive: true });
+    document.addEventListener('touchstart', onTouch, { passive: true });
+
+    // Initial idle countdown
+    startIdle();
+
+    return () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('touchstart', onTouch);
+      if (idleRef.current) clearTimeout(idleRef.current);
+    };
+  }, [autoHide, show, startIdle]);
+
+  // Don't hide while mouse is directly on the navbar
+  const onBarEnter = useCallback(() => {
+    hoveringRef.current = true;
+    if (idleRef.current) clearTimeout(idleRef.current);
+    setVisible(true);
   }, []);
+
+  const onBarLeave = useCallback(() => {
+    hoveringRef.current = false;
+    startIdle();
+  }, [startIdle]);
 
   useEffect(() => {
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (idleRef.current) clearTimeout(idleRef.current);
     };
   }, []);
 
   const bar = (
     <div
-      ref={navRef}
-      onMouseEnter={autoHide ? cancelHide : undefined}
-      onMouseLeave={autoHide ? hideSoon : undefined}
-      onTouchStart={autoHide ? cancelHide : undefined}
+      onMouseEnter={autoHide ? onBarEnter : undefined}
+      onMouseLeave={autoHide ? onBarLeave : undefined}
       style={{
         position: 'absolute',
         bottom: 0,
@@ -75,7 +114,7 @@ export default function NavBar({
         background: `${background}EE`,
         borderTop: `1px solid ${digit}11`,
         zIndex: 100,
-        transition: autoHide ? 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
+        transition: autoHide ? 'transform 0.25s ease' : 'none',
         transform: autoHide && !visible ? 'translateY(100%)' : 'translateY(0)',
       }}
     >
@@ -83,7 +122,7 @@ export default function NavBar({
         <button
           key={page}
           onClick={() => {
-            if (autoHide) show();
+            show();
             onNavigate(page);
           }}
           style={{
@@ -105,24 +144,5 @@ export default function NavBar({
     </div>
   );
 
-  if (!autoHide) return bar;
-
-  return (
-    <>
-      {/* Invisible trigger zone at screen bottom */}
-      <div
-        onMouseEnter={show}
-        onTouchStart={show}
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: TRIGGER_HEIGHT,
-          zIndex: 99,
-        }}
-      />
-      {bar}
-    </>
-  );
+  return bar;
 }
