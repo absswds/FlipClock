@@ -28,6 +28,24 @@ export default function SettingsScreen({
     return theme.displayName;
   };
 
+  const themeButtonStyle = (theme: ClockTheme): React.CSSProperties => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+    padding: '8px 14px',
+    borderRadius: 8,
+    border: settings.themeId === theme.id
+      ? `2px solid ${currentTheme.accent}`
+      : `1px solid ${theme.cardEdge}`,
+    background: theme.background,
+    color: theme.digit,
+    cursor: 'pointer',
+    fontSize: 'clamp(11px, 1.2vw, 14px)',
+    boxShadow: theme.id === 'paper_desk'
+      ? '0 6px 16px rgba(90, 68, 40, 0.08)'
+      : 'inset 0 1px 0 rgba(255,255,255,0.08)',
+  });
+
   return (
     <div className="page-panel" style={{
       width: '100vw', height: '100vh', background: currentTheme.background,
@@ -58,12 +76,12 @@ export default function SettingsScreen({
         <Sect title={t(lang, 'theme')}>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {allThemes.map((theme) => (
-              <button className="soft-button" key={theme.id} onClick={() => onSetThemeId(theme.id)} style={{
-                display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8,
-                border: settings.themeId === theme.id ? `2px solid ${currentTheme.accent}` : `1px solid ${currentTheme.date}`,
-                background: theme.background, color: currentTheme.digit, cursor: 'pointer',
-                fontSize: 'clamp(11px, 1.2vw, 14px)',
-              }}>
+              <button
+                className="soft-button"
+                key={theme.id}
+                onClick={() => onSetThemeId(theme.id)}
+                style={themeButtonStyle(theme)}
+              >
                 <span style={{
                   width: 16, height: 16, borderRadius: 4,
                   background: `linear-gradient(180deg, ${theme.cardTop}, ${theme.cardBottom})`,
