@@ -51,7 +51,7 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
         cursor: 'pointer',
         transition: 'background 0.4s',
         position: 'relative',
-        paddingTop: 'clamp(2rem, 10vh, 6rem)',
+        paddingTop: 'clamp(0.5rem, 2vh, 2rem)',
       }}
     >
       {/* Date — top */}
