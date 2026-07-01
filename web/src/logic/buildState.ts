@@ -55,14 +55,18 @@ export function buildState(
   const month = now.getMonth() + 1;
   const day = now.getDate();
 
-  // Format: "2026年7月1日 星期三" (zh) — month/day labels vary by locale
-  const dateText = lang === 'en'
-    ? `${wd}, ${now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
-    : lang === 'ja' || lang === 'ko'
+  // Locale-appropriate date format for all languages
+  const localeMap: Record<Lang, string> = {
+    zh: 'zh-CN', en: 'en-US', ja: 'ja-JP', ko: 'ko-KR',
+    fr: 'fr-FR', de: 'de-DE', es: 'es-ES', pt: 'pt-BR',
+    ru: 'ru-RU', ar: 'ar-SA',
+  };
+  const locale = localeMap[lang] ?? localeMap.zh;
+
+  const isCJK = lang === 'zh' || lang === 'ja' || lang === 'ko';
+  const dateText = isCJK
     ? `${year}年${month}月${day}日 ${wd}`
-    : lang === 'ar'
-    ? `${wd}، ${day}/${month}/${year}`
-    : `${year}年${month}月${day}日 ${wd}`;
+    : `${wd}, ${now.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}`;
 
   return {
     hourDigits,

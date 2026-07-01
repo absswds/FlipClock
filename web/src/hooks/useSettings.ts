@@ -7,7 +7,7 @@ function defaultSettings(): UserSettings {
   return {
     timeFormat: 'H24',
     showSeconds: true,
-    signature: '',
+    signature: '翻页时钟',
     themeId: 'classic_black',
     language: 'auto',
     timezone: 'auto',
