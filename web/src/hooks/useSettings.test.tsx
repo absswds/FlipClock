@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useSettings } from './useSettings';
 
@@ -66,5 +66,15 @@ describe('useSettings', () => {
     const { result } = renderHook(() => useSettings());
 
     expect(result.current.settings.themeId).toBe('classic_black');
+  });
+
+  it('updates the timezone when a user chooses one', () => {
+    const { result } = renderHook(() => useSettings());
+
+    act(() => {
+      result.current.setTimezone('Europe/London');
+    });
+
+    expect(result.current.settings.timezone).toBe('Europe/London');
   });
 });

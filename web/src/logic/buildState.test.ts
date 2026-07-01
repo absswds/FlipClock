@@ -116,4 +116,18 @@ describe('buildState', () => {
 
     expect(state.signature).toBe('My desk clock');
   });
+
+  it('renders time and date using the selected timezone', () => {
+    const d = new Date('2026-07-01T16:08:35Z');
+    const state = buildState(d, makeSettings({
+      language: 'en',
+      timezone: 'Asia/Tokyo',
+      timeFormat: 'H24',
+    }));
+
+    expect(state.hourDigits).toEqual([0, 1]);
+    expect(state.minuteDigits).toEqual([0, 8]);
+    expect(state.secondDigits).toEqual([3, 5]);
+    expect(state.dateText).toContain('July 2, 2026');
+  });
 });

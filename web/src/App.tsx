@@ -23,7 +23,7 @@ interface AppProps {
 
 export default function App({ page, onNavigate }: AppProps) {
   const now = useTime();
-  const { settings, setTimeFormat, setShowSeconds, setSignature, setThemeId, setLanguage } =
+  const { settings, setTimeFormat, setShowSeconds, setSignature, setThemeId, setLanguage, setTimezone } =
     useSettings();
   const timer = useTimer();
   const stopwatch = useStopwatch();
@@ -46,6 +46,7 @@ export default function App({ page, onNavigate }: AppProps) {
             onSetSignature={setSignature}
             onSetThemeId={setThemeId}
             onSetLanguage={setLanguage}
+            onSetTimezone={setTimezone}
           />
         );
       case 'timer':

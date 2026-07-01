@@ -95,6 +95,10 @@ export function useSettings() {
     (v: string) => update({ language: v }),
     [update],
   );
+  const setTimezone = useCallback(
+    (v: string) => update({ timezone: v || 'auto' }),
+    [update],
+  );
 
   return {
     settings,
@@ -104,5 +108,6 @@ export function useSettings() {
     setSignature,
     setThemeId,
     setLanguage,
+    setTimezone,
   };
 }

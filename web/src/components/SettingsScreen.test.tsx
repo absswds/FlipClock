@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import SettingsScreen from './SettingsScreen';
 import type { UserSettings } from '../logic/buildState';
@@ -27,10 +27,34 @@ describe('SettingsScreen', () => {
         onSetSignature={vi.fn()}
         onSetThemeId={vi.fn()}
         onSetLanguage={vi.fn()}
+        onSetTimezone={vi.fn()}
       />,
     );
 
     expect(screen.getByRole('button', { name: 'Classic Black' }).getAttribute('style')).toContain('color: rgb(255, 255, 255)');
     expect(screen.getByRole('button', { name: 'Pure Black' }).getAttribute('style')).toContain('color: rgb(218, 218, 224)');
+  });
+
+  it('lets the user switch to another timezone', () => {
+    const onSetTimezone = vi.fn();
+
+    render(
+      <SettingsScreen
+        settings={makeSettings()}
+        onClose={vi.fn()}
+        onSetTimeFormat={vi.fn()}
+        onSetShowSeconds={vi.fn()}
+        onSetSignature={vi.fn()}
+        onSetThemeId={vi.fn()}
+        onSetLanguage={vi.fn()}
+        onSetTimezone={onSetTimezone}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText('Timezone'), {
+      target: { value: 'Europe/London' },
+    });
+
+    expect(onSetTimezone).toHaveBeenCalledWith('Europe/London');
   });
 });
