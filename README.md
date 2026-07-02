@@ -12,7 +12,13 @@ A calm flip-clock for desk, bedside, and focus. Ships as a React web app and a n
 - [Live Demo](https://flipclock-wpz.pages.dev/)
 - [GitHub Releases](https://github.com/absswds/clock/releases)
 
-![FlipClock preview](./docs/assets/flipclock-preview.svg)
+![FlipClock classic black clock](./docs/assets/flipclock-classic-black.png)
+
+![FlipClock paper desk demo](./docs/assets/flipclock-paper-desk-demo.gif)
+
+![FlipClock countdown screen](./docs/assets/flipclock-countdown.png)
+
+![FlipClock settings screen](./docs/assets/flipclock-settings.png)
 
 ## Features
 

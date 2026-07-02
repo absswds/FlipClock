@@ -12,7 +12,13 @@
 - [在线演示](https://flipclock-wpz.pages.dev/)
 - [GitHub Releases](https://github.com/absswds/clock/releases)
 
-![FlipClock 预览](./docs/assets/flipclock-preview.svg)
+![FlipClock 经典黑主题](./docs/assets/flipclock-classic-black.png)
+
+![FlipClock 纸面主题动效](./docs/assets/flipclock-paper-desk-demo.gif)
+
+![FlipClock 倒计时页面](./docs/assets/flipclock-countdown.png)
+
+![FlipClock 设置页面](./docs/assets/flipclock-settings.png)
 
 ## 功能
 
