@@ -27,6 +27,7 @@ export default function App({ page, onNavigate }: AppProps) {
     settings,
     setTimeFormat,
     setShowSeconds,
+    setShowSignature,
     setSignature,
     setThemeId,
     setLanguage,
@@ -53,6 +54,7 @@ export default function App({ page, onNavigate }: AppProps) {
             onClose={() => onNavigate('clock')}
             onSetTimeFormat={setTimeFormat}
             onSetShowSeconds={setShowSeconds}
+            onSetShowSignature={setShowSignature}
             onSetSignature={setSignature}
             onSetThemeId={setThemeId}
             onSetLanguage={setLanguage}

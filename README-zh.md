@@ -17,6 +17,49 @@
 ![FlipClock 纸面主题动效](./docs/assets/flipclock-paper-desk-demo.gif)
 
 
+## 前置要求
+
+- **Web**: [Node.js](https://nodejs.org/) ≥ 18
+- **Android**: [Android Studio](https://developer.android.com/studio)（或 JDK 17 + Gradle）
+- **桌面启动器**: [Go](https://go.dev/) ≥ 1.23
+
+### Android 兼容性
+
+| 项目 | 版本 |
+|---|---|
+| minSdk | 26（Android 8.0 Oreo） |
+| Target SDK | 35（Android 15） |
+| 语言 | Kotlin + Jetpack Compose |
+
+## 快速开始
+
+**Web** — 30 秒内在浏览器中运行：
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+打开 `http://localhost:5173` 即可看到翻页时钟。
+
+**Android** — 构建并安装调试版 APK：
+
+```bash
+gradle :app:assembleDebug
+# APK 位于 app/build/outputs/apk/debug/app-debug.apk
+```
+
+或在 Android Studio 中打开项目，同步 Gradle 后点击**运行**。
+
+**桌面启动器** — Windows 单文件启动器：
+
+```bash
+cd desktop
+build.bat
+# flipclock-desktop.exe → 可随意复制运行
+```
+
 ## 功能
 
 - 全屏翻页时钟，含真实机械翻页动画（3D 旋转、阴影、回弹）

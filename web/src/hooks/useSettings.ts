@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import type { UserSettings, TimeFormat } from '../logic/buildState';
 
 const STORAGE_KEY = 'flipclock_settings';
@@ -8,6 +8,7 @@ function defaultSettings(): UserSettings {
   return {
     timeFormat: 'H24',
     showSeconds: true,
+    showSignature: true,
     signature: '',
     themeId: 'paper_desk',
     themeCustomized: false,
@@ -65,10 +66,6 @@ export function resolveTimezone(settings: UserSettings): string {
 export function useSettings() {
   const [settings, setSettings] = useState<UserSettings>(loadSettings);
 
-  useEffect(() => {
-    saveSettings(settings);
-  }, [settings]);
-
   const update = useCallback((patch: Partial<UserSettings>) => {
     setSettings((prev) => {
       const next = { ...prev, ...patch };
@@ -83,6 +80,10 @@ export function useSettings() {
   );
   const setShowSeconds = useCallback(
     (v: boolean) => update({ showSeconds: v }),
+    [update],
+  );
+  const setShowSignature = useCallback(
+    (v: boolean) => update({ showSignature: v }),
     [update],
   );
   const setSignature = useCallback(
@@ -115,6 +116,7 @@ export function useSettings() {
     update,
     setTimeFormat,
     setShowSeconds,
+    setShowSignature,
     setSignature,
     setThemeId,
     setLanguage,

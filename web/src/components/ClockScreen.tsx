@@ -27,7 +27,7 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
     }
   }, []);
 
-  const { theme, dateText, signature, dateFontSize, signatureFontSize } = state;
+  const { theme, dateText, signature, showSignature, dateFontSize, signatureFontSize } = state;
   const isPaperDesk = theme.id === 'paper_desk';
 
   return (
@@ -92,26 +92,28 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
         <FlipClock state={state} />
       </div>
 
-      <div
-        className={isPaperDesk ? 'paper-signature-chip' : undefined}
-        style={{
-          color: theme.signature,
-          fontSize: `${signatureFontSize}px`,
-          fontWeight: isPaperDesk ? 500 : 400,
-          letterSpacing: isPaperDesk ? '0.01em' : '0.08em',
-          marginTop: isPaperDesk ? 0 : 'clamp(0.5rem, 2vh, 2rem)',
-          marginBottom: isPaperDesk ? 0 : 'clamp(1rem, 4vh, 3rem)',
-          opacity: pressing ? 0.6 : 1,
-          transition: 'opacity 0.2s',
-          position: 'relative',
-          zIndex: 1,
-          alignSelf: isPaperDesk ? 'flex-end' : 'center',
-          maxWidth: isPaperDesk ? 'min(34ch, 34vw)' : 'none',
-          textAlign: isPaperDesk ? 'left' : 'center',
-        }}
-      >
-        {signature || ' '}
-      </div>
+      {showSignature && (
+        <div
+          className={isPaperDesk ? 'paper-signature-chip' : undefined}
+          style={{
+            color: theme.signature,
+            fontSize: `${signatureFontSize}px`,
+            fontWeight: isPaperDesk ? 500 : 400,
+            letterSpacing: isPaperDesk ? '0.01em' : '0.08em',
+            marginTop: isPaperDesk ? 0 : 'clamp(0.5rem, 2vh, 2rem)',
+            marginBottom: isPaperDesk ? 0 : 'clamp(1rem, 4vh, 3rem)',
+            opacity: pressing ? 0.6 : 1,
+            transition: 'opacity 0.2s',
+            position: 'relative',
+            zIndex: 1,
+            alignSelf: isPaperDesk ? 'flex-end' : 'center',
+            maxWidth: isPaperDesk ? 'min(34ch, 34vw)' : 'none',
+            textAlign: isPaperDesk ? 'left' : 'center',
+          }}
+        >
+          {signature || ' '}
+        </div>
+      )}
     </div>
   );
 }

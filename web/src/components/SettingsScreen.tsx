@@ -10,6 +10,7 @@ interface SettingsScreenProps {
   onClose: () => void;
   onSetTimeFormat: (f: TimeFormat) => void;
   onSetShowSeconds: (v: boolean) => void;
+  onSetShowSignature: (v: boolean) => void;
   onSetSignature: (v: string) => void;
   onSetThemeId: (v: string) => void;
   onSetLanguage: (v: string) => void;
@@ -23,6 +24,7 @@ export default function SettingsScreen({
   onClose,
   onSetTimeFormat,
   onSetShowSeconds,
+  onSetShowSignature,
   onSetSignature,
   onSetThemeId,
   onSetLanguage,
@@ -72,9 +74,35 @@ export default function SettingsScreen({
         justifyContent: 'space-between', alignItems: 'center',
         marginBottom: 'clamp(16px, 3vh, 32px)',
       }}>
-        <h2 style={{ margin: 0, fontSize: 'clamp(16px, 2vw, 24px)', fontWeight: 600 }}>
-          {t(lang, 'settings')}
-        </h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <h2 style={{ margin: 0, fontSize: 'clamp(16px, 2vw, 24px)', fontWeight: 600 }}>
+            {t(lang, 'settings')}
+          </h2>
+          <a
+            href="https://github.com/absswds/FlipClock"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+            title="GitHub"
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 28, height: 28, borderRadius: 6, color: currentTheme.signature,
+              transition: 'color 0.2s, background 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.color = currentTheme.accent;
+              (e.currentTarget as HTMLAnchorElement).style.background = `${currentTheme.accent}18`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.color = currentTheme.signature;
+              (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 19 19" fill="currentColor">
+              <path fillRule="evenodd" d="M9.356 1.85C5.05 1.85 1.57 5.356 1.57 9.694a7.84 7.84 0 0 0 5.324 7.44c.387.079.528-.168.528-.376 0-.182-.013-.805-.013-1.454-2.165.467-2.616-.935-2.616-.935-.349-.91-.864-1.143-.864-1.143-.71-.48.051-.48.051-.48.787.051 1.2.805 1.2.805.695 1.194 1.817.857 2.268.649.064-.507.27-.857.49-1.052-1.728-.182-3.545-.857-3.545-3.87 0-.857.31-1.558.8-2.104-.078-.195-.349-1 .077-2.078 0 0 .657-.208 2.14.805a7.5 7.5 0 0 1 1.946-.26c.657 0 1.328.092 1.946.26 1.483-1.013 2.14-.805 2.14-.805.426 1.078.155 1.883.078 2.078.502.546.799 1.247.799 2.104 0 3.013-1.818 3.675-3.558 3.87.284.247.528.714.528 1.454 0 1.052-.012 1.896-.012 2.156 0 .208.142.455.528.377a7.84 7.84 0 0 0 5.324-7.441c.013-4.338-3.48-7.844-7.773-7.844" clipRule="evenodd" />
+            </svg>
+          </a>
+        </div>
         <button className="soft-button" onClick={onClose} style={{
           background: 'transparent', border: `1px solid ${currentTheme.accent}`,
           color: currentTheme.accent, padding: '6px 16px', borderRadius: 6,
@@ -116,6 +144,13 @@ export default function SettingsScreen({
           <ToggleGroup>
             <TBtn active={settings.showSeconds} onClick={() => onSetShowSeconds(true)} accent={currentTheme.accent} digit={currentTheme.digit} label="ON" />
             <TBtn active={!settings.showSeconds} onClick={() => onSetShowSeconds(false)} accent={currentTheme.accent} digit={currentTheme.digit} label="OFF" />
+          </ToggleGroup>
+        </Sect>
+
+        <Sect title={t(lang, 'showSignature')}>
+          <ToggleGroup>
+            <TBtn active={settings.showSignature} onClick={() => onSetShowSignature(true)} accent={currentTheme.accent} digit={currentTheme.digit} label="ON" />
+            <TBtn active={!settings.showSignature} onClick={() => onSetShowSignature(false)} accent={currentTheme.accent} digit={currentTheme.digit} label="OFF" />
           </ToggleGroup>
         </Sect>
 

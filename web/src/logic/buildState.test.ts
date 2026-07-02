@@ -5,6 +5,7 @@ function makeSettings(overrides: Partial<UserSettings> = {}): UserSettings {
   return {
     timeFormat: 'H24',
     showSeconds: true,
+    showSignature: true,
     signature: '',
     themeId: 'classic_black',
     language: 'zh',
@@ -132,6 +133,13 @@ describe('buildState', () => {
 
     expect(state.dateFontSize).toBe(34);
     expect(state.signatureFontSize).toBe(22);
+  });
+
+  it('passes showSignature through', () => {
+    const d = new Date();
+    const state = buildState(d, makeSettings({ showSignature: false }));
+
+    expect(state.showSignature).toBe(false);
   });
 
   it('renders time and date using the selected timezone', () => {

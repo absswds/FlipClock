@@ -7,6 +7,7 @@ export type TimeFormat = 'H24' | 'H12';
 export interface UserSettings {
   timeFormat: TimeFormat;
   showSeconds: boolean;
+  showSignature: boolean;
   signature: string;
   themeId: string;
   themeCustomized?: boolean;
@@ -21,6 +22,7 @@ export interface ClockUiState {
   minuteDigits: number[];
   secondDigits: number[];
   showSeconds: boolean;
+  showSignature: boolean;
   amPm: string | null;
   dateText: string;
   signature: string;
@@ -28,6 +30,12 @@ export interface ClockUiState {
   signatureFontSize: number;
   theme: ClockTheme;
 }
+
+const LOCALE_MAP: Record<string, string> = {
+  zh: 'zh-CN', en: 'en-US', ja: 'ja-JP', ko: 'ko-KR',
+  fr: 'fr-FR', de: 'de-DE', es: 'es-ES', pt: 'pt-BR',
+  ru: 'ru-RU', ar: 'ar-SA',
+};
 
 function resolveClockTimezone(timezone: string): string {
   if (timezone !== 'auto') return timezone;
@@ -58,12 +66,7 @@ export function buildState(
   settings: UserSettings,
 ): ClockUiState {
   const lang: Lang = resolveLang(settings.language);
-  const localeMap: Record<Lang, string> = {
-    zh: 'zh-CN', en: 'en-US', ja: 'ja-JP', ko: 'ko-KR',
-    fr: 'fr-FR', de: 'de-DE', es: 'es-ES', pt: 'pt-BR',
-    ru: 'ru-RU', ar: 'ar-SA',
-  };
-  const locale = localeMap[lang] ?? localeMap.zh;
+  const locale = LOCALE_MAP[lang] ?? LOCALE_MAP.zh;
   const timezone = resolveClockTimezone(settings.timezone);
 
   const timeParts = safeFormatter(locale, timezone, {
@@ -114,6 +117,7 @@ export function buildState(
     minuteDigits: [Math.floor(minute / 10), minute % 10],
     secondDigits: [Math.floor(second / 10), second % 10],
     showSeconds: settings.showSeconds,
+    showSignature: settings.showSignature,
     amPm,
     dateText,
     signature: settings.signature.trim() ? settings.signature : t(lang, 'defaultSignature'),

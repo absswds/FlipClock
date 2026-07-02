@@ -17,6 +17,49 @@ A calm flip-clock for desk, bedside, and focus. Ships as a React web app and a n
 ![FlipClock paper desk demo](./docs/assets/flipclock-paper-desk-demo.gif)
 
 
+## Prerequisites
+
+- **Web**: [Node.js](https://nodejs.org/) ≥ 18
+- **Android**: [Android Studio](https://developer.android.com/studio) (or JDK 17 + Gradle)
+- **Desktop launcher**: [Go](https://go.dev/) ≥ 1.23
+
+### Android Compatibility
+
+| Requirement | Value |
+|---|---|
+| minSdk | 26 (Android 8.0 Oreo) |
+| Target SDK | 35 (Android 15) |
+| Language | Kotlin + Jetpack Compose |
+
+## Quick Start
+
+**Web** — open in your browser in 30 seconds:
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Then open `http://localhost:5173` — the flip clock is ready.
+
+**Android** — build and install the debug APK:
+
+```bash
+gradle :app:assembleDebug
+# APK at app/build/outputs/apk/debug/app-debug.apk
+```
+
+Or open the project in Android Studio, sync Gradle, and click **Run**.
+
+**Desktop** — single-file Windows launcher:
+
+```bash
+cd desktop
+build.bat
+# flipclock-desktop.exe → copy anywhere
+```
+
 ## Features
 
 - Full-screen flip clock with realistic mechanical animation (3D rotation, shadows, overshoot)

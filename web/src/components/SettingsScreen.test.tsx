@@ -7,6 +7,7 @@ function makeSettings(overrides: Partial<UserSettings> = {}): UserSettings {
   return {
     timeFormat: 'H24',
     showSeconds: true,
+    showSignature: true,
     signature: '',
     themeId: 'paper_desk',
     themeCustomized: false,
@@ -26,6 +27,7 @@ describe('SettingsScreen', () => {
         onClose={vi.fn()}
         onSetTimeFormat={vi.fn()}
         onSetShowSeconds={vi.fn()}
+        onSetShowSignature={vi.fn()}
         onSetSignature={vi.fn()}
         onSetThemeId={vi.fn()}
         onSetLanguage={vi.fn()}
@@ -48,6 +50,7 @@ describe('SettingsScreen', () => {
         onClose={vi.fn()}
         onSetTimeFormat={vi.fn()}
         onSetShowSeconds={vi.fn()}
+        onSetShowSignature={vi.fn()}
         onSetSignature={vi.fn()}
         onSetThemeId={vi.fn()}
         onSetLanguage={vi.fn()}
@@ -74,6 +77,7 @@ describe('SettingsScreen', () => {
         onClose={vi.fn()}
         onSetTimeFormat={vi.fn()}
         onSetShowSeconds={vi.fn()}
+        onSetShowSignature={vi.fn()}
         onSetSignature={vi.fn()}
         onSetThemeId={vi.fn()}
         onSetLanguage={vi.fn()}

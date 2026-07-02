@@ -17,6 +17,7 @@ function makeState(themeId: string): ClockUiState {
     minuteDigits: [2, 2],
     secondDigits: [4, 5],
     showSeconds: true,
+    showSignature: true,
     amPm: null,
     dateText: 'Tuesday, December 28, 2021',
     signature: 'Whoever is happy will make others happy too.',
