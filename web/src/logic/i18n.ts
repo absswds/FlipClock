@@ -46,7 +46,8 @@ export type TextKey = 'clock' | 'timer' | 'stopwatch' | 'countdown' | 'focus' | 
   | 'focusMode' | 'shortBreak' | 'longBreak' | 'completed' | 'focusDone' | 'breakDone'
   | 'day' | 'customDate' | 'datePlaceholder'
   | 'scrollUp' | 'scrollDown' | 'tapHint'
-  | 'newyear' | 'valentine' | 'christmas' | 'nye';
+  | 'newyear' | 'valentine' | 'christmas' | 'nye'
+  | 'deleteConfirm' | 'cancel' | 'deleteWord';
 
 const ui: Record<Lang, Record<TextKey, string>> = {
   zh: {
@@ -61,6 +62,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '专注完成！休息一下', breakDone: '休息结束，继续专注！',
     day: '天', customDate: '自定义', datePlaceholder: '选择日期...',
     scrollUp: '滚轮上滚 +1', scrollDown: '滚轮下滚 −1', tapHint: '轻触切换',
+    deleteConfirm: '确认删除', cancel: '取消', deleteWord: '删除',
     newyear: '元旦', valentine: '情人节', christmas: '圣诞节', nye: '除夕',
   },
   en: {
@@ -75,6 +77,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: 'Focus done! Take a break', breakDone: 'Break over, back to focus!',
     day: 'd', customDate: 'Custom', datePlaceholder: 'Pick a date...',
     scrollUp: 'Scroll up ＋1', scrollDown: 'Scroll down −1', tapHint: 'Tap to toggle',
+    deleteConfirm: 'Confirm Delete', cancel: 'Cancel', deleteWord: 'Delete',
     newyear: "New Year's Day", valentine: "Valentine's Day", christmas: 'Christmas', nye: "New Year's Eve",
   },
   ja: {
@@ -89,6 +92,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '集中完了！休憩しましょう', breakDone: '休憩終了、集中に戻ろう！',
     day: '日', customDate: 'カスタム', datePlaceholder: '日付を選択...',
     scrollUp: '上スクロール ＋1', scrollDown: '下スクロール −1', tapHint: 'タップ切替',
+    deleteConfirm: '削除の確認', cancel: 'キャンセル', deleteWord: '削除',
     newyear: '元旦', valentine: 'バレンタイン', christmas: 'クリスマス', nye: '大晦日',
   },
   ko: {
@@ -103,6 +107,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '집중 완료! 휴식하세요', breakDone: '휴식 종료, 다시 집중!',
     day: '일', customDate: '사용자 지정', datePlaceholder: '날짜 선택...',
     scrollUp: '위로 스크롤 ＋1', scrollDown: '아래로 스크롤 −1', tapHint: '탭 전환',
+    deleteConfirm: '삭제 확인', cancel: '취소', deleteWord: '삭제',
     newyear: '새해 첫날', valentine: '밸런타인데이', christmas: '크리스마스', nye: '새해 전날',
   },
   fr: {
@@ -117,6 +122,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: 'Focus terminé! Pause', breakDone: 'Pause finie, au travail!',
     day: 'j', customDate: 'Personnalisé', datePlaceholder: 'Choisir une date...',
     scrollUp: 'Défiler haut ＋1', scrollDown: 'Défiler bas −1', tapHint: 'Tapoter',
+    deleteConfirm: 'Confirmer la suppression', cancel: 'Annuler', deleteWord: 'Supprimer',
     newyear: 'Nouvel An', valentine: 'Saint-Valentin', christmas: 'Noël', nye: 'Saint-Sylvestre',
   },
   de: {
@@ -131,6 +137,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: 'Fokus fertig! Pause machen', breakDone: 'Pause vorbei, weiter!',
     day: 'T', customDate: 'Benutzerdefiniert', datePlaceholder: 'Datum wählen...',
     scrollUp: 'Hochscrollen ＋1', scrollDown: 'Runterscrollen −1', tapHint: 'Tippen',
+    deleteConfirm: 'Löschen bestätigen', cancel: 'Abbrechen', deleteWord: 'Löschen',
     newyear: 'Neujahr', valentine: 'Valentinstag', christmas: 'Weihnachten', nye: 'Silvester',
   },
   es: {
@@ -145,6 +152,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: '¡Enfoque completado! Descansa', breakDone: '¡Descanso terminado!',
     day: 'd', customDate: 'Personalizado', datePlaceholder: 'Elegir fecha...',
     scrollUp: 'Desplazar arriba ＋1', scrollDown: 'Desplazar abajo −1', tapHint: 'Tocar',
+    deleteConfirm: 'Confirmar eliminación', cancel: 'Cancelar', deleteWord: 'Eliminar',
     newyear: 'Año Nuevo', valentine: 'San Valentín', christmas: 'Navidad', nye: 'Nochevieja',
   },
   pt: {
@@ -159,6 +167,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: 'Foco concluído! Descanse', breakDone: 'Pausa encerrada!',
     day: 'd', customDate: 'Personalizado', datePlaceholder: 'Escolher data...',
     scrollUp: 'Rolar p/cima ＋1', scrollDown: 'Rolar p/baixo −1', tapHint: 'Tocar',
+    deleteConfirm: 'Confirmar exclusão', cancel: 'Cancelar', deleteWord: 'Excluir',
     newyear: 'Ano Novo', valentine: 'Dia dos Namorados', christmas: 'Natal', nye: 'Véspera de Ano Novo',
   },
   ru: {
@@ -173,6 +182,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: 'Фокус завершён! Отдых', breakDone: 'Перерыв окончен!',
     day: 'д', customDate: 'Своя дата', datePlaceholder: 'Выбрать дату...',
     scrollUp: 'Прокрутка вверх ＋1', scrollDown: 'Прокрутка вниз −1', tapHint: 'Нажать',
+    deleteConfirm: 'Подтвердить удаление', cancel: 'Отмена', deleteWord: 'Удалить',
     newyear: 'Новый год', valentine: 'День Валентина', christmas: 'Рождество', nye: 'Канун Нового года',
   },
   ar: {
@@ -187,6 +197,7 @@ const ui: Record<Lang, Record<TextKey, string>> = {
     focusDone: 'اكتمل التركيز! استرح', breakDone: 'انتهت الاستراحة!',
     day: 'يوم', customDate: 'مخصص', datePlaceholder: 'اختر تاريخاً...',
     scrollUp: 'تمرير لأعلى ＋1', scrollDown: 'تمرير لأسفل −1', tapHint: 'انقر',
+    deleteConfirm: 'تأكيد الحذف', cancel: 'إلغاء', deleteWord: 'حذف',
     newyear: 'رأس السنة', valentine: 'عيد الحب', christmas: 'عيد الميلاد', nye: 'ليلة رأس السنة',
   },
 };

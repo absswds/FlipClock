@@ -248,9 +248,29 @@ class CountdownViewModel(
         viewModelScope.launch { repository.selectCountdownTarget(id) }
     }
 
+    fun deleteTarget(id: String) {
+        viewModelScope.launch {
+            repository.deleteCountdownTarget(id)
+            val baseKey = id.substringBeforeLast("_")
+            if (baseKey.isNotEmpty() && baseKey != "custom") {
+                repository.hidePreset(baseKey)
+            }
+        }
+    }
+
     private fun rebuild() {
         val now = LocalDateTime.now(clock)
-        val allTargets = (CountdownPresets.forYear(now.year) + CountdownPresets.forYear(now.year + 1) + settings.countdownTargets)
+        val presets = (CountdownPresets.forYear(now.year) + CountdownPresets.forYear(now.year + 1))
+            .distinctBy { it.id }
+        val dedupedPresets = presets
+            .groupBy { it.id.substringBeforeLast("_") }
+            .mapNotNull { (baseKey, list) ->
+                if (settings.hiddenPresetKeys.contains(baseKey)) return@mapNotNull null
+                list.firstOrNull { !it.date.isBefore(now.toLocalDate()) }
+                    ?: list.maxByOrNull { it.date }
+            }
+            .sortedBy { it.date }
+        val allTargets = (dedupedPresets + settings.countdownTargets)
             .distinctBy { it.id }
             .sortedBy { it.date }
         val selected = allTargets.firstOrNull { it.id == settings.selectedCountdownId }

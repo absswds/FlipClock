@@ -6,52 +6,26 @@
 [![Android](https://img.shields.io/badge/Android-Jetpack%20Compose-3ddc84?logo=android&logoColor=white)](https://github.com/absswds/clock/releases)
 [![Release](https://img.shields.io/github/v/release/absswds/clock?display_name=tag)](https://github.com/absswds/clock/releases)
 [![Tests](https://img.shields.io/badge/Tests-Vitest%20%2B%20JUnit-4b5563)](https://github.com/absswds/clock/actions)
-[![License](https://img.shields.io/badge/License-Not%20selected-9ca3af)](./LICENSE)
 
-A calm flip-clock experience for desk, bedside, and focus use. The project ships both a React/Vite web app and a native Android app built with Jetpack Compose, with the same core modes, local persistence, and theme direction.
-
-**Links**
+A calm flip-clock for desk, bedside, and focus. Ships as a React web app and a native Kotlin/Compose Android app — same modes, same themes, local-first persistence.
 
 - [Live Demo](https://flipclock-wpz.pages.dev/)
 - [GitHub Releases](https://github.com/absswds/clock/releases)
-- [Cloudflare Pages Project](https://flipclock-wpz.pages.dev/)
-- [Chinese README](./README-zh.md)
 
-## Why this project
+## Features
 
-FlipClock is built around a simple idea: a large, legible full-screen clock should still feel warm and tactile. Instead of piling on utility-panel clutter, the project keeps the main clock front and center, then adds timer, stopwatch, countdown, focus, themes, time-format control, time-zone override, and localized default signatures around it.
-
-The current public theme set stays intentionally tight:
-
-- `Paper Desk`
-- `Classic Black`
-- `Pure Black`
-
-## Feature Set
-
-- Full-screen flip clock with optional seconds
-- 12-hour and 24-hour display
-- Language-aware default signature text
-- Theme presets shared across Web and Android
-- Timer, stopwatch, countdown, and focus modes
-- Browser-local persistence for Web settings and countdown targets
-- Android DataStore persistence for user settings and productivity state
+- Full-screen flip clock with realistic mechanical animation (3D rotation, shadows, overshoot)
+- 12/24-hour display, optional seconds, AM/PM indicator
+- Timer, stopwatch, countdown, and Pomodoro focus modes
+- Editable timer — tap or swipe to adjust hours, minutes, seconds before starting
+- Countdown with preset targets (New Year, Christmas, etc.) and custom entries
+- Delete any countdown target (presets or custom) with confirmation
+- Three theme presets: Paper Desk, Classic Black, Pure Black
+- 10 interface languages: 中文, English, 日本語, 한국어, Français, Deutsch, Español, Português, Русский, العربية
 - Manual time-zone override for the main clock
-- Cloudflare Pages deployment for the Web app
-
-## Platform Notes
-
-**Web**
-
-- Built with React 19, TypeScript, Vite, and Vitest
-- Deploys to Cloudflare Pages from GitHub Actions
-- Best for quick sharing and trying theme/layout changes
-
-**Android**
-
-- Built with Kotlin and Jetpack Compose
-- Native APK is published through GitHub Releases
-- Includes responsive tuning for smaller phones instead of simply mirroring the desktop web canvas
+- Language-aware default signature
+- Burn-in protection, ambient brightness, and exit-confirm gesture (Android)
+- Local persistence: browser localStorage (Web) / DataStore Preferences (Android)
 
 ## Development
 
@@ -60,51 +34,28 @@ The current public theme set stays intentionally tight:
 ```bash
 cd web
 npm install
-npm run dev
+npm run dev        # start dev server
+npm run test       # Vitest
+npm run build      # production build → web/dist
 ```
 
-Useful commands:
-
-```bash
-npm run test
-npm run lint
-npm run build
-```
+Built with React 19, TypeScript, Vite, and Vitest. Deploys to Cloudflare Pages on every push to the main branch.
 
 **Android**
-
-This repository keeps `gradle/wrapper/gradle-wrapper.properties`, but not the wrapper scripts or `gradle-wrapper.jar`.
-
-Use Android Studio, or install Gradle locally and run:
 
 ```bash
 gradle :app:testDebugUnitTest
 gradle :app:assembleDebug
 ```
 
-The debug APK is generated at `app/build/outputs/apk/debug/app-debug.apk`.
+Built with Kotlin and Jetpack Compose (minSdk 26). The Gradle wrapper scripts are not committed — open the project in Android Studio or install Gradle locally. The debug APK lands at `app/build/outputs/apk/debug/app-debug.apk`.
 
 ## Releases
 
-Tagging `v*` triggers the release workflow and uploads:
+Push a `v*` tag to trigger the release workflow. Each release publishes:
 
 - `flipclock-web-<tag>.zip`
-- `flipclock-android-debug-<tag>.apk`
-
-The Android artifact is currently a debug-signed preview package. A production Android release still needs signing configuration and a release build pipeline.
-
-## Deploying the Web App
-
-The GitHub workflow at [.github/workflows/deploy-web.yml](./.github/workflows/deploy-web.yml) runs tests, builds `web/dist`, and deploys to Cloudflare Pages.
-
-Required repository secrets:
-
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
-
-## Inspiration
-
-This project borrows from the broader physical flip-clock language, not from any specific app's code, brand, or assets. The goal is to build an original implementation with its own theme system, interaction details, release flow, and cross-platform shape.
+- `flipclock-android-<tag>.apk`
 
 ## Project Structure
 

@@ -30,10 +30,10 @@ const val LargeFlipDurationHeightDp = 240f
 const val CompactFlipDurationHeightDp = 180f
 
 object StageFlipHeights {
-    const val primary = 280f
-    const val primaryCompact = 236f
-    const val secondary = 188f
-    const val secondaryCompact = 156f
+    const val primary = 364f
+    const val primaryCompact = 307f
+    const val secondary = 340f
+    const val secondaryCompact = 280f
 }
 
 data class FlipDurationLayout(
@@ -70,23 +70,25 @@ fun calculateFlipDurationLayout(
     separatorCount: Int,
     maxWidth: Float,
     maxHeight: Float,
+    scaleFactor: Float = 1f,
 ): FlipDurationLayout {
     val safeDigitCount = digitCount.coerceAtLeast(1)
-    val separatorWeight = 0.18f
+    val separatorWeight = 0.12f
     val weightedGlyphs = safeDigitCount + separatorCount * separatorWeight
-    val targetWidth = maxWidth * 0.96f
+    val targetWidth = maxWidth * 0.98f
+    val aspectRatio = 1.78f * scaleFactor
     var glyphWidth = targetWidth / weightedGlyphs
-    var cardHeight = glyphWidth * 1.78f
-    val maxCardHeight = maxHeight * 0.88f
+    var cardHeight = glyphWidth * aspectRatio
+    val maxCardHeight = maxHeight * 0.92f
     if (cardHeight > maxCardHeight) {
         cardHeight = maxCardHeight
-        glyphWidth = cardHeight / 1.78f
+        glyphWidth = cardHeight / aspectRatio
     }
 
     return FlipDurationLayout(
         glyphWidth = glyphWidth,
         cardHeight = cardHeight,
-        fontSize = glyphWidth * 1.52f,
+        fontSize = glyphWidth * 1.52f * scaleFactor,
         separatorWidth = glyphWidth * separatorWeight,
         separatorFontSize = cardHeight * 0.42f,
     )
@@ -98,6 +100,7 @@ fun FlipDurationDisplay(
     theme: ClockTheme = ClockThemePresets.ClassicBlack,
     modifier: Modifier = Modifier,
     height: Dp = DefaultFlipDurationHeightDp.dp,
+    scaleFactor: Float = 1f,
 ) {
     val parts = remember(text) { splitFlipText(text) }
     val digitCount = parts.sumOf { part ->
@@ -119,6 +122,7 @@ fun FlipDurationDisplay(
             separatorCount = separatorCount,
             maxWidth = maxWidth.value,
             maxHeight = maxHeight.value,
+            scaleFactor = scaleFactor,
         )
         val glyphWidth = layout.glyphWidth.dp
         val cardHeight = layout.cardHeight.dp

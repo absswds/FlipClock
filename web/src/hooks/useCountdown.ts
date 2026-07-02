@@ -7,6 +7,7 @@ const STORAGE_KEY = 'flipclock_countdown';
 interface StoredCountdownState {
   selectedId: string;
   customTargets: CountdownTarget[];
+  hiddenPresets: string[];
 }
 
 /** Universal global dates — always resolved to the next occurrence. */
@@ -29,7 +30,7 @@ const presetKeys = [
 function readStoredState(): StoredCountdownState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { selectedId: 'newyear', customTargets: [] };
+    if (!raw) return { selectedId: 'newyear', customTargets: [], hiddenPresets: [] };
     const parsed = JSON.parse(raw) as Partial<StoredCountdownState>;
     return {
       selectedId: typeof parsed.selectedId === 'string' ? parsed.selectedId : 'newyear',
@@ -41,9 +42,10 @@ function readStoredState(): StoredCountdownState {
             && target.isPreset === false,
           )
         : [],
+      hiddenPresets: Array.isArray(parsed.hiddenPresets) ? parsed.hiddenPresets : [],
     };
   } catch {
-    return { selectedId: 'newyear', customTargets: [] };
+    return { selectedId: 'newyear', customTargets: [], hiddenPresets: [] };
   }
 }
 
@@ -64,10 +66,12 @@ export function useCountdown() {
   }, []);
 
   const presets = useMemo<CountdownTarget[]>(
-    () => presetKeys.map((k) => ({
-      id: k.id, title: k.id, date: nextDate(k.mmdd), isPreset: true,
-    })),
-    [],
+    () => presetKeys
+      .filter((k) => !storedState.hiddenPresets.includes(k.id))
+      .map((k) => ({
+        id: k.id, title: k.id, date: nextDate(k.mmdd), isPreset: true,
+      })),
+    [storedState.hiddenPresets],
   );
 
   const targets = useMemo(
@@ -86,11 +90,28 @@ export function useCountdown() {
       const customTargets = t.isPreset
         ? prev.customTargets
         : [...prev.customTargets.filter((item) => item.id !== t.id), t];
-      const next = { selectedId: t.id, customTargets };
+      const next = { selectedId: t.id, customTargets, hiddenPresets: prev.hiddenPresets };
       writeStoredState(next);
       return next;
     });
   };
 
-  return { target, remaining, setTarget, presets };
+  const deleteTarget = (id: string) => {
+    setStoredState((prev) => {
+      const customTargets = prev.customTargets.filter((item) => item.id !== id);
+      let hiddenPresets = prev.hiddenPresets;
+      if (presetKeys.some((k) => k.id === id)) {
+        hiddenPresets = [...new Set([...prev.hiddenPresets, id])];
+      }
+      const next = {
+        selectedId: prev.selectedId === id ? 'newyear' : prev.selectedId,
+        customTargets,
+        hiddenPresets,
+      };
+      writeStoredState(next);
+      return next;
+    });
+  };
+
+  return { target, remaining, setTarget, deleteTarget, presets };
 }

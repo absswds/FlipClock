@@ -68,7 +68,7 @@ fun ClockScreen(
                 Text(
                     text = state.dateText,
                     color = state.theme.date,
-                    fontSize = 18.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.SemiBold,
                     letterSpacing = 0.3.sp,
                     textAlign = TextAlign.Center,

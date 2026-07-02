@@ -1,10 +1,15 @@
 package com.binbi.flipclock.productivity
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -15,6 +20,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -25,13 +31,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -39,10 +50,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -182,9 +195,60 @@ fun CountdownScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.uiState.collectAsState()
+    var showCreatePanel by remember { mutableStateOf(false) }
+    var targetToDelete by remember { mutableStateOf<String?>(null) }
+
+    if (targetToDelete != null) {
+        val deleteId = targetToDelete!!
+        val deleteTitle = state.targets.firstOrNull { it.id == deleteId }?.let {
+            localizedCountdownTitle(it, language)
+        } ?: ""
+        AlertDialog(
+            onDismissRequest = { targetToDelete = null },
+            title = {
+                Text(
+                    when (language) {
+                        AppLanguage.ZH -> "确认删除"
+                        AppLanguage.JA -> "削除の確認"
+                        AppLanguage.KO -> "삭제 확인"
+                        else -> "Confirm Delete"
+                    }
+                )
+            },
+            text = { Text(deleteTitle) },
+            confirmButton = {
+                TextButton(onClick = { viewModel.deleteTarget(deleteId); targetToDelete = null }) {
+                    Text(
+                        when (language) {
+                            AppLanguage.ZH -> "删除"
+                            AppLanguage.JA -> "削除"
+                            AppLanguage.KO -> "삭제"
+                            else -> "Delete"
+                        },
+                        color = Color(0xFFE53935),
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { targetToDelete = null }) {
+                    Text(
+                        when (language) {
+                            AppLanguage.ZH -> "取消"
+                            AppLanguage.JA -> "キャンセル"
+                            AppLanguage.KO -> "취소"
+                            else -> "Cancel"
+                        }
+                    )
+                }
+            },
+        )
+    }
+
     ToolSurface(theme = theme, modifier = modifier) { compact, colors ->
+        Spacer(Modifier.height(if (compact) 24.dp else 40.dp))
         Text(
-            text = state.selectedTarget?.title ?: labelFor(language, "no_target"),
+            text = state.selectedTarget?.let { localizedCountdownTitle(it, language) }
+                ?: labelFor(language, "no_target"),
             color = colors.textPrimary,
             fontSize = if (compact) 22.sp else 26.sp,
             fontWeight = FontWeight.Bold,
@@ -199,9 +263,20 @@ fun CountdownScreen(
         Spacer(Modifier.height(18.dp))
         CountdownStage(state = state, theme = theme, colors = colors, compact = compact, language = language)
         Spacer(Modifier.height(18.dp))
-        TargetScroller(state.targets, state.selectedTarget?.id, language, colors, viewModel::selectTarget)
-        Spacer(Modifier.height(18.dp))
-        CountdownCreatePanel(state, viewModel, language, colors, compact)
+        TargetScroller(
+            targets = state.targets,
+            selectedId = state.selectedTarget?.id,
+            language = language,
+            colors = colors,
+            onSelect = viewModel::selectTarget,
+            showCreatePanel = showCreatePanel,
+            onToggleCreatePanel = { showCreatePanel = !showCreatePanel },
+            onDeleteRequest = { targetToDelete = it },
+        )
+        if (showCreatePanel) {
+            Spacer(Modifier.height(18.dp))
+            CountdownCreatePanel(state, viewModel, language, colors, compact)
+        }
     }
 }
 
@@ -302,7 +377,7 @@ private fun StageArea(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(if (compact) 300.dp else 360.dp),
+            .height(if (compact) 390.dp else 468.dp),
         contentAlignment = Alignment.Center,
     ) {
         content()
@@ -416,7 +491,7 @@ private fun EditableTimerPicker(
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
-            .height(if (compact) 260.dp else 320.dp),
+            .height(if (compact) 338.dp else 416.dp),
         contentAlignment = Alignment.Center,
     ) {
         val layout = calculateFlipDurationLayout(
@@ -544,7 +619,7 @@ private fun CountdownStage(
         Text(
             text = state.remaining.days.toString(),
             color = colors.textPrimary,
-            fontSize = if (compact) 52.sp else 68.sp,
+            fontSize = if (compact) 62.sp else 82.sp,
             fontWeight = FontWeight.Black,
         )
         Text(
@@ -562,11 +637,13 @@ private fun CountdownStage(
                 ),
                 theme = theme,
                 height = if (compact) StageFlipHeights.secondaryCompact.dp else StageFlipHeights.secondary.dp,
+                scaleFactor = 1.2f,
             )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TargetScroller(
     targets: List<CountdownTarget>,
@@ -574,29 +651,68 @@ private fun TargetScroller(
     language: AppLanguage,
     colors: ToolColors,
     onSelect: (String) -> Unit,
+    showCreatePanel: Boolean,
+    onToggleCreatePanel: () -> Unit,
+    onDeleteRequest: (String) -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         targets.forEach { target ->
             val selected = target.id == selectedId
             val title = localizedCountdownTitle(target, language)
-            TextButton(
-                onClick = { onSelect(target.id) },
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(if (selected) colors.accent.copy(alpha = 0.16f) else colors.panel)
-                    .border(1.dp, if (selected) colors.accent else colors.border, RoundedCornerShape(8.dp)),
-            ) {
-                Text(title, color = if (selected) colors.textPrimary else colors.textSecondary)
+            Box {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (selected) colors.accent.copy(alpha = 0.16f) else colors.panel)
+                        .border(1.dp, if (selected) colors.accent else colors.border, RoundedCornerShape(8.dp))
+                        .combinedClickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = { onSelect(target.id) },
+                            onLongClick = { onDeleteRequest(target.id) },
+                        )
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                ) {
+                    Text(title, color = if (selected) colors.textPrimary else colors.textSecondary)
+                }
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = 2.dp, y = (-2).dp)
+                        .size(20.dp)
+                        .background(colors.panel, RoundedCornerShape(50))
+                        .clickable { onDeleteRequest(target.id) },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = "Delete",
+                        tint = colors.textSecondary,
+                        modifier = Modifier.size(12.dp),
+                    )
+                }
             }
+        }
+
+        OutlinedButton(
+            onClick = onToggleCreatePanel,
+            border = BorderStroke(1.dp, if (showCreatePanel) colors.accent else colors.border),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = if (showCreatePanel) colors.accent else colors.textSecondary,
+            ),
+        ) {
+            Text("+", fontSize = 14.sp)
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CountdownCreatePanel(
     state: CountdownUiState,
@@ -605,6 +721,8 @@ private fun CountdownCreatePanel(
     colors: ToolColors,
     compact: Boolean,
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
     val inputColors = OutlinedTextFieldDefaults.colors(
         focusedBorderColor = colors.accent,
         unfocusedBorderColor = colors.border,
@@ -613,7 +731,39 @@ private fun CountdownCreatePanel(
         focusedLabelColor = colors.accent,
         unfocusedLabelColor = colors.textSecondary,
         cursorColor = colors.accent,
+        disabledTextColor = colors.textPrimary,
+        disabledBorderColor = colors.border,
+        disabledLabelColor = colors.textSecondary,
     )
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val date = java.time.Instant.ofEpochMilli(millis)
+                            .atZone(java.time.ZoneId.systemDefault())
+                            .toLocalDate()
+                        viewModel.setDateDraft(date.toString())
+                    }
+                    showDatePicker = false
+                }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text(
+                    when (language) {
+                        AppLanguage.ZH -> "取消"
+                        AppLanguage.JA -> "キャンセル"
+                        AppLanguage.KO -> "취소"
+                        else -> "Cancel"
+                    }
+                ) }
+            },
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -640,14 +790,21 @@ private fun CountdownCreatePanel(
         )
         if (compact) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedTextField(
-                    value = state.dateDraft,
-                    onValueChange = viewModel::setDateDraft,
-                    label = { Text(labelFor(language, "date_hint")) },
-                    singleLine = true,
-                    colors = inputColors,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showDatePicker = true },
+                ) {
+                    OutlinedTextField(
+                        value = state.dateDraft,
+                        onValueChange = {},
+                        enabled = false,
+                        label = { Text(labelFor(language, "date_hint")) },
+                        singleLine = true,
+                        colors = inputColors,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
                 Button(
                     onClick = viewModel::addDraftTarget,
                     colors = ButtonDefaults.buttonColors(
@@ -663,14 +820,21 @@ private fun CountdownCreatePanel(
             }
         } else {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(
-                    value = state.dateDraft,
-                    onValueChange = viewModel::setDateDraft,
-                    label = { Text(labelFor(language, "date_hint")) },
-                    singleLine = true,
-                    colors = inputColors,
-                    modifier = Modifier.weight(1f),
-                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { showDatePicker = true },
+                ) {
+                    OutlinedTextField(
+                        value = state.dateDraft,
+                        onValueChange = {},
+                        enabled = false,
+                        label = { Text(labelFor(language, "date_hint")) },
+                        singleLine = true,
+                        colors = inputColors,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
                 Button(
                     onClick = viewModel::addDraftTarget,
                     colors = ButtonDefaults.buttonColors(
@@ -695,59 +859,59 @@ private fun localizedCountdownTitle(target: CountdownTarget, language: AppLangua
         target.title
     } else {
         when {
+            target.id.startsWith("new_year_eve_") -> "new_year_eve"
             target.id.startsWith("new_year_") -> "new_year"
             target.id.startsWith("spring_festival_") -> "spring_festival"
             target.id.startsWith("christmas_") -> "christmas"
-            target.id.startsWith("new_year_eve_") -> "new_year_eve"
             else -> target.title
         }.let { presetKey ->
             when (presetKey) {
                 "new_year" -> when (language) {
-                    AppLanguage.ZH -> "鍏冩棪"
-                    AppLanguage.JA -> "鍏冩棩"
-                    AppLanguage.KO -> "靸堩暣"
+                    AppLanguage.ZH -> "元旦"
+                    AppLanguage.JA -> "元旦"
+                    AppLanguage.KO -> "새해"
                     AppLanguage.FR -> "Nouvel An"
                     AppLanguage.DE -> "Neujahr"
-                    AppLanguage.ES -> "A帽o Nuevo"
+                    AppLanguage.ES -> "Año Nuevo"
                     AppLanguage.PT -> "Ano Novo"
-                    AppLanguage.RU -> "袧芯胁褘泄 谐芯写"
-                    AppLanguage.AR -> "乇兀爻 丕賱爻賳丞"
+                    AppLanguage.RU -> "Новый год"
+                    AppLanguage.AR -> "رأس السنة"
                     else -> "New Year"
                 }
                 "spring_festival" -> when (language) {
-                    AppLanguage.ZH -> "鏄ヨ妭"
-                    AppLanguage.JA -> "鏄ョ瘈"
-                    AppLanguage.KO -> "於橃爤"
+                    AppLanguage.ZH -> "春节"
+                    AppLanguage.JA -> "春節"
+                    AppLanguage.KO -> "춘절"
                     AppLanguage.FR -> "Nouvel An lunaire"
-                    AppLanguage.DE -> "Fr眉hlingsfest"
+                    AppLanguage.DE -> "Frühlingsfest"
                     AppLanguage.ES -> "Festival de Primavera"
                     AppLanguage.PT -> "Festival da Primavera"
-                    AppLanguage.RU -> "袩褉邪蟹写薪懈泻 胁械褋薪褘"
-                    AppLanguage.AR -> "毓賷丿 丕賱乇亘賷毓"
+                    AppLanguage.RU -> "Праздник весны"
+                    AppLanguage.AR -> "عيد الربيع"
                     else -> "Spring Festival"
                 }
                 "christmas" -> when (language) {
-                    AppLanguage.ZH -> "鍦ｈ癁鑺?"
-                    AppLanguage.JA -> "銈儶銈广優銈?"
-                    AppLanguage.KO -> "韥Μ鞀る鞀?"
-                    AppLanguage.FR -> "No毛l"
+                    AppLanguage.ZH -> "圣诞节"
+                    AppLanguage.JA -> "クリスマス"
+                    AppLanguage.KO -> "크리스마스"
+                    AppLanguage.FR -> "Noël"
                     AppLanguage.DE -> "Weihnachten"
                     AppLanguage.ES -> "Navidad"
                     AppLanguage.PT -> "Natal"
-                    AppLanguage.RU -> "袪芯卸写械褋褌胁芯"
-                    AppLanguage.AR -> "毓賷丿 丕賱賲賷賱丕丿"
+                    AppLanguage.RU -> "Рождество"
+                    AppLanguage.AR -> "عيد الميلاد"
                     else -> "Christmas"
                 }
                 "new_year_eve" -> when (language) {
-                    AppLanguage.ZH -> "闄ゅ"
-                    AppLanguage.JA -> "澶ф櫐鏃?"
-                    AppLanguage.KO -> "鞐半"
+                    AppLanguage.ZH -> "除夕"
+                    AppLanguage.JA -> "大晦日"
+                    AppLanguage.KO -> "제야"
                     AppLanguage.FR -> "Saint-Sylvestre"
                     AppLanguage.DE -> "Silvester"
                     AppLanguage.ES -> "Nochevieja"
-                    AppLanguage.PT -> "V茅spera de Ano Novo"
-                    AppLanguage.RU -> "袣邪薪褍薪 袧芯胁芯谐芯 谐芯写邪"
-                    AppLanguage.AR -> "賱賷賱丞 乇兀爻 丕賱爻賳丞"
+                    AppLanguage.PT -> "Véspera de Ano Novo"
+                    AppLanguage.RU -> "Канун Нового года"
+                    AppLanguage.AR -> "ليلة رأس السنة"
                     else -> "New Year's Eve"
                 }
                 else -> target.title
@@ -759,27 +923,27 @@ private fun pomodoroLabel(mode: PomodoroMode, language: AppLanguage): String =
     when (mode) {
         PomodoroMode.FOCUS -> labelFor(language, "focus")
         PomodoroMode.SHORT_BREAK -> when (language) {
-            AppLanguage.ZH -> "鐭紤鎭?"
-            AppLanguage.JA -> "鐭亜浼戞啯"
-            AppLanguage.KO -> "歆ъ潃 頊挫嫕"
+            AppLanguage.ZH -> "短休息"
+            AppLanguage.JA -> "短い休憩"
+            AppLanguage.KO -> "짧은 휴식"
             AppLanguage.FR -> "Pause courte"
             AppLanguage.DE -> "Kurze Pause"
             AppLanguage.ES -> "Descanso corto"
             AppLanguage.PT -> "Pausa curta"
-            AppLanguage.RU -> "袣芯褉芯褌泻懈泄 锌械褉械褉褘胁"
-            AppLanguage.AR -> "丕爻鬲乇丕丨丞 賯氐賷乇丞"
+            AppLanguage.RU -> "Короткий перерыв"
+            AppLanguage.AR -> "استراحة قصيرة"
             else -> "Short Break"
         }
         PomodoroMode.LONG_BREAK -> when (language) {
-            AppLanguage.ZH -> "闀夸紤鎭?"
-            AppLanguage.JA -> "闀枫亜浼戞啯"
-            AppLanguage.KO -> "旮?頊挫嫕"
+            AppLanguage.ZH -> "长休息"
+            AppLanguage.JA -> "長い休憩"
+            AppLanguage.KO -> "긴 휴식"
             AppLanguage.FR -> "Pause longue"
             AppLanguage.DE -> "Lange Pause"
             AppLanguage.ES -> "Descanso largo"
             AppLanguage.PT -> "Pausa longa"
-            AppLanguage.RU -> "袛谢懈薪薪褘泄 锌械褉械褉褘胁"
-            AppLanguage.AR -> "丕爻鬲乇丕丨丞 胤賵賷賱丞"
+            AppLanguage.RU -> "Длинный перерыв"
+            AppLanguage.AR -> "استراحة طويلة"
             else -> "Long Break"
         }
     }
