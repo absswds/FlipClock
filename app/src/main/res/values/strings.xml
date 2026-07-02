@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">翻页时钟</string>
+    <string name="default_signature">Stay hungry, Stay foolish</string>
+
+    <!-- Settings screen -->
+    <string name="settings_title">设置</string>
+    <string name="settings_time_format">时间格式</string>
+    <string name="settings_24h">24 小时制</string>
+    <string name="settings_12h">12 小时制</string>
+    <string name="settings_show_seconds">显示秒</string>
+    <string name="settings_signature">签名文字</string>
+    <string name="settings_theme">主题</string>
+    <string name="settings_back">返回</string>
+
+    <!-- Standby exit -->
+    <string name="exit_confirm_title">退出待机？</string>
+    <string name="exit_confirm">退出</string>
+    <string name="exit_cancel">取消</string>
+</resources>
