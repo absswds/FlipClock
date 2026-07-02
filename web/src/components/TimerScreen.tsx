@@ -145,25 +145,40 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset, l
           onClick={dismissGuide}
           style={{
             position: 'absolute', inset: 0, zIndex: 200,
-            background: 'rgba(0,0,0,0.75)',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(0,0,0,0.72)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: 'pointer',
+            padding: '24px',
           }}
         >
-          <div style={{ color: theme.accent, fontSize: 'clamp(16px, 2.5vw, 24px)', fontWeight: 700, marginBottom: 12 }}>
-            {t(lang, 'timerGuide')}
-          </div>
-          <div style={{ color: theme.digit, fontSize: 'clamp(12px, 1.8vw, 18px)', opacity: 0.8, marginBottom: 8 }}>
-            &#9650; {t(lang, 'timerGuideTop')}
-          </div>
-          <div style={{ color: theme.digit, fontSize: 'clamp(12px, 1.8vw, 18px)', opacity: 0.8, marginBottom: 8 }}>
-            &#9660; {t(lang, 'timerGuideBot')}
-          </div>
-          <div style={{ color: theme.signature, fontSize: 'clamp(10px, 1.3vw, 14px)', marginTop: 16 }}>
-            {t(lang, 'scrollUp')} / {t(lang, 'scrollDown')}
-          </div>
-          <div style={{ color: theme.signature, fontSize: 'clamp(10px, 1.2vw, 13px)', marginTop: 24, opacity: 0.5 }}>
-            ({t(lang, 'tapHint')})
+          <div
+            style={{
+              width: 'min(92vw, 420px)',
+              maxWidth: 'min(92vw, 420px)',
+              background: 'rgba(19, 19, 22, 0.92)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 18,
+              boxShadow: '0 24px 80px rgba(0,0,0,0.42)',
+              padding: '24px 24px 22px',
+              textAlign: 'center',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <div style={{ color: 'rgb(255, 250, 242)', fontSize: 'clamp(22px, 3vw, 32px)', fontWeight: 800, lineHeight: 1.15, marginBottom: 14 }}>
+              {t(lang, 'timerGuide')}
+            </div>
+            <div style={{ color: 'rgba(255, 248, 235, 0.92)', fontSize: 'clamp(15px, 2vw, 20px)', fontWeight: 600, lineHeight: 1.45, marginBottom: 8 }}>
+              &#9650; {t(lang, 'timerGuideTop')}
+            </div>
+            <div style={{ color: 'rgba(255, 248, 235, 0.92)', fontSize: 'clamp(15px, 2vw, 20px)', fontWeight: 600, lineHeight: 1.45, marginBottom: 12 }}>
+              &#9660; {t(lang, 'timerGuideBot')}
+            </div>
+            <div style={{ color: 'rgba(255, 248, 235, 0.78)', fontSize: 'clamp(13px, 1.6vw, 16px)', lineHeight: 1.5 }}>
+              {t(lang, 'scrollUp')} / {t(lang, 'scrollDown')}
+            </div>
+            <div style={{ color: 'rgba(255, 248, 235, 0.62)', fontSize: 'clamp(12px, 1.4vw, 14px)', marginTop: 16, lineHeight: 1.4 }}>
+              {t(lang, 'tapHint')}
+            </div>
           </div>
         </div>
       )}
