@@ -12,7 +12,4 @@ build/
 .cxx
 local.properties
 /.kotlin
-docs/project/findings.md
-docs/project/progress.md
-docs/project/task_plan.md
 docs/superpowers/
