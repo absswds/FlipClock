@@ -476,15 +476,8 @@ private fun SecondaryIcon(icon: ImageVector, label: String, colors: ToolColors, 
 
 @Composable
 private fun CompletionBanner(visible: Boolean, text: String, colors: ToolColors, onDismiss: () -> Unit) {
-    val context = androidx.compose.ui.platform.LocalContext.current
     LaunchedEffect(visible) {
-        if (visible) {
-            try {
-                val uri = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION)
-                val ringtone = android.media.RingtoneManager.getRingtone(context, uri)
-                ringtone.play()
-            } catch (_: Exception) {}
-        }
+        if (visible) ChimePlayer.play()
     }
     if (!visible) return
     Row(
