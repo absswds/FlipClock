@@ -1,6 +1,7 @@
 package com.binbi.flipclock.productivity
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FlipDisplayPartsTest {
@@ -46,6 +47,13 @@ class FlipDisplayPartsTest {
         assertEquals(240f, DefaultFlipDurationHeightDp, 0.001f)
         assertEquals(240f, LargeFlipDurationHeightDp, 0.001f)
         assertEquals(180f, CompactFlipDurationHeightDp, 0.001f)
+    }
+
+    @Test
+    fun stageDisplayHeightsPreferPrimaryClockSizedPresentation() {
+        assertTrue(StageFlipHeights.primary > StageFlipHeights.secondary)
+        assertTrue(StageFlipHeights.primaryCompact > StageFlipHeights.secondaryCompact)
+        assertTrue(StageFlipHeights.primary >= 260f)
     }
 
     @Test

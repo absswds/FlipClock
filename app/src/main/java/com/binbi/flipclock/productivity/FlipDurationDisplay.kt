@@ -29,6 +29,13 @@ const val DefaultFlipDurationHeightDp = 240f
 const val LargeFlipDurationHeightDp = 240f
 const val CompactFlipDurationHeightDp = 180f
 
+object StageFlipHeights {
+    const val primary = 280f
+    const val primaryCompact = 236f
+    const val secondary = 188f
+    const val secondaryCompact = 156f
+}
+
 data class FlipDurationLayout(
     val glyphWidth: Float,
     val cardHeight: Float,
