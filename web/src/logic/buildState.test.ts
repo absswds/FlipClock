@@ -13,10 +13,14 @@ function makeSettings(overrides: Partial<UserSettings> = {}): UserSettings {
   };
 }
 
+function makeShanghaiDate(localIso: string): Date {
+  return new Date(`${localIso}+08:00`);
+}
+
 describe('buildState', () => {
   it('extracts digits for 24h format with seconds', () => {
     // 14:08:35 = 14:08:35
-    const d = new Date(2026, 6, 1, 14, 8, 35);
+    const d = makeShanghaiDate('2026-07-01T14:08:35');
     const state = buildState(d, makeSettings({ timeFormat: 'H24' }));
 
     expect(state.hourDigits).toEqual([1, 4]);
@@ -27,7 +31,7 @@ describe('buildState', () => {
 
   it('handles 12h AM (0->12)', () => {
     // 0:05:30 = 12:05:30 AM
-    const d = new Date(2026, 6, 1, 0, 5, 30);
+    const d = makeShanghaiDate('2026-07-01T00:05:30');
     const state = buildState(d, makeSettings({ timeFormat: 'H12' }));
 
     expect(state.hourDigits).toEqual([1, 2]);
@@ -36,7 +40,7 @@ describe('buildState', () => {
 
   it('handles 12h PM (13->1)', () => {
     // 13:05:30 = 1:05:30 PM
-    const d = new Date(2026, 6, 1, 13, 5, 30);
+    const d = makeShanghaiDate('2026-07-01T13:05:30');
     const state = buildState(d, makeSettings({ timeFormat: 'H12' }));
 
     expect(state.hourDigits).toEqual([1]);
@@ -44,7 +48,7 @@ describe('buildState', () => {
   });
 
   it('handles 12h noon (12->12 PM)', () => {
-    const d = new Date(2026, 6, 1, 12, 0, 0);
+    const d = makeShanghaiDate('2026-07-01T12:00:00');
     const state = buildState(d, makeSettings({ timeFormat: 'H12' }));
 
     expect(state.hourDigits).toEqual([1, 2]);
@@ -52,21 +56,21 @@ describe('buildState', () => {
   });
 
   it('no leading zero for single-digit hour in 12h', () => {
-    const d = new Date(2026, 6, 1, 9, 30, 0);
+    const d = makeShanghaiDate('2026-07-01T09:30:00');
     const state = buildState(d, makeSettings({ timeFormat: 'H12' }));
 
     expect(state.hourDigits).toEqual([9]);
   });
 
   it('leading zero for 10+ in 12h', () => {
-    const d = new Date(2026, 6, 1, 10, 30, 0);
+    const d = makeShanghaiDate('2026-07-01T10:30:00');
     const state = buildState(d, makeSettings({ timeFormat: 'H12' }));
 
     expect(state.hourDigits).toEqual([1, 0]);
   });
 
   it('hides seconds when showSeconds is false', () => {
-    const d = new Date(2026, 6, 1, 14, 8, 35);
+    const d = makeShanghaiDate('2026-07-01T14:08:35');
     const state = buildState(d, makeSettings({ showSeconds: false }));
 
     expect(state.showSeconds).toBe(false);
@@ -74,7 +78,7 @@ describe('buildState', () => {
   });
 
   it('formats date text in Chinese', () => {
-    const d = new Date(2026, 6, 1, 14, 8, 35); // July 1, 2026 is a Wednesday
+    const d = makeShanghaiDate('2026-07-01T14:08:35'); // July 1, 2026 is a Wednesday
     const state = buildState(d, makeSettings({ language: 'zh' }));
 
     expect(state.dateText).toContain('2026年');
