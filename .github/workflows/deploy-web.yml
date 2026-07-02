@@ -37,4 +37,4 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           workingDirectory: web
           wranglerVersion: "4"
-          command: pages deploy dist --project-name=flipclock
+          command: pages deploy dist --project-name=flipclock-wpz
