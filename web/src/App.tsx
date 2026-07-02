@@ -80,6 +80,7 @@ export default function App({ page, onNavigate }: AppProps) {
             remaining={countdown.remaining}
             presets={countdown.presets}
             onSetTarget={countdown.setTarget}
+            onDeleteTarget={countdown.deleteTarget}
             lang={lang}
           />
         );

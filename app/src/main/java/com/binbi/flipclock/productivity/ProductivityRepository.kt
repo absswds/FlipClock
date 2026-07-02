@@ -24,6 +24,7 @@ class ProductivityRepository(context: Context) {
         val timerDefaultMillis = longPreferencesKey("timer_default_millis")
         val countdownTargets = stringPreferencesKey("countdown_targets")
         val selectedCountdownId = stringPreferencesKey("selected_countdown_id")
+        val hiddenPresetKeys = stringPreferencesKey("hidden_preset_keys")
         val pomodoroFocusMinutes = intPreferencesKey("pomodoro_focus_minutes")
         val pomodoroShortBreakMinutes = intPreferencesKey("pomodoro_short_break_minutes")
         val pomodoroLongBreakMinutes = intPreferencesKey("pomodoro_long_break_minutes")
@@ -39,6 +40,8 @@ class ProductivityRepository(context: Context) {
             timerDefaultMillis = prefs[Keys.timerDefaultMillis] ?: 5 * 60_000L,
             countdownTargets = decodeTargets(prefs[Keys.countdownTargets].orEmpty()),
             selectedCountdownId = prefs[Keys.selectedCountdownId],
+            hiddenPresetKeys = (prefs[Keys.hiddenPresetKeys].orEmpty())
+                .split(",").filter { it.isNotBlank() }.toSet(),
             pomodoroSettings = pomodoro,
         )
     }
@@ -59,6 +62,26 @@ class ProductivityRepository(context: Context) {
 
     suspend fun selectCountdownTarget(id: String) {
         appContext.productivityDataStore.edit { it[Keys.selectedCountdownId] = id }
+    }
+
+    suspend fun deleteCountdownTarget(id: String) {
+        appContext.productivityDataStore.edit { prefs ->
+            val current = decodeTargets(prefs[Keys.countdownTargets].orEmpty())
+                .filterNot { it.id == id }
+            prefs[Keys.countdownTargets] = encodeTargets(current)
+            if (prefs[Keys.selectedCountdownId] == id) {
+                prefs[Keys.selectedCountdownId] = ""
+            }
+        }
+    }
+
+    suspend fun hidePreset(key: String) {
+        appContext.productivityDataStore.edit { prefs ->
+            val current = (prefs[Keys.hiddenPresetKeys].orEmpty())
+                .split(",").filter { it.isNotBlank() }.toMutableSet()
+            current.add(key)
+            prefs[Keys.hiddenPresetKeys] = current.joinToString(",")
+        }
     }
 
     suspend fun setPomodoroSettings(settings: PomodoroSettings) {

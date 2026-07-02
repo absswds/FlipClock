@@ -59,7 +59,7 @@ export default function ClockScreen({ state, onLongPress }: ClockScreenProps) {
         className={isPaperDesk ? 'paper-date-rail' : undefined}
         style={{
           color: theme.date,
-          fontSize: isPaperDesk ? 'clamp(11px, 1vw, 15px)' : 'clamp(10px, 1.4vw, 18px)',
+          fontSize: isPaperDesk ? 'clamp(15px, 1.5vw, 20px)' : 'clamp(14px, 2vw, 28px)',
           fontWeight: isPaperDesk ? 500 : 400,
           letterSpacing: isPaperDesk ? '0.02em' : '0.05em',
           marginBottom: isPaperDesk ? 0 : 'clamp(1rem, 4vh, 3rem)',

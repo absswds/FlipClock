@@ -23,6 +23,8 @@ class SettingsRepository(context: Context) {
         val showSeconds = booleanPreferencesKey("show_seconds")
         val signature = stringPreferencesKey("signature")
         val themeId = stringPreferencesKey("theme_id")
+        val language = stringPreferencesKey("language")
+        val timezone = stringPreferencesKey("timezone")
     }
 
     val settings: Flow<UserSettings> = appContext.dataStore.data.map { prefs ->
@@ -31,8 +33,10 @@ class SettingsRepository(context: Context) {
                 ?.let { runCatching { TimeFormat.valueOf(it) }.getOrNull() }
                 ?: TimeFormat.H24,
             showSeconds = prefs[Keys.showSeconds] ?: true,
-            signature = prefs[Keys.signature] ?: "Stay hungry, Stay foolish",
-            themeId = prefs[Keys.themeId] ?: "classic_black",
+            signature = migrateSignature(prefs[Keys.signature]),
+            themeId = migrateThemeId(prefs[Keys.themeId]),
+            language = prefs[Keys.language] ?: "auto",
+            timezone = prefs[Keys.timezone] ?: "auto",
         )
     }
 
@@ -51,4 +55,30 @@ class SettingsRepository(context: Context) {
     suspend fun setThemeId(id: String) {
         appContext.dataStore.edit { it[Keys.themeId] = id }
     }
+
+    suspend fun setLanguage(language: String) {
+        appContext.dataStore.edit { it[Keys.language] = language }
+    }
+
+    suspend fun setTimezone(timezone: String) {
+        appContext.dataStore.edit { it[Keys.timezone] = timezone }
+    }
+
+    private fun migrateSignature(signature: String?): String =
+        when (signature?.trim()) {
+            null,
+            "",
+            "Stay hungry, Stay foolish",
+            "翻页时钟",
+            "Flip Clock" -> ""
+            else -> signature
+        }
+
+    private fun migrateThemeId(themeId: String?): String =
+        when (themeId) {
+            "paper_desk",
+            "classic_black",
+            "pure_black" -> themeId
+            else -> "paper_desk"
+        }
 }

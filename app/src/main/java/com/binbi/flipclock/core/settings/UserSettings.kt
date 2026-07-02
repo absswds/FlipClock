@@ -6,6 +6,8 @@ import com.binbi.flipclock.core.time.TimeFormat
 data class UserSettings(
     val timeFormat: TimeFormat = TimeFormat.H24,
     val showSeconds: Boolean = true,
-    val signature: String = "Stay hungry, Stay foolish",
-    val themeId: String = "classic_black",
+    val signature: String = "",
+    val themeId: String = "paper_desk",
+    val language: String = "auto",
+    val timezone: String = "auto",
 )

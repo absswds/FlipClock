@@ -55,5 +55,6 @@ data class ProductivitySettings(
     val timerDefaultMillis: Long = 5 * 60_000L,
     val countdownTargets: List<CountdownTarget> = emptyList(),
     val selectedCountdownId: String? = null,
+    val hiddenPresetKeys: Set<String> = emptySet(),
     val pomodoroSettings: PomodoroSettings = PomodoroSettings(),
 )
