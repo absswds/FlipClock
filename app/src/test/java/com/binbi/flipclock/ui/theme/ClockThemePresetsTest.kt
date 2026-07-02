@@ -7,6 +7,14 @@ import org.junit.Test
 class ClockThemePresetsTest {
 
     @Test
+    fun paperDesk_isDefaultFallback() {
+        val theme = ClockThemePresets.byId("unknown")
+
+        assertEquals("paper_desk", theme.id)
+        assertEquals(Color(0xFFF4ECDF), theme.background)
+    }
+
+    @Test
     fun classicBlack_usesSolidNeutralGrayCardFace() {
         val theme = ClockThemePresets.ClassicBlack
 

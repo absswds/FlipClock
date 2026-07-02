@@ -4,7 +4,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.time.Clock
-import java.time.LocalDateTime
+import java.time.Instant
 
 /**
  * Emits the current [LocalDateTime] once per second, re-aligning to the next whole-second
@@ -14,9 +14,9 @@ import java.time.LocalDateTime
  */
 class ClockTimeProvider(private val clock: Clock = Clock.systemDefaultZone()) {
 
-    fun timeFlow(): Flow<LocalDateTime> = flow {
+    fun timeFlow(): Flow<Instant> = flow {
         while (true) {
-            emit(LocalDateTime.now(clock))
+            emit(clock.instant())
             val millisToNextSecond = 1000L - (clock.millis() % 1000L)
             delay(millisToNextSecond)
         }

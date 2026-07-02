@@ -3,14 +3,32 @@ package com.binbi.flipclock.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * The v1 preset palettes. ClassicBlack is tuned against the reference iPad video:
- * pure-black stage, dense charcoal cards, bright white digits, and readable quiet metadata.
+ * Theme presets shared across Android and Web. The Android app now keeps the same public
+ * theme surface as the Web version: Paper Desk, Classic Black, and Pure Black.
  */
 object ClockThemePresets {
 
+    val PaperDesk = ClockTheme(
+        id = "paper_desk",
+        displayName = "Paper Desk",
+        background = Color(0xFFF4ECDF),
+        cardTop = Color(0xFFF8F3EA),
+        cardBottom = Color(0xFFECE3D4),
+        cardEdge = Color(0xFFD7C9B6),
+        cardEdgeShadow = Color(0x1F574026),
+        digit = Color(0xFF26231F),
+        hinge = Color(0x3D56422A),
+        hingeShadow = Color(0x235E4B30),
+        bevel = Color(0xBDFFFFFF),
+        topHighlight = Color(0x9EFFFFFF),
+        date = Color(0xFF7C6F61),
+        signature = Color(0xFF8C7C68),
+        accent = Color(0xFF7B5A35),
+    )
+
     val ClassicBlack = ClockTheme(
         id = "classic_black",
-        displayName = "经典黑",
+        displayName = "Classic Black",
         background = Color(0xFF000000),
         cardTop = Color(0xFF3F3F3F),
         cardBottom = Color(0xFF3F3F3F),
@@ -28,7 +46,7 @@ object ClockThemePresets {
 
     val PureBlack = ClockTheme(
         id = "pure_black",
-        displayName = "纯黑夜间",
+        displayName = "Pure Black",
         background = Color(0xFF000000),
         cardTop = Color(0xFF151517),
         cardBottom = Color(0xFF070708),
@@ -44,62 +62,13 @@ object ClockThemePresets {
         accent = Color(0xFFDADAE0),
     )
 
-    val RetroGreen = ClockTheme(
-        id = "retro_green",
-        displayName = "复古绿",
-        background = Color(0xFF05140C),
-        cardTop = Color(0xFF123322),
-        cardBottom = Color(0xFF0A2016),
-        cardEdge = Color(0xFF205A3C),
-        cardEdgeShadow = Color(0x77000000),
-        digit = Color(0xFF7CFFB0),
-        hinge = Color(0xFF03100A),
-        hingeShadow = Color(0x99000000),
-        bevel = Color(0x3329FF8F),
-        topHighlight = Color(0x1629FF8F),
-        date = Color(0xFF4F9E76),
-        signature = Color(0xFF3C7259),
-        accent = Color(0xFF7CFFB0),
-    )
+    val all: List<ClockTheme> = listOf(PaperDesk, ClassicBlack, PureBlack)
 
-    val WarmAmber = ClockTheme(
-        id = "warm_amber",
-        displayName = "暖琥珀",
-        background = Color(0xFF120B04),
-        cardTop = Color(0xFF332113),
-        cardBottom = Color(0xFF1F140A),
-        cardEdge = Color(0xFF4B3120),
-        cardEdgeShadow = Color(0x77000000),
-        digit = Color(0xFFFFD9A0),
-        hinge = Color(0xFF0E0803),
-        hingeShadow = Color(0x99000000),
-        bevel = Color(0x33FFC773),
-        topHighlight = Color(0x16FFC773),
-        date = Color(0xFFB08855),
-        signature = Color(0xFF836643),
-        accent = Color(0xFFFFD9A0),
-    )
-
-    val Slate = ClockTheme(
-        id = "slate",
-        displayName = "石板灰",
-        background = Color(0xFF0C0F14),
-        cardTop = Color(0xFF2A313C),
-        cardBottom = Color(0xFF1A1F27),
-        cardEdge = Color(0xFF3B4554),
-        cardEdgeShadow = Color(0x77000000),
-        digit = Color(0xFFE6ECF5),
-        hinge = Color(0xFF080A0E),
-        hingeShadow = Color(0x99000000),
-        bevel = Color(0x22DCE6FF),
-        topHighlight = Color(0x12DCE6FF),
-        date = Color(0xFF8893A4),
-        signature = Color(0xFF626C7A),
-        accent = Color(0xFFE6ECF5),
-    )
-
-    /** Default first, used by the theme picker order. */
-    val all: List<ClockTheme> = listOf(ClassicBlack, PureBlack, RetroGreen, WarmAmber, Slate)
-
-    fun byId(id: String): ClockTheme = all.firstOrNull { it.id == id } ?: ClassicBlack
+    fun byId(id: String): ClockTheme =
+        when (id) {
+            "paper_desk" -> PaperDesk
+            "classic_black" -> ClassicBlack
+            "pure_black" -> PureBlack
+            else -> PaperDesk
+        }
 }
