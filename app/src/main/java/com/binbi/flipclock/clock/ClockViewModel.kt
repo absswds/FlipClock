@@ -74,6 +74,7 @@ class ClockViewModel(
                 minuteDigits = listOf(zonedNow.minute / 10, zonedNow.minute % 10),
                 secondDigits = listOf(zonedNow.second / 10, zonedNow.second % 10),
                 showSeconds = settings.showSeconds,
+                showSignature = settings.showSignature,
                 amPm = amPm,
                 dateText = formatDateText(zonedNow, locale, resolvedLanguage.id),
                 signature = settings.signature.ifBlank { defaultSignatureFor(resolvedLanguage) },

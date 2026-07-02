@@ -42,6 +42,7 @@ class SettingsViewModel(
 
     fun setTimeFormat(format: TimeFormat) = viewModelScope.launch { repository.setTimeFormat(format) }
     fun setShowSeconds(show: Boolean) = viewModelScope.launch { repository.setShowSeconds(show) }
+    fun setShowSignature(show: Boolean) = viewModelScope.launch { repository.setShowSignature(show) }
     fun setSignature(text: String) = viewModelScope.launch { repository.setSignature(text.trimStart()) }
     fun setTheme(id: String) = viewModelScope.launch { repository.setThemeId(id) }
     fun setLanguage(language: String) = viewModelScope.launch { repository.setLanguage(language) }

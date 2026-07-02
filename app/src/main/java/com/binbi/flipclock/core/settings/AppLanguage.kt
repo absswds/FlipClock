@@ -89,6 +89,7 @@ private val labels: Map<String, List<String>> = mapOf(
     "theme" to listOf("主题", "Theme", "テーマ", "테마", "Thème", "Design", "Tema", "Tema", "Тема", "السمة"),
     "time_format" to listOf("时间格式", "Time Format", "時刻形式", "시간 형식", "Format", "Zeitformat", "Formato", "Formato", "Формат", "صيغة الوقت"),
     "show_seconds" to listOf("显示秒", "Show Seconds", "秒を表示", "초 표시", "Secondes", "Sekunden", "Segundos", "Segundos", "Секунды", "إظهار الثواني"),
+    "show_signature" to listOf("显示签名", "Show Signature", "署名を表示", "서명 표시", "Afficher la signature", "Signatur anzeigen", "Mostrar firma", "Mostrar assinatura", "Показывать подпись", "إظهار التوقيع"),
     "signature" to listOf("签名", "Signature", "署名", "서명", "Signature", "Signatur", "Firma", "Assinatura", "Подпись", "توقيع"),
     "signature_placeholder" to listOf("输入自定义签名...", "Enter a custom signature...", "署名を入力...", "서명을 입력...", "Entrez une signature...", "Signatur eingeben...", "Escribe una firma...", "Digite uma assinatura...", "Введите подпись...", "أدخل توقيعاً..."),
     "font_size" to listOf("字体大小", "Font Size", "文字サイズ", "글자 크기", "Taille du texte", "Schriftgröße", "Tamaño de texto", "Tamanho do texto", "Размер текста", "حجم الخط"),

@@ -1,5 +1,7 @@
 package com.binbi.flipclock.settings
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -42,6 +44,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,6 +53,7 @@ import com.binbi.flipclock.core.settings.AppLanguage
 import com.binbi.flipclock.core.settings.defaultSignatureFor
 import com.binbi.flipclock.core.settings.labelFor
 import com.binbi.flipclock.core.settings.resolveAppLanguage
+import com.binbi.flipclock.R
 import com.binbi.flipclock.core.time.TimeFormat
 import com.binbi.flipclock.ui.theme.ClockTheme
 import com.binbi.flipclock.ui.theme.ClockThemePresets
@@ -96,21 +101,39 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = if (compact) 16.dp else 24.dp, vertical = 16.dp),
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = labelFor(language, "back"),
-                        tint = textPrimary,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = labelFor(language, "back"),
+                            tint = textPrimary,
+                        )
+                    }
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        labelFor(language, "settings"),
+                        color = textPrimary,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
                     )
                 }
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    labelFor(language, "settings"),
-                    color = textPrimary,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                )
+                val ctx = LocalContext.current
+                IconButton(onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/absswds/FlipClock"))
+                    ctx.startActivity(intent)
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_github),
+                        contentDescription = "GitHub",
+                        tint = textSecondary,
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
             }
 
             Spacer(Modifier.height(20.dp))
@@ -169,6 +192,26 @@ fun SettingsScreen(
                 Switch(
                     checked = settings.showSeconds,
                     onCheckedChange = { viewModel.setShowSeconds(it) },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = theme.background,
+                        checkedTrackColor = theme.accent,
+                        uncheckedThumbColor = textPrimary,
+                        uncheckedTrackColor = borderColor,
+                    ),
+                )
+            }
+
+            Spacer(Modifier.height(18.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(labelFor(language, "show_signature"), color = textPrimary, fontSize = 16.sp)
+                Switch(
+                    checked = settings.showSignature,
+                    onCheckedChange = { viewModel.setShowSignature(it) },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = theme.background,
                         checkedTrackColor = theme.accent,

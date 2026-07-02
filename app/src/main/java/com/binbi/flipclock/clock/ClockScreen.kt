@@ -85,7 +85,7 @@ fun ClockScreen(
 
                 Spacer(Modifier.height(clockToSignatureGap))
 
-                if (state.signature.isNotBlank()) {
+                if (state.showSignature && state.signature.isNotBlank()) {
                     Text(
                         text = state.signature,
                         color = state.theme.signature,

@@ -17,6 +17,7 @@ data class ClockUiState(
     val minuteDigits: List<Int>,
     val secondDigits: List<Int>,
     val showSeconds: Boolean,
+    val showSignature: Boolean,
     val amPm: String?,
     val dateText: String,
     val signature: String,

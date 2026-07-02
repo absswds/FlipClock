@@ -22,6 +22,7 @@ class SettingsRepository(context: Context) {
     private object Keys {
         val timeFormat = stringPreferencesKey("time_format")
         val showSeconds = booleanPreferencesKey("show_seconds")
+        val showSignature = booleanPreferencesKey("show_signature")
         val signature = stringPreferencesKey("signature")
         val themeId = stringPreferencesKey("theme_id")
         val language = stringPreferencesKey("language")
@@ -36,6 +37,7 @@ class SettingsRepository(context: Context) {
                 ?.let { runCatching { TimeFormat.valueOf(it) }.getOrNull() }
                 ?: TimeFormat.H24,
             showSeconds = prefs[Keys.showSeconds] ?: true,
+            showSignature = prefs[Keys.showSignature] ?: true,
             signature = migrateSignature(prefs[Keys.signature]),
             themeId = migrateThemeId(prefs[Keys.themeId]),
             language = prefs[Keys.language] ?: "auto",
@@ -51,6 +53,10 @@ class SettingsRepository(context: Context) {
 
     suspend fun setShowSeconds(show: Boolean) {
         appContext.dataStore.edit { it[Keys.showSeconds] = show }
+    }
+
+    suspend fun setShowSignature(show: Boolean) {
+        appContext.dataStore.edit { it[Keys.showSignature] = show }
     }
 
     suspend fun setSignature(text: String) {
