@@ -52,6 +52,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -128,10 +129,18 @@ fun TimerScreen(
             )
             ControlRow(compact) {
                 PrimaryControl(
-                    icon = if (state.timer.isRunning) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                    text = if (state.timer.isRunning) labelFor(language, "pause") else labelFor(language, "start"),
+                    icon = if (state.timer.isComplete) Icons.Filled.Refresh
+                        else if (state.timer.isRunning) Icons.Filled.Pause
+                        else Icons.Filled.PlayArrow,
+                    text = if (state.timer.isComplete) labelFor(language, "restart")
+                        else if (state.timer.isRunning) labelFor(language, "pause")
+                        else labelFor(language, "start"),
                     colors = colors,
-                    onClick = { if (state.timer.isRunning) viewModel.pause() else viewModel.startOrResume() },
+                    onClick = {
+                        if (state.timer.isComplete) viewModel.reset()
+                        else if (state.timer.isRunning) viewModel.pause()
+                        else viewModel.startOrResume()
+                    },
                 )
                 SecondaryIcon(Icons.Filled.Refresh, labelFor(language, "reset"), colors, viewModel::reset)
             }
@@ -467,6 +476,16 @@ private fun SecondaryIcon(icon: ImageVector, label: String, colors: ToolColors, 
 
 @Composable
 private fun CompletionBanner(visible: Boolean, text: String, colors: ToolColors, onDismiss: () -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    LaunchedEffect(visible) {
+        if (visible) {
+            try {
+                val uri = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION)
+                val ringtone = android.media.RingtoneManager.getRingtone(context, uri)
+                ringtone.play()
+            } catch (_: Exception) {}
+        }
+    }
     if (!visible) return
     Row(
         modifier = Modifier
