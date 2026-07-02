@@ -55,6 +55,7 @@ Push a `v*` tag to trigger the release workflow. Each release publishes:
 
 - `flipclock-web-<tag>.zip`
 - `flipclock-android-<tag>.apk`
+- `flipclock-desktop-<tag>.exe` — offline desktop launcher for Windows
 
 ## Project Structure
 
@@ -62,6 +63,7 @@ Push a `v*` tag to trigger the release workflow. Each release publishes:
 .
 |-- app/                    Android app source
 |-- web/                    React/Vite web app
+|-- desktop/                Go launcher — embed web into a single .exe
 |-- docs/project/           Working notes and progress logs
 |-- gradle/                 Gradle version catalog and wrapper metadata
 |-- .github/workflows/      Release and deployment automation

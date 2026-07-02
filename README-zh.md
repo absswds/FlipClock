@@ -55,6 +55,7 @@ gradle :app:assembleDebug
 
 - `flipclock-web-<tag>.zip`
 - `flipclock-android-<tag>.apk`
+- `flipclock-desktop-<tag>.exe` — Windows 离线桌面启动器
 
 ## 目录结构
 
@@ -62,6 +63,7 @@ gradle :app:assembleDebug
 .
 |-- app/                    Android 应用源码
 |-- web/                    React/Vite 网页版
+|-- desktop/                Go 启动器 — 把网页打包成单个 exe
 |-- docs/project/           工作记录和进度笔记
 |-- gradle/                 Gradle 版本目录与 wrapper 元数据
 |-- .github/workflows/      发布与部署自动化
