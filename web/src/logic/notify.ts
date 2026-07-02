@@ -1,13 +1,29 @@
 let audioCtx: AudioContext | null = null;
+const activeOscillators = new Set<OscillatorNode>();
 
 function getAudioCtx(): AudioContext {
   if (!audioCtx) audioCtx = new AudioContext();
   return audioCtx;
 }
 
+export function stopChime(): void {
+  if (!audioCtx) return;
+
+  activeOscillators.forEach((oscillator) => {
+    try {
+      oscillator.stop(audioCtx!.currentTime);
+    } catch {
+      // Ignore already-stopped oscillators.
+    }
+  });
+  activeOscillators.clear();
+  audioCtx = null;
+}
+
 /** Play a longer completion chime that can be heard from across a room. */
 export function playChime(): void {
   try {
+    stopChime();
     const ctx = getAudioCtx();
     const now = ctx.currentTime;
 
@@ -21,6 +37,10 @@ export function playChime(): void {
       gain.gain.linearRampToValueAtTime(0, start + duration);
       osc.connect(gain);
       gain.connect(ctx.destination);
+      activeOscillators.add(osc);
+      osc.onended = () => {
+        activeOscillators.delete(osc);
+      };
       osc.start(start);
       osc.stop(start + duration);
     };

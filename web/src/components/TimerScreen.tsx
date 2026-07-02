@@ -4,7 +4,7 @@ import type { TimerState } from '../logic/productivityModels';
 import type { Lang } from '../logic/i18n';
 import { t } from '../logic/i18n';
 import { formatDuration } from '../logic/formatDuration';
-import { alertComplete } from '../logic/notify';
+import { alertComplete, stopChime } from '../logic/notify';
 import UnitFlipCard from './UnitFlipCard';
 
 interface TimerScreenProps {
@@ -71,8 +71,14 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset, l
   }, []);
 
   const startCustom = useCallback(() => {
+    stopChime();
     onStart((h * 3600 + m * 60 + s) * 1000);
   }, [h, m, s, onStart]);
+
+  const resetCustom = useCallback(() => {
+    stopChime();
+    onReset();
+  }, [onReset]);
 
   const pad2 = (n: number) => String(n).padStart(2, '0');
   const [hTens, hOnes] = pad2(h % 100).split('').map(Number);
@@ -129,7 +135,7 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset, l
           ) : (
             <>
               <Btn theme={theme} onClick={startCustom} primary>{t(lang, 'restart')}</Btn>
-              <Btn theme={theme} onClick={onReset}>{t(lang, 'reset')}</Btn>
+              <Btn theme={theme} onClick={resetCustom}>{t(lang, 'reset')}</Btn>
             </>
           )}
         </div>

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { alertComplete, playChime } from './notify';
+import { alertComplete, playChime, stopChime } from './notify';
 
 class FakeGain {
   gain = {
@@ -36,6 +36,7 @@ class FakeAudioContext {
 
 describe('completion alerts', () => {
   afterEach(() => {
+    stopChime();
     vi.unstubAllGlobals();
   });
 
@@ -63,5 +64,19 @@ describe('completion alerts', () => {
 
     expect(requestPermission).not.toHaveBeenCalled();
     expect(Notification).not.toHaveBeenCalled();
+  });
+
+  it('can stop an active chime immediately', () => {
+    const context = new FakeAudioContext();
+    vi.stubGlobal('AudioContext', function AudioContext() {
+      return context;
+    });
+
+    playChime();
+    stopChime();
+
+    expect(context.oscillators.length).toBeGreaterThan(0);
+    expect(context.oscillators.every((oscillator) => oscillator.stop.mock.calls.length >= 2)).toBe(true);
+    expect(context.oscillators.every((oscillator) => oscillator.stop.mock.calls.at(-1)?.[0] === context.currentTime)).toBe(true);
   });
 });
