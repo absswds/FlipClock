@@ -24,7 +24,6 @@ A calm flip-clock for desk, bedside, and focus. Ships as a React web app and a n
 - 10 interface languages: 中文, English, 日本語, 한국어, Français, Deutsch, Español, Português, Русский, العربية
 - Manual time-zone override for the main clock
 - Language-aware default signature
-- Burn-in protection, ambient brightness, and exit-confirm gesture (Android)
 - Local persistence: browser localStorage (Web) / DataStore Preferences (Android)
 
 ## Development
@@ -48,7 +47,7 @@ gradle :app:testDebugUnitTest
 gradle :app:assembleDebug
 ```
 
-Built with Kotlin and Jetpack Compose (minSdk 26). Open in Android Studio or run Gradle directly. The debug APK lands at `app/build/outputs/apk/debug/app-debug.apk`.
+Built with Kotlin and Jetpack Compose (minSdk 26). Open in Android Studio or run Gradle directly. The APK is generated at `app/build/outputs/apk/debug/app-debug.apk`.
 
 ## Releases
 

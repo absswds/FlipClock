@@ -24,7 +24,6 @@
 - 10 种界面语言：中文、English、日本語、한국어、Français、Deutsch、Español、Português、Русский、العربية
 - 支持手动时区切换
 - 签名随语言自动切换
-- Android 端防烧屏、环境光自动调节、防误触退出
 - 本地持久化：Web 用 localStorage，Android 用 DataStore
 
 ## 开发
@@ -48,7 +47,7 @@ gradle :app:testDebugUnitTest
 gradle :app:assembleDebug
 ```
 
-技术栈：Kotlin + Jetpack Compose（minSdk 26）。用 Android Studio 打开或直接跑 Gradle 即可。调试 APK 输出路径：`app/build/outputs/apk/debug/app-debug.apk`。
+技术栈：Kotlin + Jetpack Compose（minSdk 26）。用 Android Studio 打开或直接跑 Gradle 即可。APK 输出路径：`app/build/outputs/apk/debug/app-debug.apk`。
 
 ## 发布
 
