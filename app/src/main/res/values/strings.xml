@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">翻页时钟</string>
+    <string name="app_name">FlipClock</string>
     <string name="default_signature">Stay hungry, Stay foolish</string>
 
     <!-- Settings screen -->
