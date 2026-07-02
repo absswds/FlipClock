@@ -12,3 +12,8 @@ build/
 .cxx
 local.properties
 /.kotlin
+AGENTS.md
+CLAUDE.md
+docs/project/findings.md
+docs/project/progress.md
+docs/project/task_plan.md
