@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,7 +27,9 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -36,16 +39,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.binbi.flipclock.core.settings.AppLanguage
+import com.binbi.flipclock.core.settings.defaultSignatureFor
+import com.binbi.flipclock.core.settings.labelFor
+import com.binbi.flipclock.core.settings.resolveAppLanguage
 import com.binbi.flipclock.core.time.TimeFormat
 import com.binbi.flipclock.ui.theme.ClockTheme
+import com.binbi.flipclock.ui.theme.ClockThemePresets
 
-private val ScreenBg = Color(0xFF0E0E10)
-private val CardBg = Color(0xFF1B1B1E)
-private val TextPrimary = Color(0xFFF2F2F4)
-private val TextSecondary = Color(0xFF9A9AA0)
 private const val MAX_SIGNATURE_LEN = 60
 
 @Composable
@@ -55,93 +60,206 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     val settings by viewModel.settings.collectAsState()
+    val language = resolveAppLanguage(settings.language)
+    val theme = ClockThemePresets.byId(settings.themeId)
+    val textPrimary = if (theme.background.luminance() > 0.5f) Color(0xFF2D241B) else Color(0xFFF4F4F5)
+    val textSecondary = if (theme.background.luminance() > 0.5f) theme.date else theme.signature
+    val panelColor = if (theme.background.luminance() > 0.5f) theme.cardTop else Color(0xCC17171A)
+    val borderColor = if (theme.background.luminance() > 0.5f) theme.cardEdge else Color(0xFF333338)
+    val inputColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = theme.accent,
+        focusedLabelColor = theme.accent,
+        focusedTextColor = textPrimary,
+        unfocusedTextColor = textPrimary,
+        unfocusedBorderColor = borderColor,
+        unfocusedLabelColor = textSecondary,
+        cursorColor = theme.accent,
+        focusedPlaceholderColor = textSecondary,
+        unfocusedPlaceholderColor = textSecondary,
+        focusedSupportingTextColor = textSecondary,
+        unfocusedSupportingTextColor = textSecondary,
+    )
 
-    Column(
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
-            .background(ScreenBg)
-            .systemBarsPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .background(theme.background)
+            .systemBarsPadding(),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回", tint = TextPrimary)
-            }
-            Spacer(Modifier.width(4.dp))
-            Text("设置", color = TextPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        }
+        val compact = maxWidth < 420.dp
 
-        Spacer(Modifier.height(20.dp))
-
-        SectionLabel("时间格式")
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FormatChip(
-                label = "24 小时制",
-                selected = settings.timeFormat == TimeFormat.H24,
-                onClick = { viewModel.setTimeFormat(TimeFormat.H24) },
-            )
-            FormatChip(
-                label = "12 小时制",
-                selected = settings.timeFormat == TimeFormat.H12,
-                onClick = { viewModel.setTimeFormat(TimeFormat.H12) },
-            )
-        }
-
-        Spacer(Modifier.height(20.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text("显示秒", color = TextPrimary, fontSize = 16.sp)
-            Switch(
-                checked = settings.showSeconds,
-                onCheckedChange = { viewModel.setShowSeconds(it) },
-            )
-        }
-
-        Spacer(Modifier.height(20.dp))
-
-        SectionLabel("签名文字")
-        OutlinedTextField(
-            value = settings.signature,
-            onValueChange = { if (it.length <= MAX_SIGNATURE_LEN) viewModel.setSignature(it) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            supportingText = {
-                Text("${settings.signature.length} / $MAX_SIGNATURE_LEN", color = TextSecondary)
-            },
-        )
-
-        Spacer(Modifier.height(20.dp))
-
-        SectionLabel("主题")
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = if (compact) 16.dp else 24.dp, vertical = 16.dp),
         ) {
-            viewModel.themes.forEach { theme ->
-                ThemeSwatch(
-                    theme = theme,
-                    selected = theme.id == settings.themeId,
-                    onClick = { viewModel.setTheme(theme.id) },
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = labelFor(language, "back"),
+                        tint = textPrimary,
+                    )
+                }
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    labelFor(language, "settings"),
+                    color = textPrimary,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
                 )
             }
-        }
 
-        Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(20.dp))
+
+            SectionLabel(labelFor(language, "theme"), textSecondary)
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                viewModel.themes.forEach { swatch ->
+                    ThemeSwatch(
+                        theme = swatch,
+                        selected = swatch.id == settings.themeId,
+                        label = labelFor(language, swatch.id),
+                        selectedOutline = theme.accent,
+                        labelColor = textSecondary,
+                        onClick = { viewModel.setTheme(swatch.id) },
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(22.dp))
+
+            SectionLabel(labelFor(language, "time_format"), textSecondary)
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                SoftChip(
+                    label = "24",
+                    selected = settings.timeFormat == TimeFormat.H24,
+                    accent = theme.accent,
+                    panelColor = panelColor,
+                    borderColor = borderColor,
+                    textPrimary = textPrimary,
+                    textSecondary = textSecondary,
+                    onClick = { viewModel.setTimeFormat(TimeFormat.H24) },
+                )
+                SoftChip(
+                    label = "12",
+                    selected = settings.timeFormat == TimeFormat.H12,
+                    accent = theme.accent,
+                    panelColor = panelColor,
+                    borderColor = borderColor,
+                    textPrimary = textPrimary,
+                    textSecondary = textSecondary,
+                    onClick = { viewModel.setTimeFormat(TimeFormat.H12) },
+                )
+            }
+
+            Spacer(Modifier.height(22.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(labelFor(language, "show_seconds"), color = textPrimary, fontSize = 16.sp)
+                Switch(
+                    checked = settings.showSeconds,
+                    onCheckedChange = { viewModel.setShowSeconds(it) },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = theme.background,
+                        checkedTrackColor = theme.accent,
+                        uncheckedThumbColor = textPrimary,
+                        uncheckedTrackColor = borderColor,
+                    ),
+                )
+            }
+
+            Spacer(Modifier.height(22.dp))
+
+            SectionLabel(labelFor(language, "signature"), textSecondary)
+            OutlinedTextField(
+                value = settings.signature,
+                onValueChange = { if (it.length <= MAX_SIGNATURE_LEN) viewModel.setSignature(it) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                placeholder = { Text(labelFor(language, "signature_placeholder")) },
+                supportingText = {
+                    Text(
+                        "${defaultSignatureFor(language)} · ${settings.signature.length} / $MAX_SIGNATURE_LEN",
+                    )
+                },
+                colors = inputColors,
+            )
+
+            Spacer(Modifier.height(22.dp))
+
+            SectionLabel(labelFor(language, "language"), textSecondary)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                viewModel.languages.forEach { option ->
+                    SoftChip(
+                        label = option.nativeLabel,
+                        selected = settings.language == option.id,
+                        accent = theme.accent,
+                        panelColor = panelColor,
+                        borderColor = borderColor,
+                        textPrimary = textPrimary,
+                        textSecondary = textSecondary,
+                        onClick = { viewModel.setLanguage(option.id) },
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(22.dp))
+
+            SectionLabel(labelFor(language, "timezone"), textSecondary)
+            OutlinedTextField(
+                value = settings.timezone.takeIf { it != "auto" }.orEmpty(),
+                onValueChange = { viewModel.setTimezone(it.ifBlank { "auto" }) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                placeholder = { Text(viewModel.detectedTimezone) },
+                supportingText = {
+                    Text("${labelFor(language, "detected")} ${viewModel.detectedTimezone}")
+                },
+                colors = inputColors,
+            )
+            Spacer(Modifier.height(10.dp))
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                viewModel.commonTimezones.forEach { zoneId ->
+                    val chipLabel = if (zoneId == "auto") labelFor(language, "auto") else zoneId
+                    SoftChip(
+                        label = chipLabel,
+                        selected = settings.timezone == zoneId,
+                        accent = theme.accent,
+                        panelColor = panelColor,
+                        borderColor = borderColor,
+                        textPrimary = textPrimary,
+                        textSecondary = textSecondary,
+                        onClick = { viewModel.setTimezone(zoneId) },
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(28.dp))
+        }
     }
 }
 
 @Composable
-private fun SectionLabel(text: String) {
+private fun SectionLabel(text: String, color: Color) {
     Text(
         text = text,
-        color = TextSecondary,
+        color = color,
         fontSize = 13.sp,
         fontWeight = FontWeight.Medium,
         modifier = Modifier.padding(bottom = 10.dp),
@@ -149,45 +267,67 @@ private fun SectionLabel(text: String) {
 }
 
 @Composable
-private fun FormatChip(label: String, selected: Boolean, onClick: () -> Unit) {
+private fun SoftChip(
+    label: String,
+    selected: Boolean,
+    accent: Color,
+    panelColor: Color,
+    borderColor: Color,
+    textPrimary: Color,
+    textSecondary: Color,
+    onClick: () -> Unit,
+) {
     FilterChip(
         selected = selected,
         onClick = onClick,
         label = { Text(label) },
         colors = FilterChipDefaults.filterChipColors(
-            containerColor = CardBg,
-            labelColor = TextSecondary,
-            selectedContainerColor = Color(0xFF3A3A40),
-            selectedLabelColor = TextPrimary,
+            containerColor = panelColor,
+            labelColor = textSecondary,
+            selectedContainerColor = accent.copy(alpha = 0.16f),
+            selectedLabelColor = textPrimary,
+        ),
+        border = FilterChipDefaults.filterChipBorder(
+            enabled = true,
+            selected = selected,
+            borderColor = borderColor,
+            selectedBorderColor = accent,
         ),
     )
 }
 
 @Composable
-private fun ThemeSwatch(theme: ClockTheme, selected: Boolean, onClick: () -> Unit) {
+private fun ThemeSwatch(
+    theme: ClockTheme,
+    selected: Boolean,
+    label: String,
+    selectedOutline: Color,
+    labelColor: Color,
+    onClick: () -> Unit,
+) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier = Modifier
-                .size(width = 58.dp, height = 78.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .size(width = 68.dp, height = 88.dp)
+                .clip(RoundedCornerShape(12.dp))
                 .background(theme.background)
                 .border(
                     width = if (selected) 2.dp else 1.dp,
-                    color = if (selected) theme.accent else Color(0xFF303036),
-                    shape = RoundedCornerShape(10.dp),
+                    color = if (selected) selectedOutline else theme.cardEdge,
+                    shape = RoundedCornerShape(12.dp),
                 )
                 .clickable(onClick = onClick),
             contentAlignment = Alignment.Center,
         ) {
-            // Mini flip-card preview.
             Box(
                 modifier = Modifier
-                    .size(width = 34.dp, height = 46.dp)
-                    .clip(RoundedCornerShape(5.dp))
-                    .background(Brush.verticalGradient(listOf(theme.cardTop, theme.cardBottom))),
+                    .size(width = 40.dp, height = 54.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(Brush.verticalGradient(listOf(theme.cardTop, theme.cardBottom)))
+                    .border(1.dp, theme.cardEdge, RoundedCornerShape(6.dp)),
                 contentAlignment = Alignment.Center,
             ) {
-                Text("8", color = theme.digit, fontSize = 22.sp, fontWeight = FontWeight.Black)
+                Text("8", color = theme.digit, fontSize = 24.sp, fontWeight = FontWeight.Black)
                 Box(
                     Modifier
                         .align(Alignment.Center)
@@ -199,8 +339,8 @@ private fun ThemeSwatch(theme: ClockTheme, selected: Boolean, onClick: () -> Uni
         }
         Spacer(Modifier.height(6.dp))
         Text(
-            text = theme.displayName,
-            color = if (selected) TextPrimary else TextSecondary,
+            text = label,
+            color = labelColor,
             fontSize = 11.sp,
         )
     }
