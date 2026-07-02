@@ -15,6 +15,7 @@ import java.util.UUID
 data class TimerUiState(
     val timer: TimerState = TimerState(durationMillis = 5 * 60_000L),
     val defaultMillis: Long = 5 * 60_000L,
+    val editor: TimerEditState = TimerEditState(hours = 0, minutes = 5, seconds = 0),
     val showCompletionAlert: Boolean = false,
 )
 
@@ -33,6 +34,11 @@ class TimerViewModel(
                     val shouldReplaceTimer = !current.timer.isRunning && current.timer.remainingMillis == current.defaultMillis
                     current.copy(
                         defaultMillis = settings.timerDefaultMillis,
+                        editor = if (shouldReplaceTimer) {
+                            timerEditStateFromMillis(settings.timerDefaultMillis)
+                        } else {
+                            current.editor
+                        },
                         timer = if (shouldReplaceTimer) {
                             TimerCalculator.reset(settings.timerDefaultMillis)
                         } else {
@@ -50,16 +56,36 @@ class TimerViewModel(
         _uiState.value = _uiState.value.copy(
             timer = TimerCalculator.reset(duration),
             defaultMillis = duration,
+            editor = timerEditStateFromMillis(duration),
             showCompletionAlert = false,
         )
         viewModelScope.launch { repository.setTimerDefaultMillis(duration) }
+    }
+
+    fun adjustEditor(segment: TimerSegment, delta: Int) {
+        _uiState.value = _uiState.value.let { current ->
+            current.copy(editor = current.editor.adjust(segment, delta))
+        }
+    }
+
+    fun applyEditorDuration() {
+        _uiState.value = _uiState.value.let { current ->
+            val duration = current.editor.toMillis().coerceAtLeast(1_000L)
+            current.copy(
+                timer = TimerCalculator.reset(duration),
+                defaultMillis = duration,
+                editor = timerEditStateFromMillis(duration),
+                showCompletionAlert = false,
+            )
+        }
+        viewModelScope.launch { repository.setTimerDefaultMillis(_uiState.value.defaultMillis) }
     }
 
     fun startOrResume() {
         val now = clock.millis()
         _uiState.value = _uiState.value.let { current ->
             val nextTimer = if (current.timer.remainingMillis == current.timer.durationMillis) {
-                TimerCalculator.start(current.timer.durationMillis, now)
+                TimerCalculator.start(current.editor.toMillis().coerceAtLeast(1_000L), now)
             } else {
                 TimerCalculator.resume(current.timer, now)
             }
@@ -68,12 +94,22 @@ class TimerViewModel(
     }
 
     fun pause() {
-        _uiState.value = _uiState.value.let { it.copy(timer = TimerCalculator.pause(it.timer, clock.millis())) }
+        _uiState.value = _uiState.value.let {
+            val paused = TimerCalculator.pause(it.timer, clock.millis())
+            it.copy(
+                timer = paused,
+                editor = timerEditStateFromMillis(paused.remainingMillis),
+            )
+        }
     }
 
     fun reset() {
         _uiState.value = _uiState.value.let {
-            it.copy(timer = TimerCalculator.reset(it.defaultMillis), showCompletionAlert = false)
+            it.copy(
+                timer = TimerCalculator.reset(it.defaultMillis),
+                editor = timerEditStateFromMillis(it.defaultMillis),
+                showCompletionAlert = false,
+            )
         }
     }
 
@@ -89,11 +125,20 @@ class TimerViewModel(
                 val ticked = TimerCalculator.tick(current.timer, clock.millis())
                 _uiState.value = current.copy(
                     timer = ticked,
+                    editor = if (ticked.isComplete) timerEditStateFromMillis(current.defaultMillis) else current.editor,
                     showCompletionAlert = ticked.isComplete || current.showCompletionAlert,
                 )
             }
         }
     }
+}
+
+private fun timerEditStateFromMillis(millis: Long): TimerEditState {
+    val totalSeconds = (millis.coerceAtLeast(0L) / 1_000L).toInt()
+    val hours = (totalSeconds / 3_600).coerceIn(0, 99)
+    val minutes = (totalSeconds % 3_600) / 60
+    val seconds = totalSeconds % 60
+    return TimerEditState(hours, minutes, seconds)
 }
 
 data class StopwatchUiState(
