@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.binbi.flipclock.clock.flip.UnitFlipCard
+import com.binbi.flipclock.ui.theme.ClockTheme
 import com.binbi.flipclock.ui.theme.ClockThemePresets
 
 sealed interface FlipTextPart {
@@ -87,6 +88,7 @@ fun calculateFlipDurationLayout(
 @Composable
 fun FlipDurationDisplay(
     text: String,
+    theme: ClockTheme = ClockThemePresets.ClassicBlack,
     modifier: Modifier = Modifier,
     height: Dp = DefaultFlipDurationHeightDp.dp,
 ) {
@@ -98,7 +100,6 @@ fun FlipDurationDisplay(
         }
     }.coerceAtLeast(1)
     val separatorCount = parts.count { it is FlipTextPart.Separator }
-    val theme = ClockThemePresets.ClassicBlack
 
     BoxWithConstraints(
         modifier = modifier

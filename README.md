@@ -1,49 +1,61 @@
 # FlipClock
 
-A full-screen flip clock for desk, bedside, and focus scenarios.
+[中文](./README-zh.md) | English
 
-FlipClock has two faces:
+[![Web Demo](https://img.shields.io/badge/Web-Live%20Demo-f38020?logo=cloudflarepages&logoColor=white)](https://flipclock-wpz.pages.dev/)
+[![Android](https://img.shields.io/badge/Android-Jetpack%20Compose-3ddc84?logo=android&logoColor=white)](https://github.com/absswds/clock/releases)
+[![Release](https://img.shields.io/github/v/release/absswds/clock?display_name=tag)](https://github.com/absswds/clock/releases)
+[![Tests](https://img.shields.io/badge/Tests-Vitest%20%2B%20JUnit-4b5563)](https://github.com/absswds/clock/actions)
+[![License](https://img.shields.io/badge/License-Not%20selected-9ca3af)](./LICENSE)
 
-- **Android app** built with Kotlin and Jetpack Compose.
-- **Web app** built with React, TypeScript, and Vite.
+A calm flip-clock experience for desk, bedside, and focus use. The project ships both a React/Vite web app and a native Android app built with Jetpack Compose, with the same core modes, local persistence, and theme direction.
 
-Both versions focus on a calm mechanical flip-clock experience, readable large digits, local settings, and simple productivity modes such as timer, stopwatch, countdown, and focus.
+**Links**
 
-## Highlights
+- [Live Demo](https://flipclock-wpz.pages.dev/)
+- [GitHub Releases](https://github.com/absswds/clock/releases)
+- [Cloudflare Pages Project](https://flipclock-wpz.pages.dev/)
+- [Chinese README](./README-zh.md)
 
-- Large flip-card clock with optional seconds.
-- 12-hour and 24-hour time formats.
-- Theme presets, including a paper desk look and black clock styles.
-- Custom signature text with localized defaults.
-- Timer, stopwatch, countdown, and focus modes.
-- Browser-local persistence for Web settings and countdown state.
-- Time zone override in the Web settings page.
-- Reduced-motion friendly Web animation styling.
+## Why this project
 
-## Screens
+FlipClock is built around a simple idea: a large, legible full-screen clock should still feel warm and tactile. Instead of piling on utility-panel clutter, the project keeps the main clock front and center, then adds timer, stopwatch, countdown, focus, themes, time-format control, time-zone override, and localized default signatures around it.
 
-The main experience is intentionally simple: a full-screen clock first, with the tool navigation kept out of the way.
+The current public theme set stays intentionally tight:
 
-```text
-Clock -> Timer -> Stopwatch -> Countdown -> Focus -> Settings
-```
+- `Paper Desk`
+- `Classic Black`
+- `Pure Black`
 
-## Project Structure
+## Feature Set
 
-```text
-.
-|-- app/                    # Android app source
-|-- web/                    # React/Vite web app
-|-- docs/project/           # Planning notes and progress logs
-|-- gradle/                 # Gradle version catalog and wrapper metadata
-|-- .github/workflows/      # Deploy and release automation
-|-- README.md               # Public project overview
-`-- AGENTS.md / CLAUDE.md   # Agent-facing project notes
-```
+- Full-screen flip clock with optional seconds
+- 12-hour and 24-hour display
+- Language-aware default signature text
+- Theme presets shared across Web and Android
+- Timer, stopwatch, countdown, and focus modes
+- Browser-local persistence for Web settings and countdown targets
+- Android DataStore persistence for user settings and productivity state
+- Manual time-zone override for the main clock
+- Cloudflare Pages deployment for the Web app
 
-See [docs/project/PROJECT_STRUCTURE.md](docs/project/PROJECT_STRUCTURE.md) for a fuller map.
+## Platform Notes
 
-## Web Development
+**Web**
+
+- Built with React 19, TypeScript, Vite, and Vitest
+- Deploys to Cloudflare Pages from GitHub Actions
+- Best for quick sharing and trying theme/layout changes
+
+**Android**
+
+- Built with Kotlin and Jetpack Compose
+- Native APK is published through GitHub Releases
+- Includes responsive tuning for smaller phones instead of simply mirroring the desktop web canvas
+
+## Development
+
+**Web**
 
 ```bash
 cd web
@@ -57,14 +69,11 @@ Useful commands:
 npm run test
 npm run lint
 npm run build
-npm run preview
 ```
 
-The production Web build is written to `web/dist/`.
+**Android**
 
-## Android Development
-
-This repository currently tracks `gradle/wrapper/gradle-wrapper.properties`, but not the wrapper scripts or `gradle-wrapper.jar`.
+This repository keeps `gradle/wrapper/gradle-wrapper.properties`, but not the wrapper scripts or `gradle-wrapper.jar`.
 
 Use Android Studio, or install Gradle locally and run:
 
@@ -73,43 +82,39 @@ gradle :app:testDebugUnitTest
 gradle :app:assembleDebug
 ```
 
-The debug APK is generated at:
+The debug APK is generated at `app/build/outputs/apk/debug/app-debug.apk`.
 
-```text
-app/build/outputs/apk/debug/app-debug.apk
-```
+## Releases
 
-## Release Packages
+Tagging `v*` triggers the release workflow and uploads:
 
-GitHub Releases are automated by [.github/workflows/release.yml](.github/workflows/release.yml).
+- `flipclock-web-<tag>.zip`
+- `flipclock-android-debug-<tag>.apk`
 
-To create a release:
+The Android artifact is currently a debug-signed preview package. A production Android release still needs signing configuration and a release build pipeline.
 
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
+## Deploying the Web App
 
-The workflow builds and uploads:
-
-- `flipclock-web-<tag>.zip` from `web/dist/`
-- `flipclock-android-debug-<tag>.apk` from the Android debug build
-
-The Android package is a debug-signed preview build. For Play Store or production distribution, add a release signing configuration and publish a signed release APK or AAB.
-
-## Deployment
-
-The Web app deploy workflow is [.github/workflows/deploy-web.yml](.github/workflows/deploy-web.yml). It builds the Web app with npm and deploys `web/dist` to Cloudflare Pages when Web files change on `master`.
+The GitHub workflow at [.github/workflows/deploy-web.yml](./.github/workflows/deploy-web.yml) runs tests, builds `web/dist`, and deploys to Cloudflare Pages.
 
 Required repository secrets:
 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
 
-## Notes On Inspiration
+## Inspiration
 
-This project is inspired by the broader physical flip-clock style, not by copying a specific app's source, assets, brand, or exact screen composition. The code, themes, interactions, and documentation in this repository are maintained as original project work.
+This project borrows from the broader physical flip-clock language, not from any specific app's code, brand, or assets. The goal is to build an original implementation with its own theme system, interaction details, release flow, and cross-platform shape.
 
-## License
+## Project Structure
 
-No open-source license has been selected yet. Add a `LICENSE` file before promoting the repository for public reuse.
+```text
+.
+|-- app/                    Android app source
+|-- web/                    React/Vite web app
+|-- docs/project/           Working notes and progress logs
+|-- gradle/                 Gradle version catalog and wrapper metadata
+|-- .github/workflows/      Release and deployment automation
+|-- README.md               English public overview
+`-- README-zh.md            Chinese public overview
+```
