@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { stopChime } from '../logic/notify';
+import { alertComplete, stopChime } from '../logic/notify';
 import TimerScreen from './TimerScreen';
 import type { TimerState } from '../logic/productivityModels';
 import { ClassicBlack } from '../logic/themes';
@@ -9,6 +9,7 @@ vi.mock('../logic/notify', async () => {
   const actual = await vi.importActual<typeof import('../logic/notify')>('../logic/notify');
   return {
     ...actual,
+    alertComplete: vi.fn(),
     stopChime: vi.fn(),
   };
 });
@@ -77,5 +78,24 @@ describe('TimerScreen', () => {
 
     expect(stopChime).toHaveBeenCalledTimes(1);
     expect(onReset).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not replay the completion chime when the completed timer screen remounts', () => {
+    const props = {
+      theme: ClassicBlack,
+      state: makeState({ remainingMillis: 0, isComplete: true }),
+      onStart: vi.fn(),
+      onPause: vi.fn(),
+      onReset: vi.fn(),
+      lang: 'zh' as const,
+    };
+
+    const firstMount = render(<TimerScreen {...props} />);
+    expect(alertComplete).toHaveBeenCalledTimes(0);
+
+    firstMount.unmount();
+
+    render(<TimerScreen {...props} />);
+    expect(alertComplete).toHaveBeenCalledTimes(0);
   });
 });

@@ -41,13 +41,12 @@ export default function TimerScreen({ theme, state, onStart, onPause, onReset, l
   const text = formatDuration(state.remainingMillis, state.durationMillis >= 3600_000);
 
   // Alert on completion
-  const wasComplete = useRef(false);
+  const wasComplete = useRef(state.isComplete);
   useEffect(() => {
     if (state.isComplete && !wasComplete.current) {
-      wasComplete.current = true;
       alertComplete(t(lang, 'timeUp'), '');
     }
-    if (!state.isComplete) wasComplete.current = false;
+    wasComplete.current = state.isComplete;
   }, [state.isComplete, lang]);
 
   // Sync local time
