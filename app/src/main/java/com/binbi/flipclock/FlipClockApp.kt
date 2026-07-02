@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +36,9 @@ import com.binbi.flipclock.core.settings.labelFor
 import com.binbi.flipclock.core.settings.resolveAppLanguage
 import com.binbi.flipclock.core.settings.SettingsRepository
 import com.binbi.flipclock.core.time.ClockTimeProvider
+import com.binbi.flipclock.productivity.AndroidChimePlayer
 import com.binbi.flipclock.productivity.CountdownScreen
+import com.binbi.flipclock.productivity.LocalChimePlayer
 import com.binbi.flipclock.productivity.PomodoroScreen
 import com.binbi.flipclock.productivity.ProductivityRepository
 import com.binbi.flipclock.productivity.StopwatchScreen
@@ -91,7 +94,8 @@ fun FlipClockApp() {
     val language = resolveAppLanguage(settings.language)
     val theme = ClockThemePresets.byId(settings.themeId)
 
-    Box(Modifier.fillMaxSize().background(theme.background)) {
+    CompositionLocalProvider(LocalChimePlayer provides AndroidChimePlayer) {
+        Box(Modifier.fillMaxSize().background(theme.background)) {
         when (destination) {
             AppDestination.Clock -> {
                 val state = uiState
@@ -122,6 +126,7 @@ fun FlipClockApp() {
             languageId = language.id,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
+    }
     }
 }
 

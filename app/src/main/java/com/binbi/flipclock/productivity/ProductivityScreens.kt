@@ -476,8 +476,9 @@ private fun SecondaryIcon(icon: ImageVector, label: String, colors: ToolColors, 
 
 @Composable
 private fun CompletionBanner(visible: Boolean, text: String, colors: ToolColors, onDismiss: () -> Unit) {
+    val chimePlayer = LocalChimePlayer.current
     LaunchedEffect(visible) {
-        if (visible) ChimePlayer.play()
+        if (visible) chimePlayer.play()
     }
     if (!visible) return
     Row(
