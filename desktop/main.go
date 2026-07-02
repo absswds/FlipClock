@@ -50,12 +50,30 @@ func main() {
 }
 
 func openBrowser(url string) {
-	switch runtime.GOOS {
+	for _, candidate := range browserLaunchCandidates(runtime.GOOS, url) {
+		if err := exec.Command(candidate.name, candidate.args...).Start(); err == nil {
+			return
+		}
+	}
+}
+
+type launchCandidate struct {
+	name string
+	args []string
+}
+
+func browserLaunchCandidates(goos string, url string) []launchCandidate {
+	switch goos {
 	case "windows":
-		exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+		appArg := "--app=" + url
+		return []launchCandidate{
+			{name: "msedge", args: []string{appArg}},
+			{name: "chrome", args: []string{appArg}},
+			{name: "rundll32", args: []string{"url.dll,FileProtocolHandler", url}},
+		}
 	case "darwin":
-		exec.Command("open", url).Start()
+		return []launchCandidate{{name: "open", args: []string{url}}}
 	default:
-		exec.Command("xdg-open", url).Start()
+		return []launchCandidate{{name: "xdg-open", args: []string{url}}}
 	}
 }

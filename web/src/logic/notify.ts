@@ -5,7 +5,7 @@ function getAudioCtx(): AudioContext {
   return audioCtx;
 }
 
-/** Play a short pleasant chime — two ascending tones to grab attention without being annoying. */
+/** Play a longer completion chime that can be heard from across a room. */
 export function playChime(): void {
   try {
     const ctx = getAudioCtx();
@@ -25,31 +25,25 @@ export function playChime(): void {
       osc.stop(start + duration);
     };
 
-    playTone(880, now, 0.15, 0.3);       // A5
-    playTone(1100, now + 0.12, 0.15, 0.3); // C#6
-    playTone(1320, now + 0.24, 0.3, 0.25); // E6
-  } catch {
-    // Audio not available — silently ignore
-  }
-}
+    const phrase = [
+      [880, 0, 0.42, 0.34],
+      [1100, 0.46, 0.42, 0.34],
+      [1320, 0.92, 0.56, 0.3],
+      [988, 1.62, 0.42, 0.32],
+      [1244, 2.08, 0.42, 0.32],
+      [1480, 2.54, 0.68, 0.28],
+      [1320, 3.28, 0.64, 0.24],
+    ] as const;
 
-/** Show a browser notification if permission is granted. Falls back gracefully. */
-export function showNotification(title: string, body: string): void {
-  if (!('Notification' in window)) return;
-
-  if (Notification.permission === 'granted') {
-    new Notification(title, { body, icon: '/favicon.svg' });
-  } else if (Notification.permission !== 'denied') {
-    Notification.requestPermission().then((perm) => {
-      if (perm === 'granted') {
-        new Notification(title, { body, icon: '/favicon.svg' });
-      }
+    phrase.forEach(([freq, offset, duration, vol]) => {
+      playTone(freq, now + offset, duration, vol);
     });
+  } catch {
+    // Audio may be unavailable until the browser allows playback.
   }
 }
 
-/** Both chime + notification — call this when a timer/countdown/pomodoro completes. */
-export function alertComplete(title: string, body: string): void {
+/** Play the completion sound. Title/body are kept for call-site readability. */
+export function alertComplete(_title: string, _body: string): void {
   playChime();
-  showNotification(title, body);
 }

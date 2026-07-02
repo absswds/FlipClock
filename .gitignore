@@ -13,3 +13,7 @@ build/
 local.properties
 /.kotlin
 docs/superpowers/
+/desktop/flipclock-desktop.exe
+/desktop/dist/*
+!/desktop/dist/
+!/desktop/dist/placeholder.txt

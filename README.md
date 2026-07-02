@@ -12,6 +12,8 @@ A calm flip-clock for desk, bedside, and focus. Ships as a React web app and a n
 - [Live Demo](https://flipclock-wpz.pages.dev/)
 - [GitHub Releases](https://github.com/absswds/clock/releases)
 
+![FlipClock preview](./docs/assets/flipclock-preview.svg)
+
 ## Features
 
 - Full-screen flip clock with realistic mechanical animation (3D rotation, shadows, overshoot)
@@ -24,6 +26,7 @@ A calm flip-clock for desk, bedside, and focus. Ships as a React web app and a n
 - 10 interface languages: 中文, English, 日本語, 한국어, Français, Deutsch, Español, Português, Русский, العربية
 - Manual time-zone override for the main clock
 - Language-aware default signature
+- Completion chime for timer, countdown, and Pomodoro
 - Local persistence: browser localStorage (Web) / DataStore Preferences (Android)
 
 ## Development
@@ -49,13 +52,22 @@ gradle :app:assembleDebug
 
 Built with Kotlin and Jetpack Compose (minSdk 26). Open in Android Studio or run Gradle directly. The APK is generated at `app/build/outputs/apk/debug/app-debug.apk`.
 
+**Desktop Launcher**
+
+```bash
+cd desktop
+build.bat
+```
+
+The Windows desktop launcher embeds the built web app into a single `.exe`. It starts a local `127.0.0.1` server and opens FlipClock in an Edge/Chrome app-style window when available, falling back to the default browser. The generated `.exe` can be copied and run by itself.
+
 ## Releases
 
 Push a `v*` tag to trigger the release workflow. Each release publishes:
 
 - `flipclock-web-<tag>.zip`
 - `flipclock-android-<tag>.apk`
-- `flipclock-desktop-<tag>.exe` — offline desktop launcher for Windows
+- `flipclock-desktop-<tag>.exe` — single-file offline desktop launcher for Windows
 
 ## Project Structure
 
@@ -63,8 +75,8 @@ Push a `v*` tag to trigger the release workflow. Each release publishes:
 .
 |-- app/                    Android app source
 |-- web/                    React/Vite web app
-|-- desktop/                Go launcher — embed web into a single .exe
-|-- docs/project/           Working notes and progress logs
+|-- desktop/                Go launcher — embeds web into a single .exe
+|-- docs/assets/            Public README preview assets
 |-- gradle/                 Gradle version catalog and wrapper metadata
 |-- .github/workflows/      Release and deployment automation
 |-- README.md               English public overview

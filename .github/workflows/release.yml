@@ -57,8 +57,10 @@ jobs:
 
       - name: Build Desktop Launcher (Windows exe)
         run: |
-          cp -r web/dist desktop/dist
-          touch desktop/dist/fonts/.gitkeep
+          rm -rf desktop/dist
+          mkdir -p desktop/dist
+          cp -r web/dist/. desktop/dist/
+          touch desktop/dist/placeholder.txt
           cd desktop
           GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -H=windowsgui" -o flipclock-desktop.exe .
 
