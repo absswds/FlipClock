@@ -48,7 +48,7 @@ gradle :app:testDebugUnitTest
 gradle :app:assembleDebug
 ```
 
-Built with Kotlin and Jetpack Compose (minSdk 26). The Gradle wrapper scripts are not committed — open the project in Android Studio or install Gradle locally. The debug APK lands at `app/build/outputs/apk/debug/app-debug.apk`.
+Built with Kotlin and Jetpack Compose (minSdk 26). Open in Android Studio or run Gradle directly. The debug APK lands at `app/build/outputs/apk/debug/app-debug.apk`.
 
 ## Releases
 

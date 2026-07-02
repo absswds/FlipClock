@@ -48,7 +48,7 @@ gradle :app:testDebugUnitTest
 gradle :app:assembleDebug
 ```
 
-技术栈：Kotlin + Jetpack Compose（minSdk 26）。仓库未提交 Gradle wrapper 脚本，用 Android Studio 打开或本地安装 Gradle 即可。调试 APK 输出路径：`app/build/outputs/apk/debug/app-debug.apk`。
+技术栈：Kotlin + Jetpack Compose（minSdk 26）。用 Android Studio 打开或直接跑 Gradle 即可。调试 APK 输出路径：`app/build/outputs/apk/debug/app-debug.apk`。
 
 ## 发布
 
